@@ -1,39 +1,73 @@
-const { classes: Cc, interfaces: Ci, utils: Cu, results: Cr } = Components;
-
-// Import the Services module.
-Cu.import("resource://gre/modules/Services.jsm");
-
-// 1. Create the context menu using the search engines defined in the browser's search bar
-
-var bss = Services.search; // browser search service
-
-bss.init();
-var searchEngines = bss.getVisibleEngines({});
-
-for (i=0;i < searchEngines.length;i++) {
-    var id$ = i.toString();
-    var title$ = searchEngines[i].name;
-    browser.contextMenus.create({
-        id: id$,
-        title: title$,
-        contexts: ["all"]
-    });
-};
-
-// 2. Perform search based on selected search engine, i.e. selected context menu item
-
-function onCreated(tab) {
-    console.log("Created new tab: ${tab.id}")
-}
+var searchEngines = {};
 
 function onError(error) {
-    console.log("Error: ${error}")
+    console.log(`Error: ${error}`)
 }
 
+function sortAlphabetically(jsonObj) {
+    // Create a new empty object
+    var sortedJSON = {};
+    // Build an array with ids of search engines and sort the array alphabetically
+    var arrayOfIds = Object.keys(jsonObj);
+    // For each element in the array, fetch its value and add it to the sorted new object
+    var arrayOfNames = [];
+    var sortedArrayOfNames = [];
+    var tmpObj = {};
+    for (let i = 0;i < arrayOfIds.length;i++) {
+        arrayOfNames.push(jsonObj[arrayOfIds[i]].name);
+        tmpObj[jsonObj[arrayOfIds[i]].name] = arrayOfIds[i];
+    }
+    var sortedArrayOfNames = arrayOfNames.sort();
+    for (let item of sortedArrayOfNames) {
+        sortedJSON[tmpObj[item]] = jsonObj[tmpObj[item]];
+    }
+    return sortedJSON;
+}
+
+// Create the context menu using the search engines listed above
+function updateContextMenu(changes, area) {
+    browser.contextMenus.removeAll();
+    browser.storage.sync.get(null).then(
+        (data) => {
+            searchEngines = sortAlphabetically(data);
+            var index = 0;
+            for (var se in searchEngines) {
+                var strId = index.toString();
+                var strTitle = searchEngines[se].name;
+                if (searchEngines[se].show) {
+                    browser.contextMenus.create({
+                        id: strId,
+                        title: strTitle,
+                        contexts: ["all"]
+                    });
+                }
+                index += 1;
+            }
+        }
+    );
+}
+
+// Perform search based on selected search engine, i.e. selected context menu item
 browser.contextMenus.onClicked.addListener(function(info, tab) {
-    var searchString = info.selectionText.replace(" ", "+");
+    var searchString = "";
+    if (info.menuItemId == 14) { // 14 is the index for LinkedIn
+        searchString = info.selectionText.replace(" ", "/");
+    } else {
+        searchString = info.selectionText.replace(/ /g, "+");
+    }
+    var targetUrl = "";
+    var index = 0;
+    for (var se in searchEngines) {
+        if (info.menuItemId == index) {
+            targetUrl = searchEngines[se].url + searchString;
+        }
+        index += 1;
+    }
     var creating = browser.tabs.create({
-        url: searchEngines[parseInt(info.menuItemId)].getSubmission(searchString, null).uri.spec
+        url: targetUrl
     });
-    creating.then(onCreated, onError);
+    creating.then(null, onError);
 });
+
+updateContextMenu();
+browser.storage.onChanged.addListener(updateContextMenu);

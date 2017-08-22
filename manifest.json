@@ -2,25 +2,34 @@
 
   "manifest_version": 2,
   "name": "Context Search",
-  "version": "1.0",
-
-  "description": "Searches the selected text using a search engine from the browser's search bar",
+  "description": "Searches the selected text using a search engine from a pre-specified list",
+  "version": "3.12",
+  "author": "Olivier de Broqueville",
+  "applications": {
+    "gecko": {
+        "id": "olivier.debroqueville@gmail.com"
+    }
+  },
 
   "background": {
-      "scripts": ["background.js"]
+      "scripts": [
+        "background.js"
+      ]
   },
 
-  "permissions": ["contextMenus"],
+  "permissions": [
+      "contextMenus",
+      "storage"
+  ],
 
   "icons": {
-    "48": "icons/context-search.svg",
-    "96": "icons/context-search.svg"
+    "48": "icons/icon_48.png",
+    "96": "icons/icon_96.png"
   },
 
-  "applications": {
-      "gecko": {
-          "id": "olivier.debroqueville@gmail.com"
-      }
+  "options_ui": {
+  "page": "options.html",
+  "browser_style": true
   }
 
 }

@@ -1,0 +1,137 @@
+{
+  "amazon": {
+    "name": "Amazon.com (book search)",
+    "url": "https://www.amazon.com/gp/search/ref=sr_adv_b/?search-alias=stripbooks&unfiltered=1&field-keywords=",
+    "show": true
+  },
+  "ask": {
+      "name": "Ask",
+      "url": "https://ask.com/web?q=",
+      "show": true
+  },
+  "baidu": {
+    "name": "Baidu",
+    "url": "http://www.baidu.com/s?wd=",
+    "show": true
+  },
+  "bing": {
+    "name": "Bing",
+    "url": "https://www.bing.com/search?q=",
+    "show": true
+  },
+  "britannica": {
+    "name": "Encyclopaedia Britannica",
+    "url": "https://www.britannica.com/search?query=",
+    "show": true
+  },
+  "dogpile": {
+    "name": "Dogpile",
+    "url": "https://www.dogpile.com/info.dogpl/search/web?q=",
+    "show": true
+  },
+  "ddg": {
+    "name": "DuckDuckGo",
+    "url": "https://duckduckgo.com/?q=",
+    "show": true
+  },
+  "ecosia": {
+    "name": "Ecosia",
+    "url": "https://www.ecosia.org/search?q=",
+    "show": true
+  },
+  "facebook": {
+    "name": "Facebook (people search)",
+    "url": "https://www.facebook.com/public?query=",
+    "show": true
+  },
+  "google": {
+    "name": "Google",
+    "url": "https://www.google.com/search?q=",
+    "show": true
+  },
+  "gmaps": {
+    "name": "Google Maps",
+    "url": "https://maps.google.com/?q=",
+    "show": true
+  },
+  "gscholar": {
+    "name": "Google Scholar",
+    "url": "https://scholar.google.ch/scholar?q=",
+    "show": true
+  },
+  "imdb": {
+    "name": "Imdb",
+    "url": "https://www.imdb.com/find?q=",
+    "show": true
+  },
+  "lilo": {
+    "name": "Lilo",
+    "url": "https://search.lilo.org/searchweb.php?q=",
+    "show": true
+  },
+  "linkedin": {
+    "name": "LinkedIn (people search)",
+    "url": "https://www.linkedin.com/pub/dir/",
+    "show": true
+  },
+  "onelook": {
+    "name": "OneLook",
+    "url": "http://onelook.com/?w=",
+    "show": true
+  },
+  "quora": {
+    "name": "Quora",
+    "url": "https://www.quora.com/search?q=",
+    "show": true
+  },
+  "qwant": {
+    "name": "Qwant",
+    "url": "https://www.qwant.com/?q=",
+    "show": true
+  },
+  "se": {
+    "name": "Stack Exchange",
+    "url": "https://stackexchange.com/search?q=",
+    "show": true
+  },
+  "startpage": {
+    "name": "Startpage",
+    "url": "https://www.startpage.com/do/search?query=",
+    "show": true
+  },
+  "swisscows": {
+    "name": "Swisscows",
+    "url": "https://swisscows.ch/?query=",
+    "show": true
+  },
+  "twitter": {
+    "name": "Twitter",
+    "url": "https://twitter.com/search?q=",
+    "show": true
+  },
+  "wikipedia": {
+    "name": "Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/wiki.html?search=",
+    "show": true
+  },
+  "wolframalpha": {
+    "name": "WolframAlpha",
+    "url": "https://www.wolframalpha.com/input/?i=",
+    "show": true
+  },
+  "yahoo": {
+    "name": "Yahoo!",
+    "url": "https://search.yahoo.com/search?p=",
+    "show": true
+  },
+  "yandex": {
+    "name": "Yandex",
+    "url": "https://www.yandex.com/search/?text=",
+    "show": true
+  },
+  "youtube": {
+    "name": "YouTube",
+    "url": "https://www.youtube.com/results?search_query=",
+    "show": true
+  }
+}

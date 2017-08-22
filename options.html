@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body {
+        font-family: Calibri, Helvetica, Arial, sans-serif;
+        font-size: 10pt;
+        color:darkslategrey;
+      }
+
+      input[type="checkbox"] {
+        display: inline-block;
+        width: 15px;
+      }
+
+      label, #name {
+        display: inline-block;
+        width: 200px;
+      }
+
+      input[type="url"] {
+        display: inline-block;
+        width: 400px;
+      }
+
+      h2 {
+        font-size: 12pt;
+      }
+
+      button {
+        margin-left: 10px;
+      }
+
+      #upl {
+        margin-top: 10px;
+        margin-bottom: 8px;
+      }
+        
+        #addSearchEngine {
+            margin-left: 40px;
+        }
+
+    </style>
+  </head>
+
+<body>
+    <form>
+      <h2>Which search engines would you like to appear in the context menu?</h2>
+      <br />
+      <input type="button" value="Clear All" id="clearAll" />
+      <input type="button" value="Select All" id="selectAll" />
+      <input type="button" value="Reset" id="reset" />
+      <br />
+      <br />
+      <div id="container">
+      </div>
+      <br />
+      <div id="addSearchEngine">
+        <input type="checkbox" id="show" />
+        <input type="text" id="name" required />
+        <input type="url" title="Should start with https://" pattern="https?://.+" id="url" required />
+        <button id="add">Add Search Engine</button>
+      </div>
+      <br />
+      <input type="button" value="Save in browser" id="save" />
+      <input type="button" value="Save to local disk" id="download" />
+      <br />
+      <label for="upload" id="upl">Upload (list of search engines) from local disk:</label>
+      <br />
+      <input type="file" id="upload" />
+    </form>
+    <script src="options.js"></script>
+</body>
+
+</html>
