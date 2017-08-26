@@ -1,4 +1,6 @@
 var searchEngines = {};
+var searchEnginesArray = [];
+var selection = "";
 
 function onError(error) {
     console.log(`Error: ${error}`)
@@ -30,15 +32,17 @@ function updateContextMenu(changes, area) {
     browser.storage.sync.get(null).then(
         (data) => {
             searchEngines = sortAlphabetically(data);
+            searchEnginesArray = [];
             var index = 0;
             for (var se in searchEngines) {
                 var strId = index.toString();
                 var strTitle = searchEngines[se].name;
+                searchEnginesArray.push(se);
                 if (searchEngines[se].show) {
                     browser.contextMenus.create({
                         id: strId,
                         title: strTitle,
-                        contexts: ["all"]
+                        contexts: ["selection"]
                     });
                 }
                 index += 1;
@@ -50,24 +54,23 @@ function updateContextMenu(changes, area) {
 // Perform search based on selected search engine, i.e. selected context menu item
 browser.contextMenus.onClicked.addListener(function(info, tab) {
     var searchString = "";
-    if (info.menuItemId == 14) { // 14 is the index for LinkedIn
-        searchString = info.selectionText.replace(" ", "/");
-    } else {
-        searchString = info.selectionText.replace(/ /g, "+");
-    }
     var targetUrl = "";
-    var index = 0;
-    for (var se in searchEngines) {
-        if (info.menuItemId == index) {
-            targetUrl = searchEngines[se].url + searchString;
-        }
-        index += 1;
+    var id = parseInt(info.menuItemId);
+    if (searchEnginesArray[id] == "linkedin") {
+        searchString = selection;
+    } else {
+        searchString = (selection).replace(/ /g, "+");
     }
-    var creating = browser.tabs.create({
+    targetUrl = searchEngines[searchEnginesArray[id]].url + searchString;
+    browser.tabs.create({
         url: targetUrl
     });
-    creating.then(null, onError);
 });
+
+function getSelectedText(selectedText) {
+    selection = selectedText;
+}
 
 updateContextMenu();
 browser.storage.onChanged.addListener(updateContextMenu);
+browser.runtime.onMessage.addListener(getSelectedText);
