@@ -58,11 +58,13 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
     var id = parseInt(info.menuItemId);
     
     // Prefer info.selectionText over selection received by content script for these lengths (more reliable)
-    if (info.selectionText.length < 150){
-	selection = info.selectionText;
+    if (info.selectionText.length < 150) {
+	    selection = info.selectionText;
     }
     if (searchEnginesArray[id] != "linkedin") {
-        searchString = selection.replace(/ /g, "+");
+        searchString = (selection).replace(/ /g, "+");
+    } else {
+        searchString = selection;
     }
     targetUrl = searchEngines[searchEnginesArray[id]].url + searchString;
     browser.tabs.create({
