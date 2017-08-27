@@ -56,10 +56,13 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
     var searchString = "";
     var targetUrl = "";
     var id = parseInt(info.menuItemId);
-    if (searchEnginesArray[id] == "linkedin") {
-        searchString = selection;
-    } else {
-        searchString = (selection).replace(/ /g, "+");
+    
+    // Prefer info.selectionText over selection received by content script for these lengths (more reliable)
+    if (info.selectionText.length < 150 || info.selectionText.length > 150){
+	    selection = info.selectionText;
+	}
+    if (searchEnginesArray[id] != "linkedin") {
+        searchString = selection.replace(/ /g, "+");
     }
     targetUrl = searchEngines[searchEnginesArray[id]].url + searchString;
     browser.tabs.create({
