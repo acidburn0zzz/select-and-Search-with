@@ -13,7 +13,8 @@
 
   "background": {
       "scripts": [
-        "background.js"
+        "background.js",
+        "sort.js"
       ]
   },
 
