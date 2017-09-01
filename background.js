@@ -33,7 +33,6 @@ function updateContextMenu(changes, area) {
 
 // Perform search based on selected search engine, i.e. selected context menu item
 browser.contextMenus.onClicked.addListener(function(info, tab) {
-    var searchString = "";
     var targetUrl = "";
     var id = parseInt(info.menuItemId);
     
@@ -41,12 +40,8 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
     if (info.selectionText.length < 150) {
 	    selection = info.selectionText;
     }
-    if (searchEnginesArray[id] != "linkedin") {
-        searchString = (selection).replace(/ /g, "+");
-    } else {
-        searchString = selection;
-    }
-    targetUrl = searchEngines[searchEnginesArray[id]].url + searchString;
+
+    targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
     browser.tabs.create({
         url: targetUrl
     });
