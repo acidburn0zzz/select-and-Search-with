@@ -9,18 +9,19 @@ function onError(error) {
 
 // Load list of search engines
 function loadSearchEngines(jsonFile) {
-    var ajaxRequest = new XMLHttpRequest();
-    ajaxRequest.open("GET", jsonFile, true);
-    ajaxRequest.setRequestHeader("Content-type", "application/json");
-    ajaxRequest.overrideMimeType("application/json");
-    ajaxRequest.onreadystatechange = function() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", jsonFile, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.overrideMimeType("application/json");
+    xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var searchEngines = JSON.parse(this.responseText);
+            console.log("Search engines have been loaded.");
             generateHTML(searchEngines);
             saveOptions();
         }
     };
-    ajaxRequest.send();
+    xhr.send();
 }
 
 function generateHTML(list) {
@@ -83,8 +84,7 @@ function selectAll() {
 function reset() {
     var divSearchEngines = document.getElementById("searchEngines");
     divContainer.removeChild(divSearchEngines);
-    var clearStorage = browser.storage.sync.clear();
-    clearStorage.then(loadSearchEngines("defaultSearchEngines.json"), onError);
+    browser.storage.sync.clear().then(loadSearchEngines("defaultSearchEngines.json"), onError);
 }
 
 function onRemoved() {
@@ -95,8 +95,7 @@ function removeSearchEngine(e) {
     if (e.target.type == "button") {
         var lineItem = e.target.parentNode;
         lineItem.parentNode.removeChild(lineItem);
-        let removeItem = browser.storage.sync.remove(lineItem.id);
-        removeItem.then(onRemoved, onError);
+        browser.storage.sync.remove(lineItem.id).then(onRemoved, onError);
     }
 }
 
@@ -138,6 +137,7 @@ function addSearchEngine() {
     const name = document.getElementById("name"); // String
     const url = document.getElementById("url"); // String
     if (url.validity.typeMismatch) {
+        alert("Url entered is not valid.");
         return;
     }
     const id = name.value.replace(" ", "-").toLowerCase();
@@ -147,21 +147,18 @@ function addSearchEngine() {
 }
 
 function onGot(searchEngines) {
-    if (Object.keys(searchEngines).length > 0) {
-        generateHTML(sortAlphabetically(searchEngines));
+    if (Object.keys(searchEngines).length > 0) { // storage sync isn't empty
+        generateHTML(sortAlphabetically(searchEngines)); // display search engines list
         console.log("Saved search engines have been loaded.");
-    } else {
-        var clearStorage = browser.storage.sync.clear();
-        clearStorage.then(loadSearchEngines("defaultSearchEngines.json"), onError);
-        console.log("Default search engines have been loaded.");
+    } else { // storage sync is empty -> load default list of search engines
+        browser.storage.sync.clear().then(loadSearchEngines("defaultSearchEngines.json"), onError);
     }
 }
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     console.log("Loading search engines...");
-    let gettingSearchEngines = browser.storage.sync.get(null);
-    gettingSearchEngines.then(onGot, onError);
+    browser.storage.sync.get(null).then(onGot, onError);
 }
 
 function removeHyperlink(event) {
@@ -188,11 +185,10 @@ function downloadSearchEngines(searchEngines) {
     a.click();
 }
 
-function handleFile() {
+function handleFileUpload() {
     var divSearchEngines = document.getElementById("searchEngines");
     divContainer.removeChild(divSearchEngines);
-    var clearStorage = browser.storage.sync.clear();
-    clearStorage.then(function() {
+    browser.storage.sync.clear().then(function() {
         var upload = document.getElementById("upload");
         var jsonFile = upload.files[0];
         var reader = new FileReader();
@@ -212,4 +208,4 @@ document.getElementById("reset").addEventListener("click", reset);
 document.getElementById("add").addEventListener("click", addSearchEngine);
 document.getElementById("save").addEventListener("click", saveOptions);
 document.getElementById("download").addEventListener("click", saveToLocalDisk);
-document.getElementById("upload").addEventListener("change", handleFile);
+document.getElementById("upload").addEventListener("change", handleFileUpload);
