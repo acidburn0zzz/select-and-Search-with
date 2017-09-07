@@ -1,6 +1,7 @@
 // Global variables
 const divContainer = document.getElementById("container");
 const divAddSearchEngine = document.getElementById("addSearchEngine");
+const tabActive = document.getElementById("tabActive");
 
 // Generic Error Handler
 function onError(error) {
@@ -155,10 +156,20 @@ function onGot(searchEngines) {
     }
 }
 
+function onHas(blnTabActive){
+    tabActive.checked = blnTabActive;
+}
+
+function onNone(){
+    tabActive.checked = true; // default behaviour: newly created tab becomes active
+    browser.storage.local.set({"tabActive": true});
+}
+
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     console.log("Loading search engines...");
     browser.storage.sync.get(null).then(onGot, onError);
+    browser.storage.local.get("tabActive").then(onHas, onNone);
 }
 
 function removeHyperlink(event) {
@@ -201,6 +212,11 @@ function handleFileUpload() {
     }, onError);
 }
 
+function saveTabActive(){
+    browser.storage.local.set({"tabActive":tabActive.checked});
+}
+
+tabActive.addEventListener("click", saveTabActive);
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById("clearAll").addEventListener("click", clearAll);
 document.getElementById("selectAll").addEventListener("click", selectAll);

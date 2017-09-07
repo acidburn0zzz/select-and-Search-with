@@ -2,6 +2,7 @@ var searchEngines = {};
 var searchEnginesArray = [];
 var selection = "";
 var browserVersion = 0;
+var openTabInForeground = true;
 
 function onError(error) {
     console.log(`Error: ${error}`)
@@ -34,24 +35,34 @@ function buildContextMenu(searchEngine, strId, strTitle, faviconUrl){
 }
 
 // Create the context menu using the search engines listed above
-function updateContextMenu(changes, area) {
-    browser.contextMenus.removeAll();
-    browser.storage.sync.get(null).then(
-        (data) => {
-            searchEngines = sortAlphabetically(data);
-            searchEnginesArray = [];
-            var index = 0;
-            for (var se in searchEngines) {
-                var strId = index.toString();
-                var strTitle = searchEngines[se].name;
-                var url = searchEngines[se].url;
-                var faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
-                searchEnginesArray.push(se);
-                buildContextMenu(searchEngines[se], strId, strTitle, faviconUrl);
-                index += 1;
+function onStorageChanges(changes, area) {
+    if (area === "local") {
+        var changedItems = Object.keys(changes);
+        for (var item of changedItems) {
+            if (item === "tabActive") {
+                openTabInForeground = changes[item].newValue;
+                break;
             }
         }
-    );
+    } else {
+        browser.contextMenus.removeAll();
+        browser.storage.sync.get(null).then(
+            (data) => {
+                searchEngines = sortAlphabetically(data);
+                searchEnginesArray = [];
+                var index = 0;
+                for (var se in searchEngines) {
+                    var strId = index.toString();
+                    var strTitle = searchEngines[se].name;
+                    var url = searchEngines[se].url;
+                    var faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
+                    searchEnginesArray.push(se);
+                    buildContextMenu(searchEngines[se], strId, strTitle, faviconUrl);
+                    index += 1;
+                }
+            }
+        );
+    }
 }
 
 // Perform search based on selected search engine, i.e. selected context menu item
@@ -66,6 +77,7 @@ function processSearch(info, tab){
 
     targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
     browser.tabs.create({
+        active: openTabInForeground,
         url: targetUrl
     });
 }
@@ -75,7 +87,7 @@ function getSelectedText(selectedText) {
 }
 
 browser.runtime.getBrowserInfo().then(gotBrowserInfo);
-browser.storage.onChanged.addListener(updateContextMenu);
+browser.storage.onChanged.addListener(onStorageChanges);
 browser.contextMenus.onClicked.addListener(processSearch);
 browser.runtime.onMessage.addListener(getSelectedText);
-updateContextMenu();
+onStorageChanges();
