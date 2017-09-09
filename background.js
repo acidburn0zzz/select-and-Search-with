@@ -109,14 +109,13 @@ function processSearch(info, tab){
     }
 
     id = parseInt(id);
-    if(isNaN(id)){
-        // At this point, it should be a number
-        return;
-    }
-
-    targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
-    openTab(targetUrl);
-    targetUrl = "";
+    
+    // At this point, it should be a number
+    if(!isNaN(id)){
+        targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
+        openTab(targetUrl);
+        targetUrl = "";
+    }    
 }
 
 function openTab(targetUrl) {
