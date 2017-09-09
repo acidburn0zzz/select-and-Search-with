@@ -60,7 +60,7 @@
     "show": true
   },
   "imdb": {
-    "name": "Imdb",
+    "name": "IMDb",
     "url": "https://www.imdb.com/find?q=",
     "show": true
   },
