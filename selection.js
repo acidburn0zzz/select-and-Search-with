@@ -1,8 +1,7 @@
-function getSelectionText(){
-    let selectedText = "";
-    
-    browser.tabs.getCurrent().then(hasActiveTab, onError);
+var selectedText = "";
 
+function getSelectionText(){
+    
     if (window.getSelection){ // all modern browsers and IE9+
         selectedText = window.getSelection().toString();
     }
@@ -12,14 +11,16 @@ function getSelectionText(){
     }
     
     if (selectedText != "") browser.runtime.sendMessage({"selection": selectedText});
+
+    // send current tab url to background.js
+    const url = window.location.href;
+    sendCurrentTabUrl(url);
 }
 
-function hasActiveTab(tabInfo) {
-    console.log(tabInfo);
-    const url = tabInfo.url;
+function sendCurrentTabUrl(url) {
     const urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
     const domain = urlParts[0];
-    targetUrl = "https://www.google.com/search?q=site" + encodeURIComponent(":" + domain + " " + selection);
+    targetUrl = "https://www.google.com/search?q=site" + encodeURIComponent(":" + domain + " " + selectedText);
     browser.runtime.sendMessage({"targetUrl": targetUrl});
 }
 

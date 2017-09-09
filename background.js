@@ -89,8 +89,8 @@ function processSearch(info, tab){
         targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
         openTab(targetUrl);
         targetUrl = "";
-    } else if (id === 999) {
-        if (targetUrl != "") openTab(targetUrl);
+    } else if (id === 999 && targetUrl != "")  {
+        openTab(targetUrl);
         targetUrl = "";
     } else {
         return
