@@ -1,6 +1,7 @@
 var searchEngines = {};
 var searchEnginesArray = [];
 var selection = "";
+var targetUrl = "";
 var browserVersion = 0;
 var openTabInForeground = true;
 
@@ -14,6 +15,16 @@ function gotBrowserInfo(info){
 }
 
 function buildContextMenu(searchEngine, strId, strTitle, faviconUrl){
+    browser.contextMenus.create({
+        id: "999",
+        title: "Search this site with Google",
+        contexts: ["selection"]
+    });
+    browser.contextMenus.create({
+        id: "1001",
+        type: "separator",
+        contexts: ["selection"]
+      });
     if (searchEngine.show) {
         if (browserVersion > 55){
             browser.contextMenus.create({
@@ -67,7 +78,6 @@ function onStorageChanges(changes, area) {
 
 // Perform search based on selected search engine, i.e. selected context menu item
 function processSearch(info, tab){
-    var targetUrl = "";
     var id = parseInt(info.menuItemId);
     
     // Prefer info.selectionText over selection received by content script for these lengths (more reliable)
@@ -75,19 +85,32 @@ function processSearch(info, tab){
 	    selection = info.selectionText;
     }
 
-    targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
+    if (id < 999) {
+        targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
+        openTab(targetUrl);
+        targetUrl = "";
+    } else if (id === 999) {
+        if (targetUrl != "") openTab(targetUrl);
+        targetUrl = "";
+    } else {
+        return
+    }
+}
+
+function openTab(targetUrl) {
     browser.tabs.create({
         active: openTabInForeground,
         url: targetUrl
     });
 }
 
-function getSelectedText(selectedText) {
-    selection = selectedText;
+function getMessage(message) {
+    if (message.selection) selection = message.selection;
+    if (message.targetUrl) targetUrl = message.targetUrl
 }
 
 browser.runtime.getBrowserInfo().then(gotBrowserInfo);
 browser.storage.onChanged.addListener(onStorageChanges);
 browser.contextMenus.onClicked.addListener(processSearch);
-browser.runtime.onMessage.addListener(getSelectedText);
+browser.runtime.onMessage.addListener(getMessage);
 onStorageChanges();
