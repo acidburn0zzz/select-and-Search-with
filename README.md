@@ -12,9 +12,9 @@ The main structure of a JSON file is as follows:
 ```javascript
 {
   "id": {
-    "name": " *search engine's name* ",
-    "url": " *search engine query string (without the search terms)* ",
-    "show": *takes the value* **true** *if the search engine is to be shown in the context menu or* **false** *if not*
+    "name": "search engine's name",
+    "url": "search engine query string (without the search terms)",
+    "show": takes the value true if the search engine is to be shown in the context menu or false if not
   }
 }
 ```
