@@ -16,12 +16,12 @@ function gotBrowserInfo(info){
 
 function buildContextMenu(searchEngine, strId, strTitle, faviconUrl){
     browser.contextMenus.create({
-        id: "999",
+        id: "cs-google-site",
         title: "Search this site with Google",
         contexts: ["selection"]
     });
     browser.contextMenus.create({
-        id: "1001",
+        id: "cs-separator",
         type: "separator",
         contexts: ["selection"]
       });
@@ -81,7 +81,7 @@ function onStorageSyncChanges() {
             searchEnginesArray = [];
             var index = 0;
             for (var se in searchEngines) {
-                var strId = index.toString();
+                var strId = "cs-" + index.toString();
                 var strTitle = searchEngines[se].name;
                 var url = searchEngines[se].url;
                 var faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
@@ -95,23 +95,27 @@ function onStorageSyncChanges() {
 
 // Perform search based on selected search engine, i.e. selected context menu item
 function processSearch(info, tab){
-    var id = parseInt(info.menuItemId);
-    
+    let id = info.menuItemId.replace("cs-", "");
+
     // Prefer info.selectionText over selection received by content script for these lengths (more reliable)
     if (info.selectionText.length < 150 || info.selectionText.length > 150) {
-	    selection = info.selectionText;
+        selection = info.selectionText;
     }
 
-    if (id < 999) {
+    if (id === "google-site" && targetUrl != "") {
+        openTab(targetUrl);
+        targetUrl = "";
+        return;
+    }
+
+    id = parseInt(id);
+    
+    // At this point, it should be a number
+    if(!isNaN(id)){
         targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
         openTab(targetUrl);
         targetUrl = "";
-    } else if (id === 999 && targetUrl != "")  {
-        openTab(targetUrl);
-        targetUrl = "";
-    } else {
-        return
-    }
+    }    
 }
 
 function openTab(targetUrl) {
