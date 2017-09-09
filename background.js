@@ -108,12 +108,15 @@ function processSearch(info, tab){
         return;
     }
 
-	id = parseInt(id);
-    if(id < 999) {
-        targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
-        openTab(targetUrl);
-        targetUrl = "";
+    id = parseInt(id);
+    if(isNaN(id)){
+        // At this point, it should be a number
+        return;
     }
+
+    targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
+    openTab(targetUrl);
+    targetUrl = "";
 }
 
 function openTab(targetUrl) {
