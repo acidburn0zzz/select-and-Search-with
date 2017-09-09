@@ -108,6 +108,7 @@ function processSearch(info, tab){
         return;
     }
 
+	id = parseInt(id);
     if(id < 999) {
         targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
         openTab(targetUrl);
