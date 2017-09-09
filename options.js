@@ -158,23 +158,19 @@ function onGot(searchEngines) {
 
 function onHas(bln) {
     console.log(bln);
-    if (bln.tabActive === true || bln.tabActive === false) {
-        tabActive.checked = bln.tabActive
-    } else { // set default behaviour for newly created tab -> becomes active
-        tabActive.checked = true;
-        browser.storage.local.set({"tabActive": true});
-    }
+    if (bln.tabActive === true || bln.tabActive === false) tabActive.checked = bln.tabActive
 }
 
 function onNone(){
-
+    tabActive.checked = true;
+    browser.storage.local.set({"tabActive": true});
 }
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     console.log("Loading search engines...");
     browser.storage.sync.get(null).then(onGot, onError);
-    browser.storage.local.get("tabActive").then(onHas, onError);
+    browser.storage.local.get("tabActive").then(onHas, onNone);
 }
 
 function removeHyperlink(event) {

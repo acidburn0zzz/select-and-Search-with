@@ -45,35 +45,52 @@ function buildContextMenu(searchEngine, strId, strTitle, faviconUrl){
     }
 }
 
+function onHas(bln) {
+    console.log(bln);
+    if (bln.tabActive === true || bln.tabActive === false) openTabInForeground = bln.tabActive
+}
+
+function onNone() {
+    openTabInForeground = true;
+    browser.storage.local.set({"tabActive": true});
+}
+
+function init() {
+    browser.storage.local.get("tabActive").then(onHas, onNone);
+    onStorageSyncChanges();
+}
+
 // Create the context menu using the search engines listed above
 function onStorageChanges(changes, area) {
     if (area === "local") {
-        var changedItems = Object.keys(changes);
-        for (var item of changedItems) {
-            if (item === "tabActive") {
-                openTabInForeground = changes[item].newValue;
-                break;
-            }
+        const changedItems = Object.keys(changes);
+        const index = changedItems.indexOf("tabActive");
+        if (index >= 0) {
+            openTabInForeground = changes["tabActive"].newValue
         }
     } else {
-        browser.contextMenus.removeAll();
-        browser.storage.sync.get(null).then(
-            (data) => {
-                searchEngines = sortAlphabetically(data);
-                searchEnginesArray = [];
-                var index = 0;
-                for (var se in searchEngines) {
-                    var strId = index.toString();
-                    var strTitle = searchEngines[se].name;
-                    var url = searchEngines[se].url;
-                    var faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
-                    searchEnginesArray.push(se);
-                    buildContextMenu(searchEngines[se], strId, strTitle, faviconUrl);
-                    index += 1;
-                }
-            }
-        );
+        onStorageSyncChanges();
     }
+}
+
+function onStorageSyncChanges() {
+    browser.contextMenus.removeAll();
+    browser.storage.sync.get(null).then(
+        (data) => {
+            searchEngines = sortAlphabetically(data);
+            searchEnginesArray = [];
+            var index = 0;
+            for (var se in searchEngines) {
+                var strId = index.toString();
+                var strTitle = searchEngines[se].name;
+                var url = searchEngines[se].url;
+                var faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
+                searchEnginesArray.push(se);
+                buildContextMenu(searchEngines[se], strId, strTitle, faviconUrl);
+                index += 1;
+            }
+        }
+    );
 }
 
 // Perform search based on selected search engine, i.e. selected context menu item
@@ -113,4 +130,5 @@ browser.runtime.getBrowserInfo().then(gotBrowserInfo);
 browser.storage.onChanged.addListener(onStorageChanges);
 browser.contextMenus.onClicked.addListener(processSearch);
 browser.runtime.onMessage.addListener(getMessage);
+init();
 onStorageChanges();
