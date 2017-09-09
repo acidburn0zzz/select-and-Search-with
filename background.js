@@ -131,4 +131,3 @@ browser.storage.onChanged.addListener(onStorageChanges);
 browser.contextMenus.onClicked.addListener(processSearch);
 browser.runtime.onMessage.addListener(getMessage);
 init();
-onStorageChanges();
