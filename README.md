@@ -40,5 +40,5 @@ Here is an example of a JSON file containing 3 search engines:
 }
 ```
 
-The firefox add-on my be found here:
+The firefox add-on may be found here:
 https://addons.mozilla.org/fr/firefox/addon/contextual-search/?src=ss
