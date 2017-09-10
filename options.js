@@ -183,7 +183,7 @@ function saveToLocalDisk() {
 
 function downloadSearchEngines(searchEngines) {
     saveOptions();
-    var fileToDownload = new File([JSON.stringify(searchEngines)], {
+    var fileToDownload = new File([JSON.stringify(searchEngines, null, 2)], {
         type: "text/json",
         name: "searchEngines.json"
     });
