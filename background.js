@@ -2,7 +2,7 @@ var searchEngines = {};
 var searchEnginesArray = [];
 var selection = "";
 var targetUrl = "";
-var browserVersion = 0;
+var tabPosition, browserVersion = 0;
 var openTabInForeground = true;
 
 function onError(error) {
@@ -46,7 +46,6 @@ function buildContextMenu(searchEngine, strId, strTitle, faviconUrl){
 }
 
 function onHas(bln) {
-    console.log(bln);
     if (bln.tabActive === true || bln.tabActive === false) openTabInForeground = bln.tabActive
 }
 
@@ -121,6 +120,7 @@ function processSearch(info, tab){
 function openTab(targetUrl) {
     browser.tabs.create({
         active: openTabInForeground,
+        index: tabPosition + 1,
         url: targetUrl
     });
 }
@@ -128,6 +128,15 @@ function openTab(targetUrl) {
 function getMessage(message) {
     if (message.selection) selection = message.selection;
     if (message.targetUrl) targetUrl = message.targetUrl
+}
+
+function getCurrentTab() {
+    var querying = browser.tabs.query({currentWindow: true, active: true});
+    querying.then(storeTabPosition, onError);
+}
+
+function storeTabPosition(tab) {
+    tabPosition = tab.index;
 }
 
 browser.runtime.getBrowserInfo().then(gotBrowserInfo);
