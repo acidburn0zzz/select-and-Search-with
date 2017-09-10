@@ -157,7 +157,6 @@ function onGot(searchEngines) {
 }
 
 function onHas(bln) {
-    console.log(bln);
     if (bln.tabActive === true || bln.tabActive === false) tabActive.checked = bln.tabActive
 }
 

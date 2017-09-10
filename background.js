@@ -55,6 +55,7 @@ function onNone() {
 }
 
 function init() {
+    getCurrentTab();
     browser.storage.local.get("tabActive").then(onHas, onNone);
     onStorageSyncChanges();
 }
