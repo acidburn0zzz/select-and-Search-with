@@ -2,7 +2,7 @@ var searchEngines = {};
 var searchEnginesArray = [];
 var selection = "";
 var targetUrl = "";
-var tabPosition, browserVersion = 0;
+var browserVersion = 0;
 var openTabInForeground = true;
 
 function onError(error) {
@@ -55,12 +55,10 @@ function onNone() {
 }
 
 function init() {
-    getCurrentTab();
     browser.storage.local.get("tabActive").then(onHas, onNone);
     onStorageSyncChanges();
 }
 
-// Create the context menu using the search engines listed above
 function onStorageChanges(changes, area) {
     if (area === "local") {
         const changedItems = Object.keys(changes);
@@ -73,6 +71,7 @@ function onStorageChanges(changes, area) {
     }
 }
 
+// Create the context menu using the search engines from storage sync
 function onStorageSyncChanges() {
     browser.contextMenus.removeAll();
     browser.storage.sync.get(null).then(
@@ -95,6 +94,7 @@ function onStorageSyncChanges() {
 
 // Perform search based on selected search engine, i.e. selected context menu item
 function processSearch(info, tab){
+    var tabPosition = tab.index + 1;
     let id = info.menuItemId.replace("cs-", "");
 
     // Prefer info.selectionText over selection received by content script for these lengths (more reliable)
@@ -103,7 +103,7 @@ function processSearch(info, tab){
     }
 
     if (id === "google-site" && targetUrl != "") {
-        openTab(targetUrl);
+        openTab(targetUrl, tabPosition);
         targetUrl = "";
         return;
     }
@@ -113,15 +113,15 @@ function processSearch(info, tab){
     // At this point, it should be a number
     if(!isNaN(id)){
         targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
-        openTab(targetUrl);
+        openTab(targetUrl, tabPosition);
         targetUrl = "";
     }    
 }
 
-function openTab(targetUrl) {
+function openTab(targetUrl, tabPosition) {
     browser.tabs.create({
         active: openTabInForeground,
-        index: tabPosition + 1,
+        index: tabPosition,
         url: targetUrl
     });
 }
@@ -129,15 +129,6 @@ function openTab(targetUrl) {
 function getMessage(message) {
     if (message.selection) selection = message.selection;
     if (message.targetUrl) targetUrl = message.targetUrl
-}
-
-function getCurrentTab() {
-    var querying = browser.tabs.query({currentWindow: true, active: true});
-    querying.then(storeTabPosition, onError);
-}
-
-function storeTabPosition(tab) {
-    tabPosition = tab.index;
 }
 
 browser.runtime.getBrowserInfo().then(gotBrowserInfo);
