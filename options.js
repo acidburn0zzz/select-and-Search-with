@@ -2,6 +2,7 @@
 const divContainer = document.getElementById("container");
 const divAddSearchEngine = document.getElementById("addSearchEngine");
 const tabActive = document.getElementById("tabActive");
+var storageSyncCount = 0;
 
 // Generic Error Handler
 function onError(error) {
@@ -25,8 +26,21 @@ function loadSearchEngines(jsonFile) {
     xhr.send();
 }
 
+function sortByIndex(list) {
+  var sortedList = {};
+  for (var i = 0;i < Object.keys(list).length - 1;i++) {
+    for (let se in list) {
+      if (list[se].index === i) {
+        sortedList[se] = list[se];
+      }
+    }
+  }
+  console.log(sortedList);
+  return sortedList;
+}
+
 function generateHTML(list) {
-    var searchEngines = sortAlphabetically(list);
+    var searchEngines = sortByIndex(list);
     var divSearchEngines = document.createElement("ol");
     divSearchEngines.setAttribute("id", "searchEngines");
     for (let se in searchEngines) {
@@ -34,22 +48,44 @@ function generateHTML(list) {
         var labelSE = document.createElement("label");
         var inputSE = document.createElement("input");
         var inputQS = document.createElement("input");
-        var removeButton = document.createElement("button");
         var textSE = document.createTextNode(searchEngines[se].name);
-        var textButton = document.createTextNode("Remove");
+        var upButton = document.createElement("button");
+        var textUpButton = document.createTextNode("↑");
+        upButton.setAttribute("class", "up");
+        upButton.appendChild(textUpButton);
+        var downButton = document.createElement("button");
+        var textDownButton = document.createTextNode("↓");
+        downButton.setAttribute("class", "down");
+        downButton.appendChild(textDownButton);
+        var removeButton = document.createElement("button");
+        var textRemoveButton = document.createTextNode("Remove");
+        removeButton.setAttribute("class", "remove");
+        removeButton.appendChild(textRemoveButton);
         lineItem.setAttribute("id", se);
         labelSE.setAttribute("for", se + "-cbx");
         labelSE.appendChild(textSE);
         inputSE.setAttribute("type", "checkbox");
         inputSE.setAttribute("id", se + "-cbx");
         inputSE.checked = searchEngines[se].show;
-        removeButton.setAttribute("type", "button");
-        removeButton.appendChild(textButton);
         inputQS.setAttribute("type", "url");
         inputQS.setAttribute("value", searchEngines[se].url);
         lineItem.appendChild(inputSE);
         lineItem.appendChild(labelSE);
         lineItem.appendChild(inputQS);
+        if (searchEngines[se].index > 0) {
+          lineItem.appendChild(upButton);
+          upButton.addEventListener("click", function(e) {
+              e.stopPropagation();
+              moveSearchEngineUp(e);
+          }, false);
+        }
+        if (searchEngines[se].index < Object.keys(searchEngines).length - 1) {
+          lineItem.appendChild(downButton);
+          downButton.addEventListener("click", function(e) {
+              e.stopPropagation();
+              moveSearchEngineDown(e);
+          }, false);
+        }
         lineItem.appendChild(removeButton);
         divSearchEngines.appendChild(lineItem);
         removeButton.addEventListener("click", function(e) {
@@ -88,15 +124,31 @@ function reset() {
     browser.storage.sync.clear().then(loadSearchEngines("defaultSearchEngines.json"), onError);
 }
 
-function onRemoved() {
-    //
+function moveSearchEngineUp(e) {
+  if (e.target.type === "button") {
+      var lineItem = e.target.parentNode;
+      var ps = lineItem.previousSibling;
+      lineItem.parentNode.removeChild(lineItem);
+      lineItem.parentNode.insertBefore(lineItem, ps);
+      browser.storage.sync.clear().then(saveOptions, onError);
+  }
+}
+
+function moveSearchEngineDown(e) {
+  if (e.target.type === "button") {
+      var lineItem = e.target.parentNode;
+      var ns = lineItem.nextSibling;
+      lineItem.parentNode.removeChild(ns);
+      lineItem.parentNode.insertBefore(ns, lineItem);
+      browser.storage.sync.clear().then(saveOptions, onError);
+  }
 }
 
 function removeSearchEngine(e) {
-    if (e.target.type == "button") {
+    if (e.target.type === "button") {
         var lineItem = e.target.parentNode;
         lineItem.parentNode.removeChild(lineItem);
-        browser.storage.sync.remove(lineItem.id).then(onRemoved, onError);
+        browser.storage.sync.clear().then(saveOptions, onError);
     }
 }
 
@@ -104,12 +156,14 @@ function readData() {
     var divSearchEngines = document.getElementById("searchEngines");
     var options = {};
     var lineItems = divSearchEngines.childNodes;
-    for (i=0;i<lineItems.length;i++) {
+    storageSyncCount = lineItems.length;
+    for (var i = 0;i < storageSyncCount;i++) {
         var input = lineItems[i].firstChild;
         if (input != null && input.nodeName == "INPUT" && input.getAttribute("type") == "checkbox") {
             var label = input.nextSibling;
             var url = label.nextSibling;
             options[lineItems[i].id] = {};
+            options[lineItems[i].id]["index"] = i;
             options[lineItems[i].id]["name"] = label.textContent;
             options[lineItems[i].id]["url"] = url.value;
             options[lineItems[i].id]["show"] = input.checked;
@@ -121,8 +175,7 @@ function readData() {
 // Save the list of search engines to be displayed in the context menu
 function saveOptions() {
     var options = readData();
-    var sortedOptions = sortAlphabetically(options);
-    browser.storage.sync.set(sortedOptions).then(null, onError);
+    browser.storage.sync.set(options).then(null, onError);
 }
 
 function onAdded() {
@@ -143,13 +196,13 @@ function addSearchEngine() {
     }
     const id = name.value.replace(" ", "-").toLowerCase();
     var newSearchEngine = {};
-    newSearchEngine[id] = {"name": name.value, "url": url.value, "show": show.checked};
+    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "url": url.value, "show": show.checked};
     browser.storage.sync.set(newSearchEngine).then(onAdded, onError);
 }
 
 function onGot(searchEngines) {
     if (Object.keys(searchEngines).length > 0) { // storage sync isn't empty
-        generateHTML(sortAlphabetically(searchEngines)); // display search engines list
+        generateHTML(searchEngines); // display search engines list
         console.log("Saved search engines have been loaded.");
     } else { // storage sync is empty -> load default list of search engines
         browser.storage.sync.clear().then(loadSearchEngines("defaultSearchEngines.json"), onError);
