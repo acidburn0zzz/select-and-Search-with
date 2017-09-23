@@ -271,12 +271,28 @@ function removeSearchEngine(e) {
 
         // If there are only 2 search engines
         if (lineItem.className === "top" && lineItem.nextSibling.className === "bottom") {
+            var ns = lineItem.nextSibling;
+
+            // 1. Remove class "bottom" from next sibling
+            ns.removeAttribute("class");
+
+            // 2. Remove up, down and remove buttons from next sibling and its associated click event listeners
+            ns.removeChild(ns.lastChild); // Remove button
+            ns.removeChild(ns.lastChild); // Down button
+            ns.removeChild(ns.lastChild); // Up button
 
         } else if (lineItem.className === "bottom" && lineItem.previousSibling === "top") {
-            
-        }
+            var ps = lineItem.previousSibling;
 
-        if (lineItem.className === "top") {
+            // 1. Remove class "top" from previous sibling
+            ps.removeAttribute("class");
+
+            // 2. Remove up, down and remove buttons from the previous sibling
+            ps.removeChild(ps.lastChild); // Remove button
+            ps.removeChild(ps.lastChild); // Down button
+            ps.removeChild(ps.lastChild); // Up button
+
+        } else if (lineItem.className === "top") {
             // 1. Set class of next sibling to "top"
             var ns = lineItem.nextSibling;
             ns.className = "top";
