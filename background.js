@@ -21,6 +21,11 @@ function buildContextMenu(searchEngine, strId, strTitle, faviconUrl){
         contexts: ["selection"]
     });
     browser.contextMenus.create({
+        id: "cs-options",
+        title: "Options...",
+        contexts: ["selection"]
+    });
+    browser.contextMenus.create({
         id: "cs-separator",
         type: "separator",
         contexts: ["selection"]
@@ -71,12 +76,24 @@ function onStorageChanges(changes, area) {
     }
 }
 
+function sortByIndex(list) {
+    var sortedList = {};
+    for (var i = 0;i < Object.keys(list).length;i++) {
+      for (let se in list) {
+        if (list[se].index === i) {
+          sortedList[se] = list[se];
+        }
+      }
+    }
+    return sortedList;
+  }
+
 // Create the context menu using the search engines from storage sync
 function onStorageSyncChanges() {
     browser.contextMenus.removeAll();
     browser.storage.sync.get(null).then(
         (data) => {
-            searchEngines = sortAlphabetically(data);
+            searchEngines = sortByIndex(data);
             searchEnginesArray = [];
             var index = 0;
             for (var se in searchEngines) {
@@ -105,7 +122,10 @@ function processSearch(info, tab){
     if (id === "google-site" && targetUrl != "") {
         openTab(targetUrl, tabPosition);
         targetUrl = "";
-        return;
+        return
+    } else if (id === "options") {
+        browser.runtime.openOptionsPage().then(null, onError);
+        return
     }
 
     id = parseInt(id);

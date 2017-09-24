@@ -43,14 +43,13 @@ function removeEventHandler(e) {
 
 function sortByIndex(list) {
   var sortedList = {};
-  for (var i = 0;i < Object.keys(list).length - 1;i++) {
+  for (var i = 0;i < Object.keys(list).length;i++) {
     for (let se in list) {
       if (list[se].index === i) {
         sortedList[se] = list[se];
       }
     }
   }
-  console.log(sortedList);
   return sortedList;
 }
 
@@ -97,17 +96,23 @@ function generateHTML(list) {
             lineItem.appendChild(inputSE);
             lineItem.appendChild(labelSE);
             lineItem.appendChild(inputQS);
-            if (searchEngines[se].index > 0) {
-              lineItem.appendChild(upButton);
+            if (i > 0) {
               upButton.addEventListener("click", upEventHandler, false);
+              lineItem.appendChild(upButton);
             }
-            if (searchEngines[se].index < Object.keys(searchEngines).length - 1) {
-              lineItem.appendChild(downButton);
+            if (i < Object.keys(searchEngines).length - 1) {
               downButton.addEventListener("click", downEventHandler, false);
+              lineItem.appendChild(downButton);
             }
-            lineItem.appendChild(removeButton);
             removeButton.addEventListener("click", removeEventHandler, false);
+            lineItem.appendChild(removeButton);
         } else {
+            lineItem.setAttribute("id", se);
+            if (i === 0) {
+                lineItem.setAttribute("class", "top");
+            } else if (i === Object.keys(searchEngines).length - 1) {
+                lineItem.setAttribute("class", "bottom");
+            }
             labelSE.setAttribute("for", se + "-cbx");
             labelSE.appendChild(textSE);
             inputSE.setAttribute("type", "checkbox");
@@ -466,9 +471,8 @@ function onHas(bln) {
     if (bln.tabActive === true || bln.tabActive === false) tabActive.checked = bln.tabActive
 }
 
-function onNone(){
-    tabActive.checked = true;
-    browser.storage.local.set({"tabActive": true});
+function onNone() {
+    browser.storage.local.set({"tabActive": tabActive.checked});
 }
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
