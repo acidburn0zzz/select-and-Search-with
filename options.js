@@ -157,7 +157,8 @@ function moveSearchEngineUp(e) {
   if (e.target.type === "button" && e.target.className === "up") {
       var lineItem = e.target.parentNode;
       var ps = lineItem.previousSibling;
-      lineItem.parentNode.removeChild(lineItem);
+      var pn = lineItem.parentNode;
+      pn.removeChild(lineItem);
       if (ps.className === "top" && lineItem.className === "bottom") {
           // 1. Remove up button from lineItem and its associated click event listener
           var liUpButton = lineItem.lastChild.previousSibling;
@@ -190,10 +191,12 @@ function moveSearchEngineUp(e) {
           ps.insertBefore(upButton, ps.lastChild);
 
           // 5. Remove class "bottom" from lineItem and add class "top" to lineItem
-          lineItem.className = "top";
+          lineItem.removeAttribute("class");
+          lineItem.setAttribute("class", "top");
           
           // 6. Remove class "top" from ps and add class "bottom" to ps
-          ps.className = "bottom";
+          ps.removeAttribute("class");
+          ps.setAttribute("class", "bottom");
 
       } else if (ps.className === "top") {
           // 1. Add an up button in ps and its associated click event listener
@@ -240,7 +243,7 @@ function moveSearchEngineUp(e) {
           ps.setAttribute("class", "bottom");
 
       }
-      lineItem.parentNode.insertBefore(lineItem, ps);
+      pn.insertBefore(lineItem, ps);
       browser.storage.sync.clear().then(saveOptions, onError);
   }
 }
@@ -249,18 +252,100 @@ function moveSearchEngineDown(e) {
   if (e.target.type === "button" && e.target.className === "down") {
       var lineItem = e.target.parentNode;
       var ns = lineItem.nextSibling;
-      lineItem.parentNode.removeChild(ns);
-      if (lineItem.className === "top") {
+      var pn = lineItem.parentNode;
+      pn.removeChild(ns);
+      if (lineItem.className === "top" && lineItem.nextSibling.className === "bottom") {
+        
+        // 1. Remove class "top" from lineItem
+        lineItem.removeAttribute("class");
+
+        // 2. Remove class "bottom" from ns
+        ns.removeAttribute("class");
+
+        // 3. Add class "top" to ns
+        ns.setAttribute("class", "top");
+
+        // 4. Add class "bottom" to lineItem
+        lineItem.setAttribute("class", "bottom");
+
+        // 5. Remove down buttom from lineItem and its associated click event listener
+        var liDownButton = lineItem.lastChild.previousSibling;
+        liDownButton.removeEventListener("click", downEventHandler, false);
+        lineItem.removeChild(liDownButton);
+        liDownButton = null;
+
+        // 6. Add up button to lineItem and its associated click event listener
+        var upButton = document.createElement("button");
+        var textUpButton = document.createTextNode("↑");
+        upButton.setAttribute("type", "button");
+        upButton.setAttribute("class", "up");
+        upButton.appendChild(textUpButton);
+        upButton.addEventListener("click", upEventHandler, false);
+        lineItem.insertBefore(upButton, lineItem.lastChild);
+
+        // 7. Remove up button from ns and its associated click event listener
+        var nsUpButton = ns.lastChild.previousSibling;
+        nsUpButton.removeEventListener("click", upEventHandler, false);
+        ns.removeChild(nsUpButton);
+        nsUpButton = null;
+
+        // 8. Add down button to ns and its associated click event listener
+        var downButton = document.createElement("button");
+        var textDownButton = document.createTextNode("↓");
+        downButton.setAttribute("type", "button");
+        downButton.setAttribute("class", "down");
+        downButton.appendChild(textDownButton);
+        downButton.addEventListener("click", downEventHandler, false);
+        ns.insertBefore(downButton, ns.lastChild);
+
+      } else if (lineItem.className === "top") {
+
         // 1. Add up button to lineItem with its associated click event listener
+        var upButton = document.createElement("button");
+        var textUpButton = document.createTextNode("↑");
+        upButton.setAttribute("type", "button");
+        upButton.setAttribute("class", "up");
+        upButton.appendChild(textUpButton);
+        upButton.addEventListener("click", upEventHandler, false);
+        lineItem.insertBefore(upButton, lineItem.lastChild.previousSibling);
 
         // 2. Remove class "top" from lineItem
+        lineItem.removeAttribute("class");
 
         // 3. Remove up button from ns and its associated click event listener
+        var nsUpButton = ns.lastChild.previousSibling.previousSibling;
+        nsUpButton.removeEventListener("click", upEventHandler, false);
+        ns.removeChild(nsUpButton);
+        nsUpButton = null;
         
         // 4. Add class "top" to ns
+        ns.setAttribute("class", "top");
+
+      } else if (ns.className === "bottom") {
+
+        // 1. Remove down button from lineItem and its associated click event listener
+        var liDownButton = lineItem.lastChild.previousSibling;
+        liDownButton.removeEventListener("click", downEventHandler, false);
+        lineItem.removeChild(liDownButton);
+        liDownButton = null;
+
+        // 2. Remove class "bottom" from ns
+        ns.removeAttribute("class");
+
+        // 3. Add down button to ns and its associated click event listener
+        var downButton = document.createElement("button");
+        var textDownButton = document.createTextNode("↓");
+        downButton.setAttribute("type", "button");
+        downButton.setAttribute("class", "down");
+        downButton.appendChild(textDownButton);
+        downButton.addEventListener("click", downEventHandler, false);
+        ns.insertBefore(downButton, ns.lastChild);
+
+        // 4. Add class "bottom" to lineItem
+        lineItem.setAttribute("class", "bottom");
 
       }
-      lineItem.parentNode.insertBefore(ns, lineItem);
+      pn.insertBefore(ns, lineItem);
       browser.storage.sync.clear().then(saveOptions, onError);
   }
 }
@@ -268,9 +353,8 @@ function moveSearchEngineDown(e) {
 function removeSearchEngine(e) {
     if (e.target.type === "button" && e.target.className === "remove") {
         var lineItem = e.target.parentNode;
-
-        // If there are only 2 search engines
-        if (lineItem.className === "top" && lineItem.nextSibling.className === "bottom") {
+        
+        if (lineItem.className === "top" && lineItem.nextSibling.className === "bottom") { // If there are only 2 search engines
             var ns = lineItem.nextSibling;
 
             // 1. Remove class "bottom" from next sibling
@@ -281,7 +365,7 @@ function removeSearchEngine(e) {
             ns.removeChild(ns.lastChild); // Down button
             ns.removeChild(ns.lastChild); // Up button
 
-        } else if (lineItem.className === "bottom" && lineItem.previousSibling === "top") {
+        } else if (lineItem.className === "bottom" && lineItem.previousSibling === "top") { // If there are only 2 search engines
             var ps = lineItem.previousSibling;
 
             // 1. Remove class "top" from previous sibling
@@ -293,8 +377,9 @@ function removeSearchEngine(e) {
             ps.removeChild(ps.lastChild); // Up button
 
         } else if (lineItem.className === "top") {
-            // 1. Set class of next sibling to "top"
             var ns = lineItem.nextSibling;
+
+            // 1. Set class of next sibling to "top"
             ns.className = "top";
 
             // 2. Remove up button from next sibling and its associated click event listener
