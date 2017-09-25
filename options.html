@@ -38,7 +38,7 @@
         margin-bottom: 5px;
       }
 
-	  li:first-child > button.up {
+	    li:first-child > button.up {
         visibility: hidden;
       }
 
@@ -78,7 +78,7 @@
         <input type="checkbox" id="show" />
         <input type="text" id="name" placeholder="Search engine name" required />
         <input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" required />
-        <button id="add">Add Search Engine</button>
+        <button type="button" id="add">Add Search Engine</button>
       </div>
       <br />
       <input type="button" value="Save in browser" id="save" />
@@ -88,7 +88,6 @@
       <br />
       <input type="file" id="upload" />
     </form>
-    <script src="sort.js"></script>
     <script src="options.js"></script>
 </body>
 

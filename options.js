@@ -63,10 +63,14 @@ function sortByIndex(list) {
 }
 
 function generateHTML(list) {
+    if (document.getElementById("searchEngines") != null) {
+        var divSearchEngines = document.getElementById("searchEngines");
+        divContainer.removeChild(divSearchEngines);
+        divSearchEngines = null;
+    }
     var searchEngines = sortByIndex(list);
     var divSearchEngines = document.createElement("ol");
     divSearchEngines.setAttribute("id", "searchEngines");
-    var i = 0;
     for (let se in searchEngines) {
         var lineItem = document.createElement("li");
         var labelSE = document.createElement("label");
@@ -125,7 +129,6 @@ function generateHTML(list) {
             lineItem.appendChild(inputQS);
         }
         divSearchEngines.appendChild(lineItem);
-        i++;
     }
     divContainer.appendChild(divSearchEngines);
     var lineItems = divSearchEngines.childNodes;
@@ -169,7 +172,7 @@ function moveSearchEngineUp(e) {
     pn.insertBefore(lineItem, sibling);
 
     // Update index in storage
-    browser.storage.sync.clear().then(saveOptions, onError);
+    browser.storage.sync.clear().then(saveOptions(false), onError);
 }
 
 function moveSearchEngineDown(e) {
@@ -181,14 +184,14 @@ function moveSearchEngineDown(e) {
     pn.insertBefore(sibling, lineItem);
 
     // Update index in storage
-    browser.storage.sync.clear().then(saveOptions, onError);
+    browser.storage.sync.clear().then(saveOptions(false), onError);
 }
 
 function removeSearchEngine(e) {
     var lineItem = e.target.parentNode;
         
     lineItem.parentNode.removeChild(lineItem);
-    browser.storage.sync.clear().then(saveOptions, onError);
+    browser.storage.sync.clear().then(saveOptions(false), onError);
 }
 
 function readData() {
@@ -198,7 +201,7 @@ function readData() {
     storageSyncCount = lineItems.length;
     for (var i = 0;i < storageSyncCount;i++) {
         var input = lineItems[i].firstChild;
-        if (input != null && input.nodeName == "INPUT" && input.getAttribute("type") == "checkbox") {
+        if (input.nodeName == "INPUT" && input.getAttribute("type") == "checkbox") {
             var label = input.nextSibling;
             var url = label.nextSibling;
             options[lineItems[i].id] = {};
@@ -218,9 +221,9 @@ function save(){
 
 function saveOptions(notification) {
     var options = readData();
-    if(notification == true){
-		browser.storage.sync.set(options).then(notify("Saved preferences"), onError);
-	}else{
+    if (notification == true) {
+		browser.storage.sync.set(options).then(notify("Saved preferences."), onError);
+	} else {
 		browser.storage.sync.set(options).then(null, onError);
 	}
 }
@@ -231,20 +234,19 @@ function onAdded() {
     name.value = "";
     url.value = "";
     restoreOptions();
-
-    notify("Search engine added");
+    notify("Search engine added.");
 }
 
 function addSearchEngine() {
     const show = document.getElementById("show"); // Boolean
     const name = document.getElementById("name"); // String
-    var url = document.getElementById("url"); // String
-    url = url.value;
+    const url = document.getElementById("url"); // String
+    strUrl = url.value;
     var testUrl = "";
-    if (url.includes("{search terms}")) {
-        testUrl = url.replace("{search terms}", "google");
+    if (strUrl.includes("{search terms}")) {
+        testUrl = strUrl.replace("{search terms}", "test");
     } else {
-        testUrl = url + "google";
+        testUrl = strUrl + "test";
     }
     if (url.validity.typeMismatch || !isValidUrl(testUrl)) {
         notify("Url entered is not valid.");
@@ -252,11 +254,12 @@ function addSearchEngine() {
     }
     const id = name.value.replace(" ", "-").toLowerCase();
     var newSearchEngine = {};
-    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "url": url, "show": show.checked};
+    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "url": url.value, "show": show.checked};
     browser.storage.sync.set(newSearchEngine).then(onAdded, onError);
 }
 
 function onGot(searchEngines) {
+    console.log(searchEngines);
     if (Object.keys(searchEngines).length > 0) { // storage sync isn't empty
         generateHTML(searchEngines); // display search engines list
         console.log("Saved search engines have been loaded.");
@@ -324,8 +327,7 @@ function saveTabActive(){
     browser.storage.local.set({"tabActive":tabActive.checked});
 }
 
-function isValidUrl(url)
-{
+function isValidUrl(url) {
     try {
         (new URL(url));
         return true;
