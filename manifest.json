@@ -21,7 +21,8 @@
   "permissions": [
       "contextMenus",
       "storage",
-      "tabs"
+      "tabs",
+      "notifications"
   ],
 
   "icons": {
@@ -30,8 +31,8 @@
   },
 
   "options_ui": {
-  "page": "options.html",
-  "browser_style": true
+    "page": "options.html",
+    "browser_style": true
   },
 
   "content_scripts": [
