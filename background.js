@@ -62,7 +62,7 @@ function init() {
 
     // tabActive onHas
     function onHas(bln) {
-        if (bln.tabActive === true || bln.tabActive === false) openTabInForeground = bln.tabActive
+        if (bln.tabActive === true || bln.tabActive === false) openTabInForeground = bln.tabActive;
     }
 
     // tabActive onNone
@@ -163,7 +163,11 @@ function processSearch(info, tab){
     
     // At this point, it should be a number
     if(!isNaN(id)){
-        targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
+        if (searchEngines[searchEnginesArray[id]].url.includes("{search terms}")) {
+            targetUrl = searchEngines[searchEnginesArray[id]].url.replace("{search terms}", encodeURIComponent(selection).replace("%s", encodeURIComponent(selection));
+        } else {
+            targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
+        }
         openTab(targetUrl, tabPosition);
         targetUrl = "";
     }    
