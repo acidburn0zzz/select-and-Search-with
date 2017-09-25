@@ -163,10 +163,13 @@ function processSearch(info, tab){
     
     // At this point, it should be a number
     if(!isNaN(id)){
+		let searchEngineUrl = searchEngines[searchEnginesArray[id]].url;
         if (searchEngines[searchEnginesArray[id]].url.includes("{search terms}")) {
-            targetUrl = searchEngines[searchEnginesArray[id]].url.replace("{search terms}", encodeURIComponent(selection).replace("%s", encodeURIComponent(selection));
+            targetUrl = searchEngineUrl.replace("{search terms}", encodeURIComponent(selection));
+        else if (searchEngines[searchEnginesArray[id]].url.includes("%s")) {
+			targetUrl = searchEngineUrl.replace("%s", encodeURIComponent(selection));
         } else {
-            targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
+            targetUrl = searchEngineUrl + encodeURIComponent(selection);
         }
         openTab(targetUrl, tabPosition);
         targetUrl = "";
