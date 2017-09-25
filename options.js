@@ -128,6 +128,8 @@ function generateHTML(list) {
         i++;
     }
     divContainer.appendChild(divSearchEngines);
+    var lineItems = divSearchEngines.childNodes;
+    storageSyncCount = lineItems.length;
 }
 
 function clearAll() {
@@ -448,7 +450,13 @@ function addSearchEngine() {
     const show = document.getElementById("show"); // Boolean
     const name = document.getElementById("name"); // String
     const url = document.getElementById("url"); // String
-    if (url.validity.typeMismatch) {
+    var testUrl = "";
+    if (url.includes("{search terms}")) {
+        testUrl = url.replace("{search terms}", "google");
+    } else {
+        testUrl = url + "google";
+    }
+    if (url.validity.typeMismatch || !isValidUrl(testUrl)) {
         alert("Url entered is not valid.");
         return;
     }
@@ -524,6 +532,18 @@ function handleFileUpload() {
 
 function saveTabActive(){
     browser.storage.local.set({"tabActive":tabActive.checked});
+}
+
+function isValidUrl(url)
+{
+    try {
+        (new URL(url));
+        return true;
+    }
+    catch (e) {
+        // Malformed URL
+        return false;
+    }
 }
 
 tabActive.addEventListener("click", saveTabActive);
