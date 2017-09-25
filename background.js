@@ -132,7 +132,11 @@ function processSearch(info, tab){
     
     // At this point, it should be a number
     if(!isNaN(id)){
-        targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
+        if (searchEngines[searchEnginesArray[id]].url.includes("{search terms}")) {
+            targetUrl = searchEngines[searchEnginesArray[id]].url.replace("{search terms}", encodeURIComponent(selection));
+        } else {
+            targetUrl = searchEngines[searchEnginesArray[id]].url + encodeURIComponent(selection);
+        }
         openTab(targetUrl, tabPosition);
         targetUrl = "";
     }    
