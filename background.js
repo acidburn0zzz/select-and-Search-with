@@ -67,8 +67,7 @@ function init() {
 
     // tabActive onNone
     function onNone() {
-        openTabInForeground = true;
-        browser.storage.local.set({"tabActive": true});
+        browser.storage.local.set({"tabActive": tabActive.checked});
     }
 }
 
