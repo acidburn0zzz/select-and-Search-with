@@ -238,7 +238,8 @@ function onAdded() {
 function addSearchEngine() {
     const show = document.getElementById("show"); // Boolean
     const name = document.getElementById("name"); // String
-    const url = document.getElementById("url"); // String
+    var url = document.getElementById("url"); // String
+    url = url.value;
     var testUrl = "";
     if (url.includes("{search terms}")) {
         testUrl = url.replace("{search terms}", "google");
@@ -251,7 +252,7 @@ function addSearchEngine() {
     }
     const id = name.value.replace(" ", "-").toLowerCase();
     var newSearchEngine = {};
-    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "url": url.value, "show": show.checked};
+    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "url": url, "show": show.checked};
     browser.storage.sync.set(newSearchEngine).then(onAdded, onError);
 }
 
