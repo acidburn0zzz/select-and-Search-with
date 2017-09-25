@@ -10,7 +10,7 @@ function getSelectionText(){
         if (selectedTextInput != "") selectedText = selectedTextInput;
     }
     
-    if (selectedText != "") browser.runtime.sendMessage({"selection": selectedText});
+    if (selectedText != "") sendMessage("getSelectionText", selectedText);
 
     // send current tab url to background.js
     const url = window.location.href;
@@ -21,7 +21,11 @@ function sendCurrentTabUrl(url) {
     const urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
     const domain = urlParts[0];
     targetUrl = "https://www.google.com/search?q=site" + encodeURIComponent(":" + domain + " " + selectedText);
-    browser.runtime.sendMessage({"targetUrl": targetUrl});
+    sendMessage("sendCurrentTabUrl", targetUrl);
 }
 
 document.addEventListener("contextmenu", getSelectionText);
+
+function sendMessage(action, data){
+	browser.runtime.sendMessage({"action": action, "data": data});
+}

@@ -38,12 +38,12 @@
         margin-bottom: 5px;
       }
 
-      li.top > button.down {
-        margin-left: 60px;
+	  li.top > button.down {
+        visibility: hidden;
       }
 
       li.bottom > button.up {
-        margin-right: 50px;
+        visibility: hidden;
       }
 
       #upl {
@@ -51,9 +51,9 @@
         margin-bottom: 8px;
       }
         
-        #addSearchEngine {
-            margin-left: 40px;
-        }
+      #addSearchEngine {
+          margin-left: 40px;
+      }
 
     </style>
   </head>
@@ -76,8 +76,8 @@
       <br />
       <div id="addSearchEngine">
         <input type="checkbox" id="show" />
-        <input type="text" id="name" required />
-        <input type="url" title="Should start with https://" pattern="https?://.+" id="url" required />
+        <input type="text" id="name" placeholder="Search engine name" required />
+        <input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" required />
         <button id="add">Add Search Engine</button>
       </div>
       <br />

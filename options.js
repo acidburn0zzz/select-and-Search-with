@@ -4,6 +4,15 @@ const divAddSearchEngine = document.getElementById("addSearchEngine");
 const tabActive = document.getElementById("tabActive");
 var storageSyncCount = 0;
 
+// Sending messages to the background script
+function sendMessage(action, data){
+	browser.runtime.sendMessage({action: action, data: data});
+}
+
+function notify(message){
+	sendMessage("notify", message);
+}
+
 // Generic Error Handler
 function onError(error) {
   console.log(`Error: ${error}`);
@@ -96,14 +105,13 @@ function generateHTML(list) {
             lineItem.appendChild(inputSE);
             lineItem.appendChild(labelSE);
             lineItem.appendChild(inputQS);
-            if (i > 0) {
-              upButton.addEventListener("click", upEventHandler, false);
-              lineItem.appendChild(upButton);
-            }
-            if (i < Object.keys(searchEngines).length - 1) {
-              downButton.addEventListener("click", downEventHandler, false);
-              lineItem.appendChild(downButton);
-            }
+
+            upButton.addEventListener("click", upEventHandler, false);
+            lineItem.appendChild(upButton);
+
+            downButton.addEventListener("click", downEventHandler, false);
+            lineItem.appendChild(downButton);
+
             removeButton.addEventListener("click", removeEventHandler, false);
             lineItem.appendChild(removeButton);
         } else {
@@ -431,9 +439,17 @@ function readData() {
 }
 
 // Save the list of search engines to be displayed in the context menu
-function saveOptions() {
+function save(){
+	saveOptions(true);
+}
+
+function saveOptions(notification) {
     var options = readData();
-    browser.storage.sync.set(options).then(null, onError);
+    if(notification == true){
+		browser.storage.sync.set(options).then(notify("Saved preferences"), onError);
+	}else{
+		browser.storage.sync.set(options).then(null, onError);
+	}
 }
 
 function onAdded() {
@@ -442,6 +458,8 @@ function onAdded() {
     name.value = "";
     url.value = "";
     restoreOptions();
+
+    notify("Search engine added");
 }
 
 function addSearchEngine() {
@@ -449,7 +467,7 @@ function addSearchEngine() {
     const name = document.getElementById("name"); // String
     const url = document.getElementById("url"); // String
     if (url.validity.typeMismatch) {
-        alert("Url entered is not valid.");
+        notify("Url entered is not valid.");
         return;
     }
     const id = name.value.replace(" ", "-").toLowerCase();
@@ -532,6 +550,6 @@ document.getElementById("clearAll").addEventListener("click", clearAll);
 document.getElementById("selectAll").addEventListener("click", selectAll);
 document.getElementById("reset").addEventListener("click", reset);
 document.getElementById("add").addEventListener("click", addSearchEngine);
-document.getElementById("save").addEventListener("click", saveOptions);
+document.getElementById("save").addEventListener("click", save);
 document.getElementById("download").addEventListener("click", saveToLocalDisk);
 document.getElementById("upload").addEventListener("change", handleFileUpload);
