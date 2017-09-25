@@ -166,8 +166,8 @@ function processSearch(info, tab){
 		let searchEngineUrl = searchEngines[searchEnginesArray[id]].url;
         if (searchEngineUrl.includes("{search terms}")) {
             targetUrl = searchEngineUrl.replace("{search terms}", encodeURIComponent(selection));
-        else if (searchEngineUrl.includes("%s")) {
-			      targetUrl = searchEngineUrl.replace("%s", encodeURIComponent(selection));
+        } else if (searchEngineUrl.includes("%s")) {
+			targetUrl = searchEngineUrl.replace("%s", encodeURIComponent(selection));
         } else {
             targetUrl = searchEngineUrl + encodeURIComponent(selection);
         }
