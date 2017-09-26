@@ -54,7 +54,7 @@ function sortByIndex(list) {
   var sortedList = {};
   for (var i = 0;i < Object.keys(list).length;i++) {
     for (let se in list) {
-      if (list[se].index === i) {
+      if (list[se] != null && list[se].index === i) {
         sortedList[se] = list[se];
       }
     }
@@ -76,16 +76,19 @@ function generateHTML(list) {
         if (Object.keys(searchEngines).length > 1) {
             var upButton = document.createElement("button");
             var textUpButton = document.createTextNode("↑");
+            upButton.setAttribute("type", "button");
             upButton.setAttribute("class", "up");
             upButton.setAttribute("title", "Move " + searchEngines[se].name + " up");
             upButton.appendChild(textUpButton);
             var downButton = document.createElement("button");
             var textDownButton = document.createTextNode("↓");
+            downButton.setAttribute("type", "button");
             downButton.setAttribute("class", "down");
             downButton.setAttribute("title", "Move " + searchEngines[se].name + " down");
             downButton.appendChild(textDownButton);
             var removeButton = document.createElement("button");
             var textRemoveButton = document.createTextNode("Remove");
+            removeButton.setAttribute("type", "button");
             removeButton.setAttribute("class", "remove");
             removeButton.setAttribute("title", "Remove " + searchEngines[se].name);
             removeButton.appendChild(textRemoveButton);
@@ -159,19 +162,28 @@ function reset() {
 }
 
 function swapIndexes(previousItem, nextItem) {
-    var firstObj = browser.storage.sync.get(previousItem)
-    firstObj.then(function(){
-        console.log("firstObj:"+firstObj);
-        var secondObj = browser.storage.sync.get(nextItem)
-    }, onError).then(function(){
-        console.log("secondObj:"+secondObj);
-        var tmp = firstObj[Object.keys(firstObj)]["index"];
-        firstObj[Object.keys(firstObj)]["index"] = secondObj[Object.keys(secondObj)]["index"];
-        secondObj[Object.keys(secondObj)]["index"] = tmp;
-        console.log("firstObj:"+firstObj);
-        console.log("secondObj:"+secondObj);
-        browser.storage.sync.set({firstObj, secondObj}).then(null, onError);
-    }, onError);
+    // Initialise variables
+    let firstObj = null;
+    let secondObj = null;
+    let tmp = null;
+    let newObj = {};
+
+    browser.storage.sync.get([previousItem, nextItem]).then(function(data){
+        console.log(data);
+        firstObj = data[previousItem];
+        secondObj = data[nextItem];
+        console.log("firstObj: " + JSON.stringify(firstObj));
+        console.log("secondObj: " + JSON.stringify(secondObj));
+        tmp = JSON.parse(JSON.stringify(firstObj["index"])); // creating a new temporary object to avoid passing firstObj by reference
+        firstObj["index"] = secondObj["index"];
+        secondObj["index"] = tmp;
+        console.log("firstObj: " + JSON.stringify(firstObj));
+        console.log("secondObj: " + JSON.stringify(secondObj));
+        newObj[previousItem] = firstObj;
+        newObj[nextItem] = secondObj;
+        }, onError).then(function(){
+            browser.storage.sync.set(newObj).then(null, onError);
+        }, onError);
 }
 
 function moveSearchEngineUp(e) {
@@ -184,6 +196,7 @@ function moveSearchEngineUp(e) {
 
     // Update indexes in sync storage
     swapIndexes(ps.id, lineItem.id);
+
 }
 
 function moveSearchEngineDown(e) {
@@ -194,8 +207,9 @@ function moveSearchEngineDown(e) {
     pn.removeChild(ns);
     pn.insertBefore(ns, lineItem);
 
-    // Update index in storage
-    browser.storage.sync.clear().then(saveOptions(false), onError);
+    // Update indexes in sync storage
+    swapIndexes(lineItem.id, ns.id);
+
 }
 
 function removeSearchEngine(e) {
@@ -212,7 +226,7 @@ function readData() {
     storageSyncCount = lineItems.length;
     for (var i = 0;i < storageSyncCount;i++) {
         var input = lineItems[i].firstChild;
-        if (input.nodeName == "INPUT" && input.getAttribute("type") == "checkbox") {
+        if (input != null && input.nodeName == "INPUT" && input.getAttribute("type") == "checkbox") {
             var label = input.nextSibling;
             var url = label.nextSibling;
             options[lineItems[i].id] = {};

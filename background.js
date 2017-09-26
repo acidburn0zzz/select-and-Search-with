@@ -131,7 +131,7 @@ function sortByIndex(list) {
     var sortedList = {};
     for (var i = 0;i < Object.keys(list).length;i++) {
       for (let se in list) {
-        if (list[se].index === i) {
+        if (list[se] != null && list[se].index === i) {
           sortedList[se] = list[se];
         }
       }
