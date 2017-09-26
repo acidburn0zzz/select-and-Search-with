@@ -63,11 +63,6 @@ function sortByIndex(list) {
 }
 
 function generateHTML(list) {
-    if (document.getElementById("searchEngines") != null) {
-        var divSearchEngines = document.getElementById("searchEngines");
-        divContainer.removeChild(divSearchEngines);
-        divSearchEngines = null;
-    }
     var searchEngines = sortByIndex(list);
     var divSearchEngines = document.createElement("ol");
     divSearchEngines.setAttribute("id", "searchEngines");
