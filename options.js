@@ -158,25 +158,41 @@ function reset() {
     browser.storage.sync.clear().then(loadSearchEngines("defaultSearchEngines.json"), onError);
 }
 
+function swapIndexes(previousItem, nextItem) {
+    var firstObj = browser.storage.sync.get(previousItem)
+    firstObj.then(function(){
+        console.log("firstObj:"+firstObj);
+        var secondObj = browser.storage.sync.get(nextItem)
+    }, onError).then(function(){
+        console.log("secondObj:"+secondObj);
+        var tmp = firstObj[Object.keys(firstObj)]["index"];
+        firstObj[Object.keys(firstObj)]["index"] = secondObj[Object.keys(secondObj)]["index"];
+        secondObj[Object.keys(secondObj)]["index"] = tmp;
+        console.log("firstObj:"+firstObj);
+        console.log("secondObj:"+secondObj);
+        browser.storage.sync.set({firstObj, secondObj}).then(null, onError);
+    }, onError);
+}
+
 function moveSearchEngineUp(e) {
     var lineItem = e.target.parentNode;
-    var sibling = lineItem.previousSibling;
-
+    var ps = lineItem.previousSibling;
     var pn = lineItem.parentNode;
-    pn.removeChild(lineItem);
-    pn.insertBefore(lineItem, sibling);
 
-    // Update index in storage
-    browser.storage.sync.clear().then(saveOptions(false), onError);
+    pn.removeChild(lineItem);
+    pn.insertBefore(lineItem, ps);
+
+    // Update indexes in sync storage
+    swapIndexes(ps.id, lineItem.id);
 }
 
 function moveSearchEngineDown(e) {
     var lineItem = e.target.parentNode;
-    var sibling = lineItem.nextSibling;
-
+    var ns = lineItem.nextSibling;
     var pn = lineItem.parentNode;
-    pn.removeChild(sibling);
-    pn.insertBefore(sibling, lineItem);
+
+    pn.removeChild(ns);
+    pn.insertBefore(ns, lineItem);
 
     // Update index in storage
     browser.storage.sync.clear().then(saveOptions(false), onError);
