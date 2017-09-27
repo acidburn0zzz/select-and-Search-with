@@ -28,7 +28,7 @@ function loadSearchEngines(jsonFile) {
         if (this.readyState == 4 && this.status == 200) {
             var searchEngines = JSON.parse(this.responseText);
             console.log("Search engines have been loaded.");
-            generateHTML(searchEngines);
+            listSearchEngines(searchEngines);
             saveOptions();
         }
     };
@@ -62,75 +62,69 @@ function sortByIndex(list) {
   return sortedList;
 }
 
-function generateHTML(list) {
+function listSearchEngines(list) {
     var searchEngines = sortByIndex(list);
     var divSearchEngines = document.createElement("ol");
     divSearchEngines.setAttribute("id", "searchEngines");
-    for (let se in searchEngines) {
-        var lineItem = document.createElement("li");
-        var labelSE = document.createElement("label");
-        var inputSE = document.createElement("input");
-        var inputQS = document.createElement("input");
-        var textSE = document.createTextNode(searchEngines[se].name);
-
-        if (Object.keys(searchEngines).length > 1) {
-            var upButton = document.createElement("button");
-            var textUpButton = document.createTextNode("↑");
-            upButton.setAttribute("type", "button");
-            upButton.setAttribute("class", "up");
-            upButton.setAttribute("title", "Move " + searchEngines[se].name + " up");
-            upButton.appendChild(textUpButton);
-            var downButton = document.createElement("button");
-            var textDownButton = document.createTextNode("↓");
-            downButton.setAttribute("type", "button");
-            downButton.setAttribute("class", "down");
-            downButton.setAttribute("title", "Move " + searchEngines[se].name + " down");
-            downButton.appendChild(textDownButton);
-            var removeButton = document.createElement("button");
-            var textRemoveButton = document.createTextNode("Remove");
-            removeButton.setAttribute("type", "button");
-            removeButton.setAttribute("class", "remove");
-            removeButton.setAttribute("title", "Remove " + searchEngines[se].name);
-            removeButton.appendChild(textRemoveButton);
-            lineItem.setAttribute("id", se);
-
-            labelSE.setAttribute("for", se + "-cbx");
-            labelSE.appendChild(textSE);
-            inputSE.setAttribute("type", "checkbox");
-            inputSE.setAttribute("id", se + "-cbx");
-            inputSE.checked = searchEngines[se].show;
-            inputQS.setAttribute("type", "url");
-            inputQS.setAttribute("value", searchEngines[se].url);
-            lineItem.appendChild(inputSE);
-            lineItem.appendChild(labelSE);
-            lineItem.appendChild(inputQS);
-
-            upButton.addEventListener("click", upEventHandler, false);
-            lineItem.appendChild(upButton);
-
-            downButton.addEventListener("click", downEventHandler, false);
-            lineItem.appendChild(downButton);
-
-            removeButton.addEventListener("click", removeEventHandler, false);
-            lineItem.appendChild(removeButton);
-        } else {
-            lineItem.setAttribute("id", se);
-            labelSE.setAttribute("for", se + "-cbx");
-            labelSE.appendChild(textSE);
-            inputSE.setAttribute("type", "checkbox");
-            inputSE.setAttribute("id", se + "-cbx");
-            inputSE.checked = searchEngines[se].show;
-            inputQS.setAttribute("type", "url");
-            inputQS.setAttribute("value", searchEngines[se].url);
-            lineItem.appendChild(inputSE);
-            lineItem.appendChild(labelSE);
-            lineItem.appendChild(inputQS);
-        }
+    for (let id in searchEngines) {
+        var searchEngine = searchEngines[id];
+        var lineItem = createLineItem(id, searchEngine);
         divSearchEngines.appendChild(lineItem);
     }
     divContainer.appendChild(divSearchEngines);
-    var lineItems = divSearchEngines.childNodes;
-    storageSyncCount = lineItems.length;
+    storageSyncCount = divSearchEngines.childNodes.length;
+}
+
+function createLineItem(id, searchEngine) {
+    var lineItem = document.createElement("li");
+    var labelSE = document.createElement("label");
+    var inputSE = document.createElement("input");
+    var inputQS = document.createElement("input");
+    var textSE = document.createTextNode(searchEngine.name);
+
+    var upButton = document.createElement("button");
+    var textUpButton = document.createTextNode("↑");
+    upButton.setAttribute("type", "button");
+    upButton.setAttribute("class", "up");
+    upButton.setAttribute("title", "Move " + searchEngine.name + " up");
+    upButton.appendChild(textUpButton);
+
+    var downButton = document.createElement("button");
+    var textDownButton = document.createTextNode("↓");
+    downButton.setAttribute("type", "button");
+    downButton.setAttribute("class", "down");
+    downButton.setAttribute("title", "Move " + searchEngine.name + " down");
+    downButton.appendChild(textDownButton);
+
+    var removeButton = document.createElement("button");
+    var textRemoveButton = document.createTextNode("Remove");
+    removeButton.setAttribute("type", "button");
+    removeButton.setAttribute("class", "remove");
+    removeButton.setAttribute("title", "Remove " + searchEngine.name);
+    removeButton.appendChild(textRemoveButton);
+
+    lineItem.setAttribute("id", id);
+    labelSE.setAttribute("for", id + "-cbx");
+    labelSE.appendChild(textSE);
+    inputSE.setAttribute("type", "checkbox");
+    inputSE.setAttribute("id", id + "-cbx");
+    inputSE.checked = searchEngine.show;
+    inputQS.setAttribute("type", "url");
+    inputQS.setAttribute("value", searchEngine.url);
+    lineItem.appendChild(inputSE);
+    lineItem.appendChild(labelSE);
+    lineItem.appendChild(inputQS);
+
+    upButton.addEventListener("click", upEventHandler, false);
+    lineItem.appendChild(upButton);
+
+    downButton.addEventListener("click", downEventHandler, false);
+    lineItem.appendChild(downButton);
+
+    removeButton.addEventListener("click", removeEventHandler, false);
+    lineItem.appendChild(removeButton);
+
+    return lineItem;
 }
 
 function clearAll() {
@@ -258,19 +252,12 @@ function saveOptions(notification) {
 	}
 }
 
-function onAdded() {
-    // Clear HTML input fields to add a search engine
-    show.checked = false;
-    name.value = "";
-    url.value = "";
-    restoreOptions();
-    notify("Search engine added.");
-}
-
 function addSearchEngine() {
+    const divSearchEngines = document.getElementById("searchEngines");
     const show = document.getElementById("show"); // Boolean
     const name = document.getElementById("name"); // String
     const url = document.getElementById("url"); // String
+
     strUrl = url.value;
     var testUrl = "";
     if (strUrl.includes("{search terms}")) {
@@ -282,16 +269,24 @@ function addSearchEngine() {
         notify("Url entered is not valid.");
         return;
     }
+
     const id = name.value.replace(" ", "-").toLowerCase();
     var newSearchEngine = {};
     newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "url": url.value, "show": show.checked};
-    browser.storage.sync.set(newSearchEngine).then(onAdded, onError);
+    var lineItem = createLineItem(id, newSearchEngine[id]);
+    divSearchEngines.appendChild(lineItem);
+    browser.storage.sync.set(newSearchEngine).then(notify("Search engine added."), onError);
+
+    // Clear HTML input fields to add a search engine
+    show.checked = true;
+    name.value = null;
+    url.value = null;
 }
 
 function onGot(searchEngines) {
     console.log(searchEngines);
     if (Object.keys(searchEngines).length > 0) { // storage sync isn't empty
-        generateHTML(searchEngines); // display search engines list
+        listSearchEngines(searchEngines); // display search engines list
         console.log("Saved search engines have been loaded.");
     } else { // storage sync is empty -> load default list of search engines
         browser.storage.sync.clear().then(loadSearchEngines("defaultSearchEngines.json"), onError);
@@ -350,7 +345,7 @@ function handleFileUpload() {
         var reader = new FileReader();
         reader.onload = function(event) {
             var searchEngines = JSON.parse(event.target.result);
-            generateHTML(searchEngines);
+            listSearchEngines(searchEngines);
             saveOptions();
         };
         reader.readAsText(jsonFile);
