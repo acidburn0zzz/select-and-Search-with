@@ -168,6 +168,9 @@ function swapIndexes(previousItem, nextItem) {
     let tmp = null;
     let newObj = {};
 
+    console.log(previousItem);
+    console.log(nextItem);
+
     browser.storage.sync.get([previousItem, nextItem]).then(function(data){
         console.log(data);
         firstObj = data[previousItem];
@@ -195,7 +198,7 @@ function moveSearchEngineUp(e) {
     pn.insertBefore(lineItem, ps);
 
     // Update indexes in sync storage
-    swapIndexes(ps.id, lineItem.id);
+    swapIndexes(ps.getAttribute("id"), lineItem.getAttribute("id"));
 
 }
 
@@ -208,15 +211,17 @@ function moveSearchEngineDown(e) {
     pn.insertBefore(ns, lineItem);
 
     // Update indexes in sync storage
-    swapIndexes(lineItem.id, ns.id);
+    swapIndexes(lineItem.getAttribute("id"), ns.getAttribute("id"));
 
 }
 
 function removeSearchEngine(e) {
     var lineItem = e.target.parentNode;
+    var id = lineItem.getAttribute("id");
+    var pn = lineItem.parentNode;
         
-    lineItem.parentNode.removeChild(lineItem);
-    browser.storage.sync.clear().then(saveOptions(false), onError);
+    pn.removeChild(lineItem);
+    browser.storage.sync.remove(id).then(saveOptions, onError);
 }
 
 function readData() {
@@ -303,6 +308,10 @@ function onNone() {
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
+    if(document.getElementById("searchEngines") != null) {
+        let se = document.getElementById("searchEngines");
+        divContainer.removeChild(se);
+    }
     console.log("Loading search engines...");
     browser.storage.sync.get(null).then(onGot, onError);
     browser.storage.local.get("tabActive").then(onHas, onNone);
