@@ -4,8 +4,10 @@ var searchEnginesArray = [];
 var selection = "";
 var targetUrl = "";
 var browserVersion = 0;
-var openSearchResultsInNewTab = true; // Default value
-var openTabInForeground = false; // Default value
+
+/// Preferences
+var openSearchResultsInNewTab = true;
+var openTabInForeground = false;
 
 /// Messages
 // listen for messages from the content or options script
@@ -23,6 +25,7 @@ browser.runtime.onMessage.addListener(function(message) {
         case "setTabMode":
             openSearchResultsInNewTab = message.data.newTab;
             openTabInForeground = message.data.tabActive;
+            break;
         default:
             break;
     }
@@ -127,8 +130,8 @@ function sortByIndex(list) {
 // Perform search based on selected search engine, i.e. selected context menu item
 function processSearch(info, tab){
     var tabPosition = tab.index + 1;
-    if (openSearchResultsInNewTab === false) {
-        tabPosition -= 1;
+    if (!openSearchResultsInNewTab) {
+        tabPosition = null;
     }
     let id = info.menuItemId.replace("cs-", "");
 
@@ -138,7 +141,7 @@ function processSearch(info, tab){
     }
 
     if (id === "google-site" && targetUrl != "") {
-        openTab(targetUrl, tabPosition);
+        openTab(tab.id, targetUrl, tabPosition);
         targetUrl = "";
         return;
     } else if (id === "options") {
@@ -158,22 +161,33 @@ function processSearch(info, tab){
         } else {
             targetUrl = searchEngineUrl + encodeURIComponent(selection);
         }
-        openTab(targetUrl, tabPosition);
+        openTab(tab.id, targetUrl, tabPosition);
         targetUrl = "";
     }    
 }
 
 /// Helper functions
-function openTab(targetUrl, tabPosition) {
-    browser.tabs.create({
-        active: openTabInForeground,
-        index: tabPosition,
-        url: targetUrl
-    });
+function openTab(tabId, targetUrl, tabPosition) {
+    if (tabPosition != null) {
+        browser.tabs.create({
+            active: openTabInForeground,
+            index: tabPosition,
+            url: targetUrl
+        });
+        return;
+    }
+    sendMessage(tabId, "openUrlInSameTab", targetUrl);
 }
 
 function onError(error) {
     console.log(`${error}`);
+}
+
+function sendMessage(tabId, action, data){
+    console.log(tabId);
+    console.log(action);
+    console.log(data);
+	browser.tabs.sendMessage(tabId, {"action": action, "data": data});
 }
 
 function notify(message){

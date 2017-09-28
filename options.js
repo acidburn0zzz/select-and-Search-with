@@ -16,7 +16,7 @@ function notify(message){
 
 // Generic Error Handler
 function onError(error) {
-  console.log(`Error: ${error}`);
+  console.log(`${error}`);
 }
 
 // Load list of search engines
@@ -95,6 +95,16 @@ function listSearchEngines(list) {
     storageSyncCount = divSearchEngines.childNodes.length;
 }
 
+function createButton(btnLabel, btnClass, btnTitle) {
+    var button = document.createElement("button");
+    var btnText = document.createTextNode(btnLabel)
+    button.setAttribute("type", "button");
+    button.setAttribute("class", btnClass);
+    button.setAttribute("title", btnTitle);
+    button.appendChild(btnText);
+    return button;
+}
+
 function createLineItem(id, searchEngine) {
     var lineItem = document.createElement("li");
     var labelSE = document.createElement("label");
@@ -102,26 +112,9 @@ function createLineItem(id, searchEngine) {
     var inputQS = document.createElement("input");
     var textSE = document.createTextNode(searchEngine.name);
 
-    var upButton = document.createElement("button");
-    var textUpButton = document.createTextNode("↑");
-    upButton.setAttribute("type", "button");
-    upButton.setAttribute("class", "up");
-    upButton.setAttribute("title", "Move " + searchEngine.name + " up");
-    upButton.appendChild(textUpButton);
-
-    var downButton = document.createElement("button");
-    var textDownButton = document.createTextNode("↓");
-    downButton.setAttribute("type", "button");
-    downButton.setAttribute("class", "down");
-    downButton.setAttribute("title", "Move " + searchEngine.name + " down");
-    downButton.appendChild(textDownButton);
-
-    var removeButton = document.createElement("button");
-    var textRemoveButton = document.createTextNode("Remove");
-    removeButton.setAttribute("type", "button");
-    removeButton.setAttribute("class", "remove");
-    removeButton.setAttribute("title", "Remove " + searchEngine.name);
-    removeButton.appendChild(textRemoveButton);
+    var upButton = createButton("↑", "up", "Move " + searchEngine.name + " up");
+    var downButton = createButton("↓", "down", "Move " + searchEngine.name + " down");
+    var removeButton = createButton("Remove", "remove", "Remove " + searchEngine.name);
 
     lineItem.setAttribute("id", id);
     labelSE.setAttribute("for", id + "-cbx");
@@ -321,9 +314,9 @@ function onHas(data) {
         tabActive.checked = data.tabActive;
     }
     if (!openNewTab.checked) {
-        tabActive.readOnly = true;
+        tabActive.disabled = true;
     } else {
-        tabActive.readOnly = false;
+        tabActive.disabled = false;
     }
     sendMessage("setTabMode", data);
 }
@@ -335,7 +328,7 @@ function onNone() {
     openNewTab.checked = true;
     data["tabActive"] = false;
     tabActive.checked = true;
-    tabActive.readOnly = false;
+    tabActive.disabled = false;
     browser.storage.local.set(data);
     sendMessage("setTabMode", data);
 }
@@ -396,9 +389,9 @@ function setTabMode() {
     data["newTab"] = openNewTab.checked;
     data["tabActive"] = tabActive.checked;
     if (!openNewTab.checked) {
-        tabActive.readOnly = true;
+        tabActive.disabled = true;
     } else {
-        tabActive.readOnly = false;
+        tabActive.disabled = false;
     }
     browser.storage.local.set(data);
     sendMessage("setTabMode", data);
