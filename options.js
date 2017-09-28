@@ -1,6 +1,7 @@
 // Global variables
 const divContainer = document.getElementById("container");
 const divAddSearchEngine = document.getElementById("addSearchEngine");
+const openNewTab = document.getElementById("openNewTab");
 const tabActive = document.getElementById("tabActive");
 var storageSyncCount = 0;
 
@@ -27,7 +28,7 @@ function loadSearchEngines(jsonFile) {
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var searchEngines = JSON.parse(this.responseText);
-            notify("Search engines have been loaded.");
+            notify("Default list of search engines has been loaded.");
             listSearchEngines(searchEngines);
             saveOptions();
         }
@@ -312,12 +313,31 @@ function onGot(searchEngines) {
     }
 }
 
-function onHas(bln) {
-    if (bln.tabActive === true || bln.tabActive === false) tabActive.checked = bln.tabActive
+function onHas(data) {
+    if (data.newTab === true || data.newTab === false) {
+        openNewTab.checked = data.newTab;
+    }
+    if (data.tabActive === true || data.tabActive === false) {
+        tabActive.checked = data.tabActive;
+    }
+    if (!openNewTab.checked) {
+        tabActive.readOnly = true;
+    } else {
+        tabActive.readOnly = false;
+    }
+    sendMessage("setTabMode", data);
 }
 
+// Store the default values for tab mode in storage local and send them to background.js
 function onNone() {
-    browser.storage.local.set({"tabActive": tabActive.checked});
+    var data = {};
+    data["newTab"] = true;
+    openNewTab.checked = true;
+    data["tabActive"] = false;
+    tabActive.checked = true;
+    tabActive.readOnly = false;
+    browser.storage.local.set(data);
+    sendMessage("setTabMode", data);
 }
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
@@ -328,7 +348,7 @@ function restoreOptions() {
     }
     console.log("Loading search engines...");
     browser.storage.sync.get(null).then(onGot, onError);
-    browser.storage.local.get("tabActive").then(onHas, onNone);
+    browser.storage.local.get(["newTab", "tabActive"]).then(onHas, onNone);
 }
 
 function removeHyperlink(event) {
@@ -371,8 +391,17 @@ function handleFileUpload() {
     }, onError);
 }
 
-function saveTabActive(){
-    browser.storage.local.set({"tabActive":tabActive.checked});
+function setTabMode() {
+    var data = {};
+    data["newTab"] = openNewTab.checked;
+    data["tabActive"] = tabActive.checked;
+    if (!openNewTab.checked) {
+        tabActive.readOnly = true;
+    } else {
+        tabActive.readOnly = false;
+    }
+    browser.storage.local.set(data);
+    sendMessage("setTabMode", data);
 }
 
 function isValidUrl(url) {
@@ -386,7 +415,8 @@ function isValidUrl(url) {
     }
 }
 
-tabActive.addEventListener("click", saveTabActive);
+openNewTab.addEventListener("click", setTabMode);
+tabActive.addEventListener("click", setTabMode);
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById("clearAll").addEventListener("click", clearAll);
 document.getElementById("selectAll").addEventListener("click", selectAll);

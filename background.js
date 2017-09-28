@@ -4,7 +4,8 @@ var searchEnginesArray = [];
 var selection = "";
 var targetUrl = "";
 var browserVersion = 0;
-var openTabInForeground = true;
+var openSearchResultsInNewTab = true; // Default value
+var openTabInForeground = false; // Default value
 
 /// Messages
 // listen for messages from the content or options script
@@ -14,15 +15,32 @@ browser.runtime.onMessage.addListener(function(message) {
             notify(message.data);
             break;
         case "getSelectionText":
-             if (message.data) selection = message.data;
+            if (message.data) selection = message.data;
             break;
         case "sendCurrentTabUrl":
-             if (message.data) targetUrl = message.data;
+            if (message.data) targetUrl = message.data;
             break;
+        case "setTabMode":
+            openSearchResultsInNewTab = message.data.newTab;
+            openTabInForeground = message.data.tabActive;
         default:
             break;
     }
 });
+
+/// Initialisation
+function init() {
+    browser.runtime.getBrowserInfo().then(gotBrowserInfo);
+    browser.storage.onChanged.addListener(onStorageChanges);
+
+    onStorageSyncChanges();
+
+    // getBrowserInfo
+    function gotBrowserInfo(info){
+        let v = info.version;
+        browserVersion = parseInt(v.slice(0, v.search(".") - 1));
+    }
+}
 
 /// Context menus
 function buildContextMenuItem(searchEngine, id, title, faviconUrl){
@@ -46,47 +64,14 @@ function buildContextMenuItem(searchEngine, id, title, faviconUrl){
     }
 }
 
-/// Initialisation
-function init() {
-    browser.runtime.getBrowserInfo().then(gotBrowserInfo);
-    browser.storage.onChanged.addListener(onStorageChanges);
-
-    browser.storage.local.get("tabActive").then(onHas, onNone);
-    onStorageSyncChanges();
-
-    // getBrowserInfo
-    function gotBrowserInfo(info){
-        let v = info.version;
-        browserVersion = parseInt(v.slice(0, v.search(".") - 1));
-    }
-
-    // tabActive onHas
-    function onHas(bln) {
-        if (bln.tabActive === true || bln.tabActive === false) openTabInForeground = bln.tabActive;
-    }
-
-    // tabActive onNone
-    function onNone() {
-        browser.storage.local.set({"tabActive": tabActive.checked});
-    }
-}
-
-init();
-
 /// Storage
 function onStorageChanges(changes, area) {
-    if (area === "local") {
-        const changedItems = Object.keys(changes);
-        const index = changedItems.indexOf("tabActive");
-        if (index >= 0) {
-            openTabInForeground = changes["tabActive"].newValue;
-        }
-    } else {
+    if (area === "sync") {
         onStorageSyncChanges();
     }
 }
 
-// Create the context menu using the search engines from storage sync
+// On storage sync changes re-build the context menu using the search engines from storage sync
 function onStorageSyncChanges() {
     browser.contextMenus.removeAll();
     browser.contextMenus.onClicked.removeListener(processSearch);
@@ -142,6 +127,9 @@ function sortByIndex(list) {
 // Perform search based on selected search engine, i.e. selected context menu item
 function processSearch(info, tab){
     var tabPosition = tab.index + 1;
+    if (openSearchResultsInNewTab === false) {
+        tabPosition -= 1;
+    }
     let id = info.menuItemId.replace("cs-", "");
 
     // Prefer info.selectionText over selection received by content script for these lengths (more reliable)
@@ -197,3 +185,5 @@ function notify(message){
         message: message
     });
 }
+
+init();
