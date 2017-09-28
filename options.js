@@ -27,7 +27,7 @@ function loadSearchEngines(jsonFile) {
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var searchEngines = JSON.parse(this.responseText);
-            console.log("Search engines have been loaded.");
+            notify("Search engines have been loaded.");
             listSearchEngines(searchEngines);
             saveOptions();
         }
@@ -52,13 +52,32 @@ function removeEventHandler(e) {
 
 function sortByIndex(list) {
   var sortedList = {};
+  var skip = false;
+
+  // If there are no indexes, then add some arbitrarily
   for (var i = 0;i < Object.keys(list).length;i++) {
-    for (let se in list) {
-      if (list[se] != null && list[se].index === i) {
-        sortedList[se] = list[se];
-      }
+    var id = Object.keys(list)[i];
+    if (list[id].index != null) {
+        break;
+    } 
+    if (list[id] != null) {
+        sortedList[id] = list[id];
+        sortedList[id]["index"] = i;
+        skip = true;
     }
   }
+
+  // If there are indexes, then sort the list
+  if (!skip) {
+    for (var i = 0;i < Object.keys(list).length;i++) {
+        for (let id in list) {
+            if (list[id] != null && list[id].index === i) {
+            sortedList[id] = list[id];
+            }
+        }
+    }
+  }
+  
   return sortedList;
 }
 
@@ -287,7 +306,7 @@ function onGot(searchEngines) {
     console.log(searchEngines);
     if (Object.keys(searchEngines).length > 0) { // storage sync isn't empty
         listSearchEngines(searchEngines); // display search engines list
-        console.log("Saved search engines have been loaded.");
+        notify("Saved search engines have been restored.");
     } else { // storage sync is empty -> load default list of search engines
         browser.storage.sync.clear().then(loadSearchEngines("defaultSearchEngines.json"), onError);
     }
