@@ -41,122 +41,134 @@
     "url": "https://duckduckgo.com/?q=",
     "show": true
   },
-  "ecosia": {
+  "ebay": {
     "index": 7,
+    "name": "eBay",
+    "url": "https://www.ebay.com/sch/?LH_TitleDesc=1&_nkw=",
+    "show": true
+  },
+  "ecosia": {
+    "index": 8,
     "name": "Ecosia",
     "url": "https://www.ecosia.org/search?q=",
     "show": true
   },
   "facebook": {
-    "index": 8,
+    "index": 9,
     "name": "Facebook (people search)",
     "url": "https://www.facebook.com/public?query=",
     "show": true
   },
   "google": {
-    "index": 9,
+    "index": 10,
     "name": "Google",
     "url": "https://www.google.com/search?q=",
     "show": true
   },
   "gmaps": {
-    "index": 10,
+    "index": 11,
     "name": "Google Maps",
     "url": "https://maps.google.com/?q=",
     "show": true
   },
   "gscholar": {
-    "index": 11,
+    "index": 12,
     "name": "Google Scholar",
     "url": "https://scholar.google.ch/scholar?q=",
     "show": true
   },
+  "gtranslate": {
+    "index": 13,
+    "name": "Google Translate [..->EN]",
+    "url": "https://translate.google.com/?sl=da#auto/en/",
+    "show": true
+  },
   "imdb": {
-    "index": 12,
+    "index": 14,
     "name": "IMDb",
     "url": "https://www.imdb.com/find?q=",
     "show": true
   },
   "lilo": {
-    "index": 13,
+    "index": 15,
     "name": "Lilo",
     "url": "https://search.lilo.org/searchweb.php?q=",
     "show": true
   },
   "linkedin": {
-    "index": 14,
+    "index": 16,
     "name": "LinkedIn (people search)",
     "url": "https://www.linkedin.com/search/results/index/?keywords=",
     "show": true
   },
   "onelook": {
-    "index": 15,
+    "index": 17,
     "name": "OneLook",
     "url": "http://onelook.com/?w=",
     "show": true
   },
   "quora": {
-    "index": 16,
+    "index": 18,
     "name": "Quora",
     "url": "https://www.quora.com/search?q=",
     "show": true
   },
   "qwant": {
-    "index": 17,
+    "index": 19,
     "name": "Qwant",
     "url": "https://www.qwant.com/?q=",
     "show": true
   },
   "se": {
-    "index": 18,
+    "index": 20,
     "name": "Stack Exchange",
     "url": "https://stackexchange.com/search?q=",
     "show": true
   },
   "startpage": {
-    "index": 19,
+    "index": 21,
     "name": "Startpage",
     "url": "https://www.startpage.com/do/search?query=",
     "show": true
   },
   "swisscows": {
-    "index": 20,
+    "index": 22,
     "name": "Swisscows",
     "url": "https://swisscows.ch/?query=",
     "show": true
   },
   "twitter": {
-    "index": 21,
+    "index": 23,
     "name": "Twitter",
     "url": "https://twitter.com/search?q=",
     "show": true
   },
   "wikipedia": {
-    "index": 22,
+    "index": 24,
     "name": "Wikipedia",
     "url": "https://en.wikipedia.org/wiki/wiki.html?search=",
     "show": true
   },
   "wolframalpha": {
-    "index": 23,
+    "index": 25,
     "name": "WolframAlpha",
     "url": "https://www.wolframalpha.com/input/?i=",
     "show": true
   },
   "yahoo": {
-    "index": 24,
+    "index": 26,
     "name": "Yahoo!",
     "url": "https://search.yahoo.com/search?p=",
     "show": true
   },
   "yandex": {
-    "index": 25,
+    "index": 27,
     "name": "Yandex",
     "url": "https://www.yandex.com/search/?text=",
     "show": true
   },
   "youtube": {
-    "index": 26,
+    "index": 28,
     "name": "YouTube",
     "url": "https://www.youtube.com/results?search_query=",
     "show": true
