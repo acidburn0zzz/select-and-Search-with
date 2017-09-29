@@ -99,13 +99,13 @@ function onStorageSyncChanges() {
             searchEngines = sortByIndex(data);
             searchEnginesArray = [];
             var index = 0;
-            for (var se in searchEngines) {
+            for (var id in searchEngines) {
                 var strId = "cs-" + index.toString();
-                var strTitle = searchEngines[se].name;
-                var url = searchEngines[se].url;
+                var strTitle = searchEngines[id].name;
+                var url = searchEngines[id].url;
                 var faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
-                searchEnginesArray.push(se);
-                buildContextMenuItem(searchEngines[se], strId, strTitle, faviconUrl);
+                searchEnginesArray.push(id);
+                buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
                 index += 1;
             }
         }
@@ -117,10 +117,25 @@ function onStorageSyncChanges() {
 /// Search engines
 function sortByIndex(list) {
     var sortedList = {};
+    var skip = false;
+    
+    // If there are no indexes, then add some arbitrarily
     for (var i = 0;i < Object.keys(list).length;i++) {
-      for (let se in list) {
-        if (list[se] != null && list[se].index === i) {
-          sortedList[se] = list[se];
+    var id = Object.keys(list)[i];
+    if (list[id].index != null) {
+        break;
+    } 
+    if (list[id] != null) {
+        sortedList[id] = list[id];
+        sortedList[id]["index"] = i;
+        skip = true;
+    }
+    }
+
+    for (var i = 0;i < Object.keys(list).length;i++) {
+      for (let id in list) {
+        if (list[id] != null && list[id].index === i) {
+          sortedList[id] = list[id];
         }
       }
     }
