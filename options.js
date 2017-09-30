@@ -3,6 +3,7 @@ const divContainer = document.getElementById("container");
 const divAddSearchEngine = document.getElementById("addSearchEngine");
 const openNewTab = document.getElementById("openNewTab");
 const tabActive = document.getElementById("tabActive");
+const importSearchEngines = document.getElementById("import");
 var storageSyncCount = 0;
 
 // Sending messages to the background script
@@ -408,8 +409,44 @@ function isValidUrl(url) {
     }
 }
 
+function readLz4File(file, onRead, onError)
+{
+    let reader = new FileReader();
+
+    reader.onload = function() {
+        let Buffer = require('buffer').Buffer;
+        let LZ4 = require('lz4');
+
+        let encodedBytes = reader.result;
+        encodedBytes = encodedBytes.slice(8+4, encodedBytes.length);    // 8 byte magic number + 4 byte data size field
+
+        let input = new Buffer(encodedBytes);
+        let output = new Buffer(input.length*3);    // size estimate!
+
+        let uncompressedSize = LZ4.decodeBlock(input, output);
+        output = output.slice(0, uncompressedSize); // remove excess bytes
+
+        let decodedText = new TextDecoder().decode(output);
+        onRead(decodedText);
+    };
+
+    if (onError) {
+        reader.onerror = onError;
+    }
+
+    reader.readAsArrayBuffer(file);
+};
+
+function readFile(event) {
+    let file = event.target.files[0];
+    readLz4File(file, function(text){
+        console.log(text);
+    });
+}
+
 openNewTab.addEventListener("click", setTabMode);
 tabActive.addEventListener("click", setTabMode);
+importSearchEngines.addEventListener("change", readFile);
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById("clearAll").addEventListener("click", clearAll);
 document.getElementById("selectAll").addEventListener("click", selectAll);
