@@ -28,17 +28,4 @@ function sendMessage(action, data){
 	browser.runtime.sendMessage({"action": action, "data": data});
 }
 
-function handleMessage(message) {
-    console.log(message.action);
-    console.log(message.data);
-    switch (message.action) {
-        case "openUrlInSameTab":
-            location.assign(message.data);
-            break;
-        default:
-            break;
-    }
-}
-
-browser.runtime.onMessage.addListener(handleMessage);
 document.addEventListener("contextmenu", getSelectionText);
