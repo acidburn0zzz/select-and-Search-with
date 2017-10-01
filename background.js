@@ -6,8 +6,8 @@ var targetUrl = "";
 var browserVersion = 0;
 
 /// Preferences
-var openSearchResultsInNewTab = true;
-var openTabInForeground = false;
+var contextsearch_openSearchResultsInNewTab = true;
+var contextsearch_openTabInForeground = false;
 
 /// Messages
 // listen for messages from the content or options script
@@ -23,8 +23,8 @@ browser.runtime.onMessage.addListener(function(message) {
             if (message.data) targetUrl = message.data;
             break;
         case "setTabMode":
-            openSearchResultsInNewTab = message.data.newTab;
-            openTabInForeground = message.data.tabActive;
+            contextsearch_openSearchResultsInNewTab = message.data.newTab;
+            contextsearch_openTabInForeground = message.data.tabActive;
             break;
         default:
             break;
@@ -121,15 +121,15 @@ function sortByIndex(list) {
     
     // If there are no indexes, then add some arbitrarily
     for (var i = 0;i < Object.keys(list).length;i++) {
-    var id = Object.keys(list)[i];
-    if (list[id].index != null) {
-        break;
-    } 
-    if (list[id] != null) {
-        sortedList[id] = list[id];
-        sortedList[id]["index"] = i;
-        skip = true;
-    }
+		var id = Object.keys(list)[i];
+		if (list[id].index != null) {
+			break;
+		} 
+		if (list[id] != null) {
+			sortedList[id] = list[id];
+			sortedList[id]["index"] = i;
+			skip = true;
+		}
     }
 
     for (var i = 0;i < Object.keys(list).length;i++) {
@@ -144,10 +144,6 @@ function sortByIndex(list) {
 
 // Perform search based on selected search engine, i.e. selected context menu item
 function processSearch(info, tab){
-    var tabPosition = tab.index + 1;
-    if (!openSearchResultsInNewTab) {
-        tabPosition = null;
-    }
     let id = info.menuItemId.replace("cs-", "");
 
     // Prefer info.selectionText over selection received by content script for these lengths (more reliable)
@@ -156,7 +152,7 @@ function processSearch(info, tab){
     }
 
     if (id === "google-site" && targetUrl != "") {
-        openTab(tab.id, targetUrl, tabPosition);
+        openTab(targetUrl, tab.id);
         targetUrl = "";
         return;
     } else if (id === "options") {
@@ -176,33 +172,28 @@ function processSearch(info, tab){
         } else {
             targetUrl = searchEngineUrl + encodeURIComponent(selection);
         }
-        openTab(tab.id, targetUrl, tabPosition);
+        openTab(targetUrl, tab.id);
         targetUrl = "";
     }    
 }
 
 /// Helper functions
-function openTab(tabId, targetUrl, tabPosition) {
-    if (tabPosition != null) {
+function openTab(targetUrl, currentTabId) {
+    if (contextsearch_openSearchResultsInNewTab) {
         browser.tabs.create({
-            active: openTabInForeground,
-            index: tabPosition,
+            active: contextsearch_openTabInForeground,
+            index: currentTabId + 1,
             url: targetUrl
         });
-        return;
-    }
-    sendMessage(tabId, "openUrlInSameTab", targetUrl);
+    }else{
+		// openUrlInSameTab:
+		console.log("Opening URL in same tab");
+		browser.tabs.update({url: targetUrl});
+	}
 }
 
 function onError(error) {
     console.log(`${error}`);
-}
-
-function sendMessage(tabId, action, data){
-    console.log(tabId);
-    console.log(action);
-    console.log(data);
-	browser.tabs.sendMessage(tabId, {"action": action, "data": data});
 }
 
 function notify(message){
