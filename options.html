@@ -42,7 +42,7 @@
         margin-bottom: 5px;
       }
 
-	    li:first-child > button.up {
+	  li:first-child > button.up {
         visibility: hidden;
       }
 
@@ -64,15 +64,13 @@
 
 <body>
     <form>
+      <h2>Context Search Preferences</h2>
+
+      <input type=checkbox id="openNewTab"><label for="openNewTab">Open search result in a new tab</label>
+      <br />
+      <input type=checkbox id="tabActive"><label for="tabActive">Open new tab in foreground</label>
+
       <h2>Which search engines would you like to appear in the context menu?</h2>
-      <br />
-      <input type=checkbox id="openNewTab">
-      <label for="openNewTab">Open search result in a new tab</label>
-      <br />
-      <input type=checkbox id="tabActive">
-      <label for="tabActive">Open new tab in foreground</label>
-      <br />
-      <br />
       <input type="button" value="Clear All" id="clearAll" />
       <input type="button" value="Select All" id="selectAll" />
       <input type="button" value="Reset" id="reset" />
@@ -88,15 +86,24 @@
         <button type="button" id="add">Add Search Engine</button>
       </div>
       <br />
-      <input type="button" value="Save in browser" id="save" />
-      <input type="button" value="Save to local disk" id="download" />
-      <br />
-      <label for="upload" id="upl">Upload (list of search engines) from local disk:</label>
-      <br />
-      <input type="file" id="upload" />
-      <br />
-      <label for="import">Import search engines from search bar:</label>
-      <input name="selectSearchEnginesFileButton" id="import" type="file" accept=".json.mozlz4">
+      <input type="button" value="Save preferences" id="save" />
+
+      <h2>Import/export search engines</h2>
+
+      <table>
+		  <tr>
+			<td><label for="upload" id="upl">Import JSON from local disk</label></td>
+			<td><input type="file" id="upload" /></td>
+		  </tr>
+		  <tr>
+			<td><label for="download">Export search engines to JSON</label></td>
+			<td><input type="button" value="Export to local disk" id="download" /></td>
+		  </tr>
+		  <tr>
+			<td><label for="import">Import search engines from search bar</label></td>
+			<td><input name="selectSearchEnginesFileButton" id="import" type="file" accept=".json.mozlz4"></td>
+		  </tr>
+      </table>
     </form>
     <script src="options.js"></script>
 </body>

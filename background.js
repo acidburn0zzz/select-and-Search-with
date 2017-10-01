@@ -1,13 +1,15 @@
-/// Static variables
+/// Global variables
 var searchEngines = {};
 var searchEnginesArray = [];
 var selection = "";
 var targetUrl = "";
-var browserVersion = 0;
+
+/// Browser specifics
+let browserVersion = 0;
 
 /// Preferences
-var contextsearch_openSearchResultsInNewTab = true;
-var contextsearch_openTabInForeground = false;
+let contextsearch_openSearchResultsInNewTab = true;
+let contextsearch_openTabInForeground = false;
 
 /// Messages
 // listen for messages from the content or options script
@@ -33,16 +35,32 @@ browser.runtime.onMessage.addListener(function(message) {
 
 /// Initialisation
 function init() {
+	detectStorageSupport();
     browser.runtime.getBrowserInfo().then(gotBrowserInfo);
     browser.storage.onChanged.addListener(onStorageChanges);
 
-    onStorageSyncChanges();
+    rebuildContextMenu();
 
     // getBrowserInfo
     function gotBrowserInfo(info){
         let v = info.version;
         browserVersion = parseInt(v.slice(0, v.search(".") - 1));
     }
+}
+
+// To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
+function detectStorageSupport() {
+	browser.storage.sync.get(null).then(onGot, onFallback);
+
+	function onGot(){
+		// Do nothing
+	}
+
+	function onFallback(error){
+		if(error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1){
+			notify("Please enable sync storage by setting webextensions.storage.sync.enabled to true in about:config. Context Search will not work until you do so.");
+		}
+	}
 }
 
 /// Context menus
@@ -70,12 +88,12 @@ function buildContextMenuItem(searchEngine, id, title, faviconUrl){
 /// Storage
 function onStorageChanges(changes, area) {
     if (area === "sync") {
-        onStorageSyncChanges();
+        rebuildContextMenu();
     }
 }
 
-// On storage sync changes re-build the context menu using the search engines from storage sync
-function onStorageSyncChanges() {
+// Rebuild the context menu using the search engines from sync
+function rebuildContextMenu() {
     browser.contextMenus.removeAll();
     browser.contextMenus.onClicked.removeListener(processSearch);
     browser.contextMenus.create({
