@@ -9,7 +9,8 @@ let browserVersion = 0;
 
 /// Preferences
 let contextsearch_openSearchResultsInNewTab = true;
-let contextsearch_openTabInForeground = false;
+let contextsearch_makeNewTabOrWindowActive = false;
+let contextsearch_openSearchResultsInNewWindow = false;
 
 /// Messages
 // listen for messages from the content or options script
@@ -25,8 +26,23 @@ browser.runtime.onMessage.addListener(function(message) {
             if (message.data) targetUrl = message.data;
             break;
         case "setTabMode":
-            contextsearch_openSearchResultsInNewTab = message.data.newTab;
-            contextsearch_openTabInForeground = message.data.tabActive;
+            contextsearch_makeNewTabOrWindowActive = message.data.tabActive;
+            switch (message.data.tabMode) {
+                case "openNewTab":
+                    contextsearch_openSearchResultsInNewTab = true;
+                    contextsearch_openSearchResultsInNewWindow = false;
+                    break;
+                case "sameTab":
+                    contextsearch_openSearchResultsInNewTab = false;
+                    contextsearch_openSearchResultsInNewWindow = false;
+                    break;
+                case "openNewWindow":
+                    contextsearch_openSearchResultsInNewWindow = true;
+                    contextsearch_openSearchResultsInNewTab = false;
+                    break;
+                default:
+                    break;
+            }            
             break;
         default:
             break;
@@ -170,7 +186,7 @@ function processSearch(info, tab){
     }
 
     if (id === "google-site" && targetUrl != "") {
-        openTab(targetUrl, tab.id);
+        displaySearchResults(targetUrl, tab.id);
         targetUrl = "";
         return;
     } else if (id === "options") {
@@ -190,22 +206,34 @@ function processSearch(info, tab){
         } else {
             targetUrl = searchEngineUrl + encodeURIComponent(selection);
         }
-        openTab(targetUrl, tab.id);
+        displaySearchResults(targetUrl, tab.id);
         targetUrl = "";
     }    
 }
 
 /// Helper functions
-function openTab(targetUrl, currentTabId) {
-    if (contextsearch_openSearchResultsInNewTab) {
+function displaySearchResults(targetUrl, currentTabId) {
+    let currentWindowId = browser.windows.WINDOW_ID_CURRENT;
+    console.log(currentWindowId);
+    if (contextsearch_openSearchResultsInNewWindow) {
+        browser.windows.create({
+            url: targetUrl
+        }).then(function() {
+            if (!contextsearch_makeNewTabOrWindowActive) {
+                browser.windows.update(currentWindowId, {
+                    focused: true
+                }).then(null, onError);    
+            }
+        }, onError);
+    } else if (contextsearch_openSearchResultsInNewTab) {
         browser.tabs.create({
-            active: contextsearch_openTabInForeground,
+            active: contextsearch_makeNewTabOrWindowActive,
             index: currentTabId + 1,
             url: targetUrl
         });
-    }else{
-		// openUrlInSameTab:
-		console.log("Opening URL in same tab");
+    } else {
+		// Open search results in the same tab
+		console.log("Opening search results in same tab");
 		browser.tabs.update({url: targetUrl});
 	}
 }

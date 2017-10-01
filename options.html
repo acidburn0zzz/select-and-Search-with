@@ -11,6 +11,10 @@
         color:darkslategrey;
       }
 
+      fieldset {
+        width: 500px;
+      }
+
       input[type="checkbox"] {
         display: inline-block;
         width: 15px;
@@ -18,7 +22,11 @@
 
       label, #name {
         display: inline-block;
-        width: 200px;
+        width: 220px;
+      }
+
+      input[type="radio"] + label {
+        width: 120px;
       }
 
       input[type="url"] {
@@ -66,9 +74,26 @@
     <form>
       <h2>Context Search Preferences</h2>
 
-      <input type=checkbox id="openNewTab"><label for="openNewTab">Open search result in a new tab</label>
+      <fieldset>
+        <legend><h4>Where would you like the search results to appear?</h4></legend>
+        <div id="tabMode">
+          <input type="radio" id="openNewTab" name="results" value="openNewTab" checked>
+          <label for="openNewTab">In a new tab</label>
+    
+          <input type="radio" id="sameTab" name="results" value="sameTab">
+          <label for="sameTab">In the same tab</label>
+    
+          <input type="radio" id="openNewWindow" name="results" value="openNewWindow">
+          <label for="openNewWindow">In a new window</label>
+        </div>
+      </fieldset>
+
       <br />
-      <input type=checkbox id="tabActive"><label for="tabActive">Open new tab in foreground</label>
+      <div id="active">
+        <input type=checkbox id="tabActive"><label for="tabActive">Make the new tab or window active</label>
+      </div>
+      <br />
+      <br />
 
       <h2>Which search engines would you like to appear in the context menu?</h2>
       <input type="button" value="Clear All" id="clearAll" />
@@ -98,10 +123,6 @@
 		  <tr>
 			<td><label for="download">Export search engines to JSON</label></td>
 			<td><input type="button" value="Export to local disk" id="download" /></td>
-		  </tr>
-		  <tr>
-			<td><label for="import">Import search engines from search bar</label></td>
-			<td><input name="selectSearchEnginesFileButton" id="import" type="file" accept=".json.mozlz4"></td>
 		  </tr>
       </table>
     </form>
