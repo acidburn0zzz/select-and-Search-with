@@ -213,29 +213,31 @@ function processSearch(info, tab){
 
 /// Helper functions
 function displaySearchResults(targetUrl, currentTabId) {
-    let currentWindowId = browser.windows.WINDOW_ID_CURRENT;
-    console.log(currentWindowId);
-    if (contextsearch_openSearchResultsInNewWindow) {
-        browser.windows.create({
-            url: targetUrl
-        }).then(function() {
-            if (!contextsearch_makeNewTabOrWindowActive) {
-                browser.windows.update(currentWindowId, {
-                    focused: true
-                }).then(null, onError);    
-            }
-        }, onError);
-    } else if (contextsearch_openSearchResultsInNewTab) {
-        browser.tabs.create({
-            active: contextsearch_makeNewTabOrWindowActive,
-            index: currentTabId + 1,
-            url: targetUrl
-        });
-    } else {
-		// Open search results in the same tab
-		console.log("Opening search results in same tab");
-		browser.tabs.update({url: targetUrl});
-	}
+    browser.windows.getCurrent({populate: false}).then(function(windowInfo) {
+        var currentWindowID = windowInfo.id;
+        console.log(currentWindowID);
+        if (contextsearch_openSearchResultsInNewWindow) {
+            browser.windows.create({
+                url: targetUrl
+            }).then(function() {
+                if (!contextsearch_makeNewTabOrWindowActive) {
+                    browser.windows.update(currentWindowID, {
+                        focused: true
+                    }).then(null, onError);    
+                }
+            }, onError);
+        } else if (contextsearch_openSearchResultsInNewTab) {
+            browser.tabs.create({
+                active: contextsearch_makeNewTabOrWindowActive,
+                index: currentTabId + 1,
+                url: targetUrl
+            });
+        } else {
+            // Open search results in the same tab
+            console.log("Opening search results in same tab");
+            browser.tabs.update({url: targetUrl});
+        }
+    }, onError);
 }
 
 function onError(error) {
