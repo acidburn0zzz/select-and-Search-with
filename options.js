@@ -10,7 +10,7 @@ let storageSyncCount = 0;
 
 // Sending messages to the background script
 function sendMessage(action, data){
-    browser.runtime.sendMessage({action: action, data: data});
+    browser.runtime.sendMessage({"action": action, "data": data});
 }
 
 function notify(message){
@@ -20,22 +20,6 @@ function notify(message){
 // Generic Error Handler
 function onError(error) {
   console.log(`${error}`);
-}
-
-// Load default list of search engines
-function loadSearchEngines(jsonFile) {
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", jsonFile, true);
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.overrideMimeType("application/json");
-    xhr.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            notify("Default list of search engines has been loaded.");
-            listSearchEngines(JSON.parse(this.responseText));
-            saveOptions();
-        }
-    };
-    xhr.send();
 }
 
 function upEventHandler(e) {
@@ -172,7 +156,7 @@ function selectAll() {
 }
 
 function reset() {
-    browser.storage.sync.clear().then(loadSearchEngines("defaultSearchEngines.json"), onError);
+    sendMessage("reset", "");
 }
 
 function swapIndexes(previousItem, nextItem) {
@@ -330,21 +314,7 @@ function onNone() {
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
-    console.log("Loading search engines...");
-
-    /*
-    browser.storage.sync.get(null).then(function(searchEngines){
-        //console.log(searchEngines);
-        if (Object.keys(searchEngines).length > 0) {
-            // storage sync isn't empty -> display search engines list
-            listSearchEngines(searchEngines);
-        } else {
-            // storage sync is empty -> load default list of search engines
-            browser.storage.sync.then(loadSearchEngines("defaultSearchEngines.json"), onError);
-        }
-    }, onError);
-    */
-
+    browser.storage.sync.get(null).then(listSearchEngines);
     browser.storage.local.get(["newTab", "tabActive"]).then(onHas, onNone);
 }
 
@@ -410,6 +380,14 @@ function isValidUrl(url) {
     }
 }
 
+function handleMessage(message) {
+    console.log(message);
+    if (message.action === "searchEnginesLoaded") {
+        listSearchEngines(message.data);
+    }
+}
+
+browser.runtime.onMessage.addListener(handleMessage);
 tabMode.addEventListener("click", setTabMode);
 tabActive.addEventListener("click", setTabMode);
 document.addEventListener('DOMContentLoaded', restoreOptions);

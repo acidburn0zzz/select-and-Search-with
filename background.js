@@ -13,7 +13,7 @@ let contextsearch_makeNewTabOrWindowActive = false;
 let contextsearch_openSearchResultsInNewWindow = false;
 
 /// Handle Incoming Messages
-// listen for messages from the content or options script
+// Listen for messages from the content or options script
 browser.runtime.onMessage.addListener(function(message) {
     switch (message.action) {
         case "notify":
@@ -24,6 +24,10 @@ browser.runtime.onMessage.addListener(function(message) {
             break;
         case "sendCurrentTabUrl":
             if (message.data) targetUrl = message.data;
+            break;
+        case "reset":
+            let reset = true;
+            detectStorageSupportAndLoadSearchEngines(reset);
             break;
         case "setTabMode":
             contextsearch_makeNewTabOrWindowActive = message.data.tabActive;
@@ -51,7 +55,8 @@ browser.runtime.onMessage.addListener(function(message) {
 
 /// Initialisation
 function init() {
-	detectStorageSupportAndLoadSearchEngines();
+    let reset = false;
+	detectStorageSupportAndLoadSearchEngines(reset);
     browser.runtime.getBrowserInfo().then(gotBrowserInfo);
     browser.storage.onChanged.addListener(onStorageChanges);
 
@@ -78,14 +83,15 @@ function onNone() {
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
-function detectStorageSupportAndLoadSearchEngines() {
+function detectStorageSupportAndLoadSearchEngines(reset) {
 	browser.storage.sync.get(null).then(onGot, onFallback);
+    reset = false;
 
     // Load search engines if they're not already loaded in storage sync
 	function onGot(searchEngines){
         if (!Object.keys(searchEngines).length > 0) {
             // Storage sync is empty -> load default list of search engines
-            browser.storage.sync.then(loadSearchEngines("defaultSearchEngines.json"), onError);
+            loadSearchEngines("defaultSearchEngines.json");
         }
 	}
 
@@ -106,13 +112,18 @@ function loadSearchEngines(jsonFile) {
         if (this.readyState == 4 && this.status == 200) {
             notify("Default list of search engines has been loaded.");
             var searchEngines = JSON.parse(this.responseText);
-            browser.storage.sync.set(searchEngines).then(rebuildContextMenu, onError);
+            browser.storage.sync.set(searchEngines).then(function() {
+                rebuildContextMenu();
+                if (reset) {
+                    browser.runtime.sendMessage({"action": "searchEnginesLoaded", "data": searchEngines}).then(null, onError);
+                }
+            }, onError);
         }
     };
     xhr.send();
 }
 
-/// Context menus
+/// Build a single context menu item
 function buildContextMenuItem(searchEngine, id, title, faviconUrl){
     const contexts = ["selection"];
 
@@ -141,7 +152,7 @@ function onStorageChanges(changes, area) {
     }
 }
 
-// Rebuild the context menu using the search engines from sync
+/// Rebuild the context menu using the search engines from storage sync
 function rebuildContextMenu() {
     browser.contextMenus.removeAll();
     browser.contextMenus.onClicked.removeListener(processSearch);
@@ -181,7 +192,7 @@ function rebuildContextMenu() {
     browser.contextMenus.onClicked.addListener(processSearch);
 }
 
-/// Search engines
+/// Sort search engines by index
 function sortByIndex(list) {
     var sortedList = {};
     var skip = false;
@@ -248,7 +259,6 @@ function processSearch(info, tab){
 function displaySearchResults(targetUrl, currentTabId) {
     browser.windows.getCurrent({populate: false}).then(function(windowInfo) {
         var currentWindowID = windowInfo.id;
-        console.log(currentWindowID);
         if (contextsearch_openSearchResultsInNewWindow) {
             browser.windows.create({
                 url: targetUrl
