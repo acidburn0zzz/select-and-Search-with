@@ -22,7 +22,7 @@ function onError(error) {
   console.log(`${error}`);
 }
 
-// Load list of search engines
+// Load default list of search engines
 function loadSearchEngines(jsonFile) {
     let xhr = new XMLHttpRequest();
     xhr.open("GET", jsonFile, true);
@@ -331,6 +331,8 @@ function onNone() {
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     console.log("Loading search engines...");
+
+    /*
     browser.storage.sync.get(null).then(function(searchEngines){
         //console.log(searchEngines);
         if (Object.keys(searchEngines).length > 0) {
@@ -341,6 +343,7 @@ function restoreOptions() {
             browser.storage.sync.then(loadSearchEngines("defaultSearchEngines.json"), onError);
         }
     }, onError);
+    */
 
     browser.storage.local.get(["newTab", "tabActive"]).then(onHas, onNone);
 }

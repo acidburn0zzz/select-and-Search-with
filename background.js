@@ -12,7 +12,7 @@ let contextsearch_openSearchResultsInNewTab = true;
 let contextsearch_makeNewTabOrWindowActive = false;
 let contextsearch_openSearchResultsInNewWindow = false;
 
-/// Messages
+/// Handle Incoming Messages
 // listen for messages from the content or options script
 browser.runtime.onMessage.addListener(function(message) {
     switch (message.action) {
@@ -51,11 +51,13 @@ browser.runtime.onMessage.addListener(function(message) {
 
 /// Initialisation
 function init() {
-	detectStorageSupport();
+	detectStorageSupportAndLoadSearchEngines();
     browser.runtime.getBrowserInfo().then(gotBrowserInfo);
     browser.storage.onChanged.addListener(onStorageChanges);
 
     rebuildContextMenu();
+
+    browser.storage.local.get(["newTab", "tabActive"]).then(null, onNone);
 
     // getBrowserInfo
     function gotBrowserInfo(info){
@@ -64,19 +66,50 @@ function init() {
     }
 }
 
+// Store the default values for tab mode in storage local
+function onNone() {
+    let data = {};
+    data["newTab"] = true;
+    openNewTab.checked = true;
+    data["tabActive"] = false;
+    tabActive.checked = true;
+    tabActive.disabled = false;
+    browser.storage.local.set(data);
+}
+
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
-function detectStorageSupport() {
+function detectStorageSupportAndLoadSearchEngines() {
 	browser.storage.sync.get(null).then(onGot, onFallback);
 
-	function onGot(){
-		// Do nothing
+    // Load search engines if they're not already loaded in storage sync
+	function onGot(searchEngines){
+        if (!Object.keys(searchEngines).length > 0) {
+            // Storage sync is empty -> load default list of search engines
+            browser.storage.sync.then(loadSearchEngines("defaultSearchEngines.json"), onError);
+        }
 	}
 
 	function onFallback(error){
 		if(error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1){
-			notify("Please enable sync storage by setting webextensions.storage.sync.enabled to true in about:config. Context Search will not work until you do so.");
+			notify("Please enable storage sync by setting webextensions.storage.sync.enabled to true in about:config. Context Search will not work until you do so.");
 		}
 	}
+}
+
+/// Load default list of search engines
+function loadSearchEngines(jsonFile) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", jsonFile, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.overrideMimeType("application/json");
+    xhr.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            notify("Default list of search engines has been loaded.");
+            var searchEngines = JSON.parse(this.responseText);
+            browser.storage.sync.set(searchEngines).then(rebuildContextMenu, onError);
+        }
+    };
+    xhr.send();
 }
 
 /// Context menus
