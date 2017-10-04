@@ -5,7 +5,8 @@ var selection = "";
 var targetUrl = "";
 
 /// Browser specifics
-let browserVersion = 0;
+var reset = false;
+let browserVersion = 45;
 
 /// Preferences
 let contextsearch_openSearchResultsInNewTab = true;
@@ -26,8 +27,8 @@ browser.runtime.onMessage.addListener(function(message) {
             if (message.data) targetUrl = message.data;
             break;
         case "reset":
-            let reset = true;
-            detectStorageSupportAndLoadSearchEngines(reset);
+            reset = true;
+            detectStorageSupportAndLoadSearchEngines();
             break;
         case "setTabMode":
             contextsearch_makeNewTabOrWindowActive = message.data.tabActive;
@@ -55,8 +56,7 @@ browser.runtime.onMessage.addListener(function(message) {
 
 /// Initialisation
 function init() {
-    let reset = false;
-	detectStorageSupportAndLoadSearchEngines(reset);
+	detectStorageSupportAndLoadSearchEngines();
     browser.runtime.getBrowserInfo().then(gotBrowserInfo);
     browser.storage.onChanged.addListener(onStorageChanges);
 
@@ -83,22 +83,23 @@ function onNone() {
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
-function detectStorageSupportAndLoadSearchEngines(reset) {
+function detectStorageSupportAndLoadSearchEngines() {
 	browser.storage.sync.get(null).then(onGot, onFallback);
-    reset = false;
 
     // Load search engines if they're not already loaded in storage sync
 	function onGot(searchEngines){
-        if (!Object.keys(searchEngines).length > 0) {
+        if (!Object.keys(searchEngines).length > 0 || reset) {
             // Storage sync is empty -> load default list of search engines
             loadSearchEngines("defaultSearchEngines.json");
         }
 	}
 
 	function onFallback(error){
-		if(error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1){
+		if (error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1) {
 			notify("Please enable storage sync by setting webextensions.storage.sync.enabled to true in about:config. Context Search will not work until you do so.");
-		}
+		} else {
+            onError();
+        }
 	}
 }
 
@@ -116,6 +117,7 @@ function loadSearchEngines(jsonFile) {
                 rebuildContextMenu();
                 if (reset) {
                     browser.runtime.sendMessage({"action": "searchEnginesLoaded", "data": searchEngines}).then(null, onError);
+                    reset = false;
                 }
             }, onError);
         }
@@ -230,7 +232,7 @@ function processSearch(info, tab){
     }
 
     if (id === "google-site" && targetUrl != "") {
-        displaySearchResults(targetUrl, tab.id);
+        displaySearchResults(targetUrl, tab.index);
         targetUrl = "";
         return;
     } else if (id === "options") {
@@ -250,13 +252,13 @@ function processSearch(info, tab){
         } else {
             targetUrl = searchEngineUrl + encodeURIComponent(selection);
         }
-        displaySearchResults(targetUrl, tab.id);
+        displaySearchResults(targetUrl, tab.index);
         targetUrl = "";
     }    
 }
 
 /// Helper functions
-function displaySearchResults(targetUrl, currentTabId) {
+function displaySearchResults(targetUrl, tabPosition) {
     browser.windows.getCurrent({populate: false}).then(function(windowInfo) {
         var currentWindowID = windowInfo.id;
         if (contextsearch_openSearchResultsInNewWindow) {
@@ -272,7 +274,7 @@ function displaySearchResults(targetUrl, currentTabId) {
         } else if (contextsearch_openSearchResultsInNewTab) {
             browser.tabs.create({
                 active: contextsearch_makeNewTabOrWindowActive,
-                index: currentTabId + 1,
+                index: tabPosition + 1,
                 url: targetUrl
             });
         } else {

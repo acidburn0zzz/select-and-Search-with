@@ -170,16 +170,16 @@ function swapIndexes(previousItem, nextItem) {
     //console.log(nextItem);
 
     browser.storage.sync.get([previousItem, nextItem]).then(function(data){
-        console.log(data);
+        //console.log(data);
         firstObj = data[previousItem];
         secondObj = data[nextItem];
-        console.log("firstObj: " + JSON.stringify(firstObj));
-        console.log("secondObj: " + JSON.stringify(secondObj));
+        //console.log("firstObj: " + JSON.stringify(firstObj));
+        //console.log("secondObj: " + JSON.stringify(secondObj));
         tmp = JSON.parse(JSON.stringify(firstObj["index"])); // creating a new temporary object to avoid passing firstObj by reference
         firstObj["index"] = secondObj["index"];
         secondObj["index"] = tmp;
-        console.log("firstObj: " + JSON.stringify(firstObj));
-        console.log("secondObj: " + JSON.stringify(secondObj));
+        //console.log("firstObj: " + JSON.stringify(firstObj));
+        //console.log("secondObj: " + JSON.stringify(secondObj));
         newObj[previousItem] = firstObj;
         newObj[nextItem] = secondObj;
         }, onError).then(function(){
@@ -223,7 +223,7 @@ function removeSearchEngine(e) {
 }
 
 function readData() {
-    let options = {};
+    let searchEngines = {};
 
     let divSearchEngines = document.getElementById("searchEngines");
     let lineItems = divSearchEngines.childNodes;
@@ -233,14 +233,14 @@ function readData() {
         if (input != null && input.nodeName == "INPUT" && input.getAttribute("type") == "checkbox") {
             let label = input.nextSibling;
             let url = label.nextSibling;
-            options[lineItems[i].id] = {};
-            options[lineItems[i].id]["index"] = i;
-            options[lineItems[i].id]["name"] = label.textContent;
-            options[lineItems[i].id]["url"] = url.value;
-            options[lineItems[i].id]["show"] = input.checked;
+            searchEngines[lineItems[i].id] = {};
+            searchEngines[lineItems[i].id]["index"] = i;
+            searchEngines[lineItems[i].id]["name"] = label.textContent;
+            searchEngines[lineItems[i].id]["url"] = url.value;
+            searchEngines[lineItems[i].id]["show"] = input.checked;
         }
     }
-    return options;
+    return sortByIndex(searchEngines);
 }
 
 // Save the list of search engines to be displayed in the context menu
@@ -249,11 +249,11 @@ function save(){
 }
 
 function saveOptions(notification) {
-    let options = readData();
+    let searchEngines = readData();
     if (notification == true) {
-        browser.storage.sync.set(options).then(notify("Saved preferences."), onError);
+        browser.storage.sync.set(searchEngines).then(notify("Saved preferences."), onError);
     } else {
-        browser.storage.sync.set(options).then(null, onError);
+        browser.storage.sync.set(searchEngines).then(null, onError);
     }
 }
 
@@ -381,7 +381,6 @@ function isValidUrl(url) {
 }
 
 function handleMessage(message) {
-    console.log(message);
     if (message.action === "searchEnginesLoaded") {
         listSearchEngines(message.data);
     }
