@@ -77,10 +77,11 @@ function detectStorageSupportAndLoadSearchEngines() {
 	}
 
 	function onFallback(error){
+        loadSearchEngines(DEFAULT_JSON);
 		if (error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1) {
 			notify("Please enable storage sync by setting webextensions.storage.sync.enabled to true in about:config. Context Search will not work until you do so.");
 		} else {
-            onError();
+            onError(error);
         }
 	}
 }
