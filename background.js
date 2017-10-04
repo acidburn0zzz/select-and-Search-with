@@ -30,25 +30,6 @@ browser.runtime.onMessage.addListener(function(message) {
             reset = true;
             detectStorageSupportAndLoadSearchEngines();
             break;
-        case "setTabMode":
-            contextsearch_makeNewTabOrWindowActive = message.data.tabActive;
-            switch (message.data.tabMode) {
-                case "openNewTab":
-                    contextsearch_openSearchResultsInNewTab = true;
-                    contextsearch_openSearchResultsInNewWindow = false;
-                    break;
-                case "sameTab":
-                    contextsearch_openSearchResultsInNewTab = false;
-                    contextsearch_openSearchResultsInNewWindow = false;
-                    break;
-                case "openNewWindow":
-                    contextsearch_openSearchResultsInNewWindow = true;
-                    contextsearch_openSearchResultsInNewTab = false;
-                    break;
-                default:
-                    break;
-            }            
-            break;
         default:
             break;
     }
@@ -62,7 +43,7 @@ function init() {
 
     rebuildContextMenu();
 
-    browser.storage.local.get(["newTab", "tabActive"]).then(null, onNone);
+    browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onNone);
 
     // getBrowserInfo
     function gotBrowserInfo(info){
@@ -74,12 +55,10 @@ function init() {
 // Store the default values for tab mode in storage local
 function onNone() {
     let data = {};
-    data["newTab"] = true;
-    openNewTab.checked = true;
+    data["tabMode"] = "openNewTab";
     data["tabActive"] = false;
-    tabActive.checked = true;
-    tabActive.disabled = false;
     browser.storage.local.set(data);
+    setTabMode(data);
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
@@ -147,10 +126,33 @@ function buildContextMenuItem(searchEngine, id, title, faviconUrl){
     }
 }
 
-/// Storage
+/// Handle Storage Changes
 function onStorageChanges(changes, area) {
     if (area === "sync") {
         rebuildContextMenu();
+    } else if (area === "local") {
+        browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onError);
+    }
+}
+
+/// Tab Mode
+function setTabMode(data) {
+    contextsearch_makeNewTabOrWindowActive = data.tabActive;
+    switch (data.tabMode) {
+        case "openNewTab":
+            contextsearch_openSearchResultsInNewTab = true;
+            contextsearch_openSearchResultsInNewWindow = false;
+            break;
+        case "sameTab":
+            contextsearch_openSearchResultsInNewTab = false;
+            contextsearch_openSearchResultsInNewWindow = false;
+            break;
+        case "openNewWindow":
+            contextsearch_openSearchResultsInNewWindow = true;
+            contextsearch_openSearchResultsInNewTab = false;
+            break;
+        default:
+            break;
     }
 }
 
