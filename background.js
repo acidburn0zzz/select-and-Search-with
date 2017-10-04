@@ -4,6 +4,9 @@ var searchEnginesArray = [];
 var selection = "";
 var targetUrl = "";
 
+/// Constants
+const DEFAULT_JSON = "defaultSearchEngines.json";
+
 /// Browser specifics
 var reset = false;
 let browserVersion = 45;
@@ -28,7 +31,7 @@ browser.runtime.onMessage.addListener(function(message) {
             break;
         case "reset":
             reset = true;
-            detectStorageSupportAndLoadSearchEngines();
+            loadSearchEngines(DEFAULT_JSON);
             break;
         default:
             break;
@@ -69,7 +72,7 @@ function detectStorageSupportAndLoadSearchEngines() {
 	function onGot(searchEngines){
         if (!Object.keys(searchEngines).length > 0 || reset) {
             // Storage sync is empty -> load default list of search engines
-            loadSearchEngines("defaultSearchEngines.json");
+            loadSearchEngines(DEFAULT_JSON);
         }
 	}
 
