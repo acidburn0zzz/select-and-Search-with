@@ -3,7 +3,7 @@
   "manifest_version": 2,
   "name": "Context Search",
   "description": "Searches the selected text using a search engine from a pre-specified list",
-  "version": "3.22", 
+  "version": "3.23", 
   "author": "Olivier de Broqueville",
   "applications": {
     "gecko": {
@@ -23,6 +23,10 @@
       "tabs",
       "notifications"
   ],
+
+  "omnibox": { 
+    "keyword" : "cs" 
+  },
 
   "icons": {
     "48": "icons/icon_48.png",

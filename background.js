@@ -1,4 +1,5 @@
 /// Global variables
+var os = "-";
 var searchEngines = {};
 var searchEnginesArray = [];
 var selection = "";
@@ -95,7 +96,7 @@ function loadSearchEngines(jsonFile) {
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             notify("Default list of search engines has been loaded.");
-            var searchEngines = JSON.parse(this.responseText);
+            searchEngines = JSON.parse(this.responseText);
             browser.storage.sync.set(searchEngines).then(function() {
                 rebuildContextMenu();
                 if (reset) {
@@ -291,10 +292,58 @@ function displaySearchResults(targetUrl, tabPosition) {
     }, onError);
 }
 
+/// OMNIBOX
+// Provide help text to the user
+browser.omnibox.setDefaultSuggestion({
+    description: `Search using Context Search with keywords
+      (e.g. "cs w linux" searches Wikipedia for the term "linux")`
+});
+
+
+// Update the suggestions whenever the input is changed
+browser.omnibox.onInputChanged.addListener((input, suggest) => {
+    suggest(buildSuggestion(input));
+});
+
+// Open the page based on how the user clicks on a suggestion
+browser.omnibox.onInputEntered.addListener((url, disposition) => {
+    browser.tabs.query({
+        currentWindow: true, 
+        active: true,
+    }).then(function(tabs){
+        for (let tab of tabs) {
+            tabPosition = tab.index;
+        }
+        displaySearchResults(url, tabPosition);
+
+    }, onError);
+});
+
+function buildSuggestion(text) {
+    var result = [];
+    let suggestion = {};
+    let keyword = text.split(" ")[0];
+    let searchTerms = text.replace(keyword, "").trim();
+
+    for (let id in searchEngines) {
+        if (searchEngines[id].keyword === keyword) {
+            suggestion["content"] = searchEngines[id].url + searchTerms;
+            suggestion["description"] = "Search " + searchEngines[id].name + " for " + searchTerms;
+            result.push(suggestion);
+            return result;
+        }
+    }
+
+    notify("Search engine unknown.");
+    return result;
+}
+
+/// Generic Error Handler
 function onError(error) {
     console.log(`${error}`);
 }
 
+/// Notifications
 function notify(message){
     browser.notifications.create(message.substring(0, 20),
     {

@@ -2,174 +2,203 @@
   "amazon": {
     "index": 0,
     "name": "Amazon.com (book search)",
+    "keyword": "a",
     "url": "https://www.amazon.com/gp/search/ref=sr_adv_b/?search-alias=stripbooks&unfiltered=1&field-keywords=",
     "show": true
   },
   "ask": {
       "index": 1,
       "name": "Ask",
+      "keyword": "ask",
       "url": "https://ask.com/web?q=",
       "show": true
   },
   "baidu": {
     "index": 2,
     "name": "Baidu",
+    "keyword": "bd",
     "url": "http://www.baidu.com/s?wd=",
     "show": true
   },
   "bing": {
     "index": 3,
     "name": "Bing",
+    "keyword": "b",
     "url": "https://www.bing.com/search?q=",
     "show": true
   },
   "britannica": {
     "index": 4,
     "name": "Encyclopaedia Britannica",
+    "keyword": "eb",
     "url": "https://www.britannica.com/search?query=",
     "show": true
   },
   "dogpile": {
     "index": 5,
     "name": "Dogpile",
+    "keyword": "dp",
     "url": "https://www.dogpile.com/info.dogpl/search/web?q=",
     "show": true
   },
   "ddg": {
     "index": 6,
     "name": "DuckDuckGo",
+    "keyword": "ddg",
     "url": "https://duckduckgo.com/?q=",
     "show": true
   },
   "ebay": {
     "index": 7,
     "name": "eBay",
+    "keyword": "ebay",
     "url": "https://www.ebay.com/sch/?LH_TitleDesc=1&_nkw=",
     "show": true
   },
   "ecosia": {
     "index": 8,
     "name": "Ecosia",
+    "keyword": "e",
     "url": "https://www.ecosia.org/search?q=",
     "show": true
   },
   "facebook": {
     "index": 9,
     "name": "Facebook (people search)",
+    "keyword": "f",
     "url": "https://www.facebook.com/public?query=",
     "show": true
   },
   "google": {
     "index": 10,
     "name": "Google",
+    "keyword": "g",
     "url": "https://www.google.com/search?q=",
     "show": true
   },
   "gmaps": {
     "index": 11,
     "name": "Google Maps",
+    "keyword": "gm",
     "url": "https://maps.google.com/?q=",
     "show": true
   },
   "gscholar": {
     "index": 12,
     "name": "Google Scholar",
+    "keyword": "gs",
     "url": "https://scholar.google.ch/scholar?q=",
     "show": true
   },
   "gtranslate": {
     "index": 13,
     "name": "Google Translate [..->EN]",
+    "keyword": "gt",
     "url": "https://translate.google.com/?sl=da#auto/en/",
     "show": true
   },
   "imdb": {
     "index": 14,
     "name": "IMDb",
+    "keyword": "i",
     "url": "https://www.imdb.com/find?q=",
     "show": true
   },
   "lilo": {
     "index": 15,
     "name": "Lilo",
+    "keyword": "l",
     "url": "https://search.lilo.org/searchweb.php?q=",
     "show": true
   },
   "linkedin": {
     "index": 16,
     "name": "LinkedIn (people search)",
+    "keyword": "li",
     "url": "https://www.linkedin.com/search/results/index/?keywords=",
     "show": true
   },
   "onelook": {
     "index": 17,
     "name": "OneLook",
+    "keyword": "ol",
     "url": "http://onelook.com/?w=",
     "show": true
   },
   "quora": {
     "index": 18,
     "name": "Quora",
+    "keyword": "q",
     "url": "https://www.quora.com/search?q=",
     "show": true
   },
   "qwant": {
     "index": 19,
     "name": "Qwant",
+    "keyword": "qw",
     "url": "https://www.qwant.com/?q=",
     "show": true
   },
   "se": {
     "index": 20,
     "name": "Stack Exchange",
+    "keyword": "se",
     "url": "https://stackexchange.com/search?q=",
     "show": true
   },
   "startpage": {
     "index": 21,
     "name": "Startpage",
+    "keyword": "s",
     "url": "https://www.startpage.com/do/search?query=",
     "show": true
   },
   "swisscows": {
     "index": 22,
     "name": "Swisscows",
+    "keyword": "sc",
     "url": "https://swisscows.ch/?query=",
     "show": true
   },
   "twitter": {
     "index": 23,
     "name": "Twitter",
+    "keyword": "t",
     "url": "https://twitter.com/search?q=",
     "show": true
   },
   "wikipedia": {
     "index": 24,
     "name": "Wikipedia",
+    "keyword": "w",
     "url": "https://en.wikipedia.org/wiki/wiki.html?search=",
     "show": true
   },
   "wolframalpha": {
     "index": 25,
     "name": "WolframAlpha",
+    "keyword": "wa",
     "url": "https://www.wolframalpha.com/input/?i=",
     "show": true
   },
   "yahoo": {
     "index": 26,
     "name": "Yahoo!",
+    "keyword": "y",
     "url": "https://search.yahoo.com/search?p=",
     "show": true
   },
   "yandex": {
     "index": 27,
     "name": "Yandex",
+    "keyword": "yd",
     "url": "https://www.yandex.com/search/?text=",
     "show": true
   },
   "youtube": {
     "index": 28,
     "name": "YouTube",
+    "keyword": "yt",
     "url": "https://www.youtube.com/results?search_query=",
     "show": true
   }

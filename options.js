@@ -8,6 +8,13 @@ const tabMode = document.getElementById("tabMode");
 const tabActive = document.getElementById("tabActive");
 const active = document.getElementById("active");
 let storageSyncCount = 0;
+let os = "-";
+
+/// Identify Operating System
+function identifyOS() {
+    os = navigator.platform;
+    console.log(os);
+}
 
 // Sending messages to the background script
 function sendMessage(action, data){
@@ -99,10 +106,14 @@ function createButton(btnLabel, btnClass, btnTitle) {
 
 function createLineItem(id, searchEngine) {
     let lineItem = document.createElement("li");
-    let labelSE = document.createElement("label");
-    let inputSE = document.createElement("input");
-    let inputQS = document.createElement("input");
-    let textSE = document.createTextNode(searchEngine.name);
+
+    let inputName = document.createElement("input");
+    let labelName = document.createElement("label");
+    let textName = document.createTextNode(searchEngine.name);
+
+    let inputKeyword = document.createElement("input");
+    
+    let inputQueryString = document.createElement("input");
 
     let upButton = createButton("↑", "up", "Move " + searchEngine.name + " up");
     let downButton = createButton("↓", "down", "Move " + searchEngine.name + " down");
@@ -113,19 +124,26 @@ function createLineItem(id, searchEngine) {
 
     lineItem.setAttribute("id", id);
 
-    labelSE.setAttribute("for", id + "-cbx");
-    labelSE.appendChild(textSE);
+    inputName.setAttribute("type", "checkbox");
+    inputName.setAttribute("id", id + "-cbx");
+    inputName.checked = searchEngine.show;
 
-    inputSE.setAttribute("type", "checkbox");
-    inputSE.setAttribute("id", id + "-cbx");
-    inputSE.checked = searchEngine.show;
+    labelName.setAttribute("for", id + "-cbx");
+    labelName.appendChild(textName);
 
-    inputQS.setAttribute("type", "url");
-    inputQS.setAttribute("value", searchEngine.url);
+    inputQueryString.setAttribute("type", "url");
+    inputQueryString.setAttribute("value", searchEngine.url);
 
-    lineItem.appendChild(inputSE);
-    lineItem.appendChild(labelSE);
-    lineItem.appendChild(inputQS);
+    inputKeyword.setAttribute("type", "text");
+    inputKeyword.setAttribute("id", id + "-kw");
+    inputKeyword.setAttribute("class", "keyword");
+    inputKeyword.setAttribute("placeholder", "Keyword");
+    inputKeyword.setAttribute("value", searchEngine.keyword);
+
+    lineItem.appendChild(inputName);
+    lineItem.appendChild(labelName);
+    lineItem.appendChild(inputKeyword);
+    lineItem.appendChild(inputQueryString);
 
     lineItem.appendChild(upButton);
     lineItem.appendChild(downButton);
@@ -231,12 +249,14 @@ function readData() {
     storageSyncCount = lineItems.length;
     for (let i = 0;i < storageSyncCount;i++) {
         let input = lineItems[i].firstChild;
-        if (input != null && input.nodeName == "INPUT" && input.getAttribute("type") == "checkbox") {
+        if (input != null && input.nodeName === "INPUT" && input.getAttribute("type") === "checkbox") {
             let label = input.nextSibling;
-            let url = label.nextSibling;
+            let keyword = label.nextSibling;
+            let url = keyword.nextSibling;
             searchEngines[lineItems[i].id] = {};
             searchEngines[lineItems[i].id]["index"] = i;
             searchEngines[lineItems[i].id]["name"] = label.textContent;
+            searchEngines[lineItems[i].id]["keyword"] = keyword.value;
             searchEngines[lineItems[i].id]["url"] = url.value;
             searchEngines[lineItems[i].id]["show"] = input.checked;
         }
@@ -262,6 +282,7 @@ function addSearchEngine() {
     const divSearchEngines = document.getElementById("searchEngines");
     const show = document.getElementById("show"); // Boolean
     const name = document.getElementById("name"); // String
+    const keyword = document.getElementById("keyword"); // String
     const url = document.getElementById("url"); // String
 
     strUrl = url.value;
@@ -278,7 +299,7 @@ function addSearchEngine() {
 
     const id = name.value.replace(" ", "-").toLowerCase();
     let newSearchEngine = {};
-    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "url": url.value, "show": show.checked};
+    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "keyword": keyword.value, "url": url.value, "show": show.checked};
     let lineItem = createLineItem(id, newSearchEngine[id]);
     divSearchEngines.appendChild(lineItem);
     browser.storage.sync.set(newSearchEngine).then(notify("Search engine added."), onError);
@@ -286,6 +307,7 @@ function addSearchEngine() {
     // Clear HTML input fields to add a search engine
     show.checked = true;
     name.value = null;
+    keyword.value = null;
     url.value = null;
 }
 
@@ -381,6 +403,8 @@ function handleMessage(message) {
         listSearchEngines(message.data);
     }
 }
+
+identifyOS();
 
 browser.runtime.onMessage.addListener(handleMessage);
 tabMode.addEventListener("click", updateTabMode);

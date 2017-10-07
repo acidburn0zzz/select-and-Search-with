@@ -32,10 +32,12 @@
       input[type="url"] {
         display: inline-block;
         width: 400px;
+        margin-left: 10px;
       }
 
-      input#tabActive:disabled + label {
-        color: #9A9A9A;
+      .keyword {
+        width: 100px;
+        margin-left: 10px;
       }
 
       h2 {
@@ -50,7 +52,7 @@
         margin-bottom: 5px;
       }
 
-	  li:first-child > button.up {
+	   li:first-child > button.up {
         visibility: hidden;
       }
 
@@ -107,6 +109,7 @@
       <div id="addSearchEngine">
         <input type="checkbox" id="show" />
         <input type="text" id="name" placeholder="Search engine name" />
+        <input type="text" id="keyword" class="keyword" placeholder="Keyword" />
         <input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" />
         <button type="button" id="add">Add Search Engine</button>
       </div>
