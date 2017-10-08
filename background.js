@@ -1,9 +1,9 @@
 /// Global variables
-var os = "-";
 var searchEngines = {};
 var searchEnginesArray = [];
 var selection = "";
 var targetUrl = "";
+var gridMode = false;
 
 /// Constants
 const DEFAULT_JSON = "defaultSearchEngines.json";
@@ -45,9 +45,8 @@ function init() {
     browser.runtime.getBrowserInfo().then(gotBrowserInfo);
     browser.storage.onChanged.addListener(onStorageChanges);
 
-    rebuildContextMenu();
-
-    browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onNone);
+    browser.storage.local.get(["tabMode", "tabActive"]).then(queryTabMode, onError);
+    browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
 
     // getBrowserInfo
     function gotBrowserInfo(info){
@@ -57,17 +56,56 @@ function init() {
 }
 
 // Store the default values for tab mode in storage local
-function onNone() {
-    let data = {};
-    data["tabMode"] = "openNewTab";
-    data["tabActive"] = false;
-    browser.storage.local.set(data);
-    setTabMode(data);
+function queryTabMode(data) {
+    if (data != null) {
+        setTabMode(data);
+    } else {
+        let data = {};
+        data["tabMode"] = "openNewTab";
+        data["tabActive"] = false;
+        browser.storage.local.set(data);
+        setTabMode(data);
+    }
+}
+
+/// Tab Mode
+function setTabMode(data) {
+    contextsearch_makeNewTabOrWindowActive = data.tabActive;
+    switch (data.tabMode) {
+        case "openNewTab":
+            contextsearch_openSearchResultsInNewTab = true;
+            contextsearch_openSearchResultsInNewWindow = false;
+            break;
+        case "sameTab":
+            contextsearch_openSearchResultsInNewTab = false;
+            contextsearch_openSearchResultsInNewWindow = false;
+            break;
+        case "openNewWindow":
+            contextsearch_openSearchResultsInNewWindow = true;
+            contextsearch_openSearchResultsInNewTab = false;
+            break;
+        default:
+            break;
+    }
+}
+
+function setGridModeAndBuildContextMenu(data) {
+    console.log(data);
+    if (data.gridMode === true || data.gridMode === false) {
+        gridMode = data.gridMode;
+        console.log("background.js > grid mode:" + gridMode);
+        rebuildContextMenu();
+    } else {
+        // Set default value for gridMode to false
+        gridMode = false;
+        browser.storage.local.set({"gridMode": false}).then(null, onError);
+        rebuildContextMenu();
+    }
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
 function detectStorageSupportAndLoadSearchEngines() {
-	browser.storage.sync.get(null).then(onGot, onFallback);
+	browser.storage.sync.get(null).then(onGot, onNone);
 
     // Load search engines if they're not already loaded in storage sync
 	function onGot(searchEngines){
@@ -77,7 +115,7 @@ function detectStorageSupportAndLoadSearchEngines() {
         }
 	}
 
-	function onFallback(error){
+	function onNone(error){
         loadSearchEngines(DEFAULT_JSON);
 		if (error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1) {
 			notify("Please enable storage sync by setting webextensions.storage.sync.enabled to true in about:config. Context Search will not work until you do so.");
@@ -98,7 +136,6 @@ function loadSearchEngines(jsonFile) {
             notify("Default list of search engines has been loaded.");
             searchEngines = JSON.parse(this.responseText);
             browser.storage.sync.set(searchEngines).then(function() {
-                rebuildContextMenu();
                 if (reset) {
                     browser.runtime.sendMessage({"action": "searchEnginesLoaded", "data": searchEngines}).then(null, onError);
                     reset = false;
@@ -137,27 +174,7 @@ function onStorageChanges(changes, area) {
         rebuildContextMenu();
     } else if (area === "local") {
         browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onError);
-    }
-}
-
-/// Tab Mode
-function setTabMode(data) {
-    contextsearch_makeNewTabOrWindowActive = data.tabActive;
-    switch (data.tabMode) {
-        case "openNewTab":
-            contextsearch_openSearchResultsInNewTab = true;
-            contextsearch_openSearchResultsInNewWindow = false;
-            break;
-        case "sameTab":
-            contextsearch_openSearchResultsInNewTab = false;
-            contextsearch_openSearchResultsInNewWindow = false;
-            break;
-        case "openNewWindow":
-            contextsearch_openSearchResultsInNewWindow = true;
-            contextsearch_openSearchResultsInNewTab = false;
-            break;
-        default:
-            break;
+        browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
     }
 }
 
@@ -165,40 +182,42 @@ function setTabMode(data) {
 function rebuildContextMenu() {
     browser.contextMenus.removeAll();
     browser.contextMenus.onClicked.removeListener(processSearch);
-    browser.contextMenus.create({
-        id: "cs-google-site",
-        title: "Search this site with Google",
-        contexts: ["selection"]
-    });
-    browser.contextMenus.create({
-        id: "cs-options",
-        title: "Options...",
-        contexts: ["selection"]
-    });
-    browser.contextMenus.create({
-        id: "cs-separator",
-        type: "separator",
-        contexts: ["selection"]
-    });
-
-    browser.storage.sync.get(null).then(
-        (data) => {
-            searchEngines = sortByIndex(data);
-            searchEnginesArray = [];
-            var index = 0;
-            for (var id in searchEngines) {
-                var strId = "cs-" + index.toString();
-                var strTitle = searchEngines[id].name;
-                var url = searchEngines[id].url;
-                var faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
-                searchEnginesArray.push(id);
-                buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
-                index += 1;
+    if (!gridMode) {
+        browser.contextMenus.create({
+            id: "cs-google-site",
+            title: "Search this site with Google",
+            contexts: ["selection"]
+        });
+        browser.contextMenus.create({
+            id: "cs-options",
+            title: "Options...",
+            contexts: ["selection"]
+        });
+        browser.contextMenus.create({
+            id: "cs-separator",
+            type: "separator",
+            contexts: ["selection"]
+        });
+    
+        browser.storage.sync.get(null).then(
+            (data) => {
+                searchEngines = sortByIndex(data);
+                searchEnginesArray = [];
+                var index = 0;
+                for (var id in searchEngines) {
+                    var strId = "cs-" + index.toString();
+                    var strTitle = searchEngines[id].name;
+                    var url = searchEngines[id].url;
+                    var faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
+                    searchEnginesArray.push(id);
+                    buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
+                    index += 1;
+                }
             }
-        }
-    );
-
-    browser.contextMenus.onClicked.addListener(processSearch);
+        );
+    
+        browser.contextMenus.onClicked.addListener(processSearch);
+    }
 }
 
 /// Sort search engines by index

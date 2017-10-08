@@ -7,21 +7,16 @@ const sameTab = document.getElementById("sameTab");
 const tabMode = document.getElementById("tabMode");
 const tabActive = document.getElementById("tabActive");
 const active = document.getElementById("active");
+const gridMode = document.getElementById("gridMode");
 let storageSyncCount = 0;
-let os = "-";
 
-/// Identify Operating System
-function identifyOS() {
-    os = navigator.platform;
-    console.log(os);
-}
-
-// Sending messages to the background script
-function sendMessage(action, data){
+// Send a message to the background script
+function sendMessage(action, data) {
     browser.runtime.sendMessage({"action": action, "data": data});
 }
 
-function notify(message){
+// Notification
+function notify(message) {
     sendMessage("notify", message);
 }
 
@@ -329,12 +324,13 @@ function onHas(data) {
             break;
     }
     tabActive.checked = data.tabActive;
+    gridMode.checked = data.gridMode;
 }
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     browser.storage.sync.get(null).then(listSearchEngines);
-    browser.storage.local.get(["tabMode", "tabActive"]).then(onHas, onError);
+    browser.storage.local.get(["tabMode", "tabActive", "gridMode"]).then(onHas, onError);
 }
 
 function removeHyperlink(event) {
@@ -387,6 +383,12 @@ function updateTabMode() {
     browser.storage.local.set(data);
 }
 
+function updateGridMode() {
+    let gm = gridMode.checked;
+    console.log("grid mode:" + gm);
+    browser.storage.local.set({"gridMode": gm}).then(null, onError);
+}
+
 function isValidUrl(url) {
     try {
         (new URL(url));
@@ -404,11 +406,10 @@ function handleMessage(message) {
     }
 }
 
-identifyOS();
-
 browser.runtime.onMessage.addListener(handleMessage);
 tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
+gridMode.addEventListener("click", updateGridMode);
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById("clearAll").addEventListener("click", clearAll);
 document.getElementById("selectAll").addEventListener("click", selectAll);

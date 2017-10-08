@@ -1,5 +1,21 @@
 var selectedText = "";
 
+function handleRightClick(e) {
+    console.log(e);
+    browser.storage.local.get("gridMode").then(function(data) {
+        if (data.gridMode) {
+            e.preventDefault();
+            console.log("cancelable: " + e.cancelable);
+            console.log("target: " + e.target);
+            console.log("screenX: " + e.screenX + ", screenY: " + e.screenY);
+            console.log("clientX: " + e.clientX + ", clientY: " + e.clientY);
+            return false;
+        } else {
+            getSelectionText();
+        }
+    });
+}
+
 function getSelectionText(){
     
     if (window.getSelection){ // all modern browsers and IE9+
@@ -28,4 +44,4 @@ function sendMessage(action, data){
 	browser.runtime.sendMessage({"action": action, "data": data});
 }
 
-document.addEventListener("contextmenu", getSelectionText);
+document.addEventListener("contextmenu", handleRightClick);
