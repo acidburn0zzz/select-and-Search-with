@@ -319,7 +319,12 @@ browser.omnibox.setDefaultSuggestion({
 
 // Update the suggestions whenever the input is changed
 browser.omnibox.onInputChanged.addListener((input, suggest) => {
-    suggest(buildSuggestion(input));
+    console.log(input);
+    if (input.indexOf(" ") > 0) {
+        browser.omnibox.setDefaultSuggestion({description: buildSuggestion(input)[0].description});
+    } else {
+        suggest(buildSuggestion(input));
+    }
 });
 
 // Open the page based on how the user clicks on a suggestion
@@ -333,17 +338,17 @@ browser.omnibox.onInputEntered.addListener((url, disposition) => {
         }
 
         // Only display search results when there is a valid link inside of the url variable
-        if(url.indexOf("://") > -1){
+        if (url.indexOf("://") > -1) {
 			displaySearchResults(url, tabPosition);
-		}else{
-			try{
+		} else {
+			try {
 				let suggestion = buildSuggestion(url);
-				if(suggestion.length == 1){
+				if (suggestion.length === 1) {
 					displaySearchResults(suggestion[0].content, tabPosition);
-				}else if(url.indexOf(" ") == -1){
+				} else if (url.indexOf(" ") === -1) {
 					notify("Usage: cs [keyword] [search terms] (for example, cs w Linux)");
 				}
-			}catch(ex){
+			} catch(ex) {
 				console.error("Failed to process " + url);
 			}
 		}
@@ -365,7 +370,7 @@ function buildSuggestion(text) {
 
 	// Don't notify for the same keyword
 	let showNotification = true;
-	if(lastAddressBarKeyword == keyword) showNotification = false;
+	if (lastAddressBarKeyword == keyword) showNotification = false;
 	lastAddressBarKeyword = keyword;
 
     for (let id in searchEngines) {
@@ -377,7 +382,7 @@ function buildSuggestion(text) {
         }
     }
 
-	if(showNotification){
+	if (showNotification) {
 		notify("Search engine with keyword " + keyword + " is unknown.");
 	}
 
