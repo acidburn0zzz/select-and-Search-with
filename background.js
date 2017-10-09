@@ -336,11 +336,15 @@ browser.omnibox.onInputEntered.addListener((url, disposition) => {
         if(url.indexOf("://") > -1){
 			displaySearchResults(url, tabPosition);
 		}else{
-			let suggestion = buildSuggestion(url);
-			if(suggestion.length == 1){
-				displaySearchResults(suggestion[0].content, tabPosition);
-			}else if(url.indexOf(" ") == -1){
-				notify("Usage: cs [keyword] [search terms] (for example, cs w Linux)");
+			try{
+				let suggestion = buildSuggestion(url);
+				if(suggestion.length == 1){
+					displaySearchResults(suggestion[0].content, tabPosition);
+				}else if(url.indexOf(" ") == -1){
+					notify("Usage: cs [keyword] [search terms] (for example, cs w Linux)");
+				}
+			}catch(ex){
+				console.error("Failed to process " + url);
 			}
 		}
 
