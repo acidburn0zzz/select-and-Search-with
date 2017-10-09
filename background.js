@@ -4,6 +4,7 @@ var searchEnginesArray = [];
 var selection = "";
 var targetUrl = "";
 var gridMode = false;
+var lastAddressBarKeyword = "";
 
 /// Constants
 const DEFAULT_JSON = "defaultSearchEngines.json";
@@ -314,10 +315,9 @@ function displaySearchResults(targetUrl, tabPosition) {
 /// OMNIBOX
 // Provide help text to the user
 browser.omnibox.setDefaultSuggestion({
-    description: `Search using Context Search with keywords
-      (e.g. "cs w linux" searches Wikipedia for the term "linux")`
+    description: `Search using Context Search with keywords. Usage: cs [keyword] [search terms]
+      (e.g. "cs w Linux" searches Wikipedia for the term "Linux")`
 });
-
 
 // Update the suggestions whenever the input is changed
 browser.omnibox.onInputChanged.addListener((input, suggest) => {
@@ -333,16 +333,38 @@ browser.omnibox.onInputEntered.addListener((url, disposition) => {
         for (let tab of tabs) {
             tabPosition = tab.index;
         }
-        displaySearchResults(url, tabPosition);
+
+        // Only display search results when there is a valid link inside of the url variable
+        if(url.indexOf("://") > -1){
+			displaySearchResults(url, tabPosition);
+		}else{
+			let suggestion = buildSuggestion(url);
+			if(suggestion.length == 1){
+				displaySearchResults(suggestion[0].content, tabPosition);
+			}else if(url.indexOf(" ") == -1){
+				notify("Usage: cs [keyword] [search terms] (for example, cs w Linux)");
+			}
+		}
 
     }, onError);
 });
 
 function buildSuggestion(text) {
-    var result = [];
+    let result = [];
     let suggestion = {};
     let keyword = text.split(" ")[0];
     let searchTerms = text.replace(keyword, "").trim();
+
+	// Only make suggestions available and check for existance of a search engine when there is a space.
+	if(text.indexOf(" ") == -1){
+		lastAddressBarKeyword = "";
+		return result;
+	}
+
+	// Don't notify for the same keyword
+	let showNotification = true;
+	if(lastAddressBarKeyword == keyword) showNotification = false;
+	lastAddressBarKeyword = keyword;
 
     for (let id in searchEngines) {
         if (searchEngines[id].keyword === keyword) {
@@ -353,7 +375,10 @@ function buildSuggestion(text) {
         }
     }
 
-    notify("Search engine unknown.");
+	if(showNotification){
+		notify("Search engine with keyword " + keyword + " is unknown.");
+	}
+
     return result;
 }
 
