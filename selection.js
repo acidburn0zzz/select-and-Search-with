@@ -1,19 +1,33 @@
 var selectedText = "";
+console.log("Hello from selection.js!");
+
+// Generic Error Handler
+function onError(error) {
+    console.log(`${error}`);
+}
 
 function handleRightClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
     console.log(e);
     browser.storage.local.get("gridMode").then(function(data) {
         if (data.gridMode) {
-            e.preventDefault();
+            
             console.log("cancelable: " + e.cancelable);
+            console.log("mouse button: " + e.buttons);
             console.log("target: " + e.target);
             console.log("screenX: " + e.screenX + ", screenY: " + e.screenY);
             console.log("clientX: " + e.clientX + ", clientY: " + e.clientY);
-            return false;
+            browser.storage.sync.get(null).then(buildIconGrid, onError);
         } else {
             getSelectionText();
         }
-    });
+    }, onError);
+    return false;
+}
+
+function buildIconGrid(data) {
+
 }
 
 function getSelectionText(){

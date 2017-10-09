@@ -90,16 +90,14 @@ function setTabMode(data) {
 }
 
 function setGridModeAndBuildContextMenu(data) {
-    console.log(data);
-    if (data.gridMode === true || data.gridMode === false) {
+    if (data.gridMode === true || data.gridMode === false) {
         gridMode = data.gridMode;
         console.log("background.js > grid mode:" + gridMode);
         rebuildContextMenu();
     } else {
-        // Set default value for gridMode to false
+        // Set default value for gridMode to false if it is not set to true or false
         gridMode = false;
         browser.storage.local.set({"gridMode": false}).then(null, onError);
-        rebuildContextMenu();
     }
 }
 
