@@ -21,40 +21,44 @@ function handleRightClick(e) {
 }
 
 function buildIconGrid(data, e) {
-    console.log(e);
     let searchEngines = sortByIndex(data);
-    console.log(data);
     let arrIDs = Object.keys(searchEngines);
     let n = arrIDs.length; // Number of search engines
     let m = Math.round(Math.sqrt(n)); // Grid dimension: m x m matrix
-    let r = Math.ceil((n-m*m)/m); // Number of rows
+    let r = Math.ceil(Math.abs(n-m*m)/m); // Number of rows
     let item = [];
     if (m * m <= n) {
-        r = m + Math.ceil((n-m*m)/m);
+        r = m + r;
     } else {
-        r = m + 1 - Math.ceil((m*m-n)/m);
+        r = m + 1 - r;
     }
+    let width = 24 * m;
+    let height = 24 * r;
     let nav = document.createElement("nav");
+    nav.setAttribute("id", "cs-grid");
+    nav.style.display = "block";
+    nav.style.width = width.toString() + "px";
+    nav.style.height = height.toString() + "px";
     nav.style.zIndex = 999;
-    nav.style.position = "absolute";
-    nav.style.top = e.clientY;
-    nav.style.left = e.clientX;
+    nav.style.position = "fixed";
+    nav.style.setProperty("top", e.clientY.toString() + "px");
+    nav.style.setProperty("left", e.clientX.toString() + "px");
     let ol = document.createElement("ol");
     for (let i=0; i < r ;i++) {
         let liRow = document.createElement("li");
         let olRow = document.createElement("ol");
         for (let j=0; j < m ;j++) {
             let liItem = document.createElement("li");
+            liItem.style.display = "inline-block";
             let img = document.createElement("img");
             let id = arrIDs[i * m + j];
-            console.log(id);
             let src = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + searchEngines[id].url;
-            let alt = searchEngines[id].name;
+            let title = searchEngines[id].name;
             liItem.setAttribute("id", id);
             img.setAttribute("src", src);
-            img.setAttribute("alt", alt);
-            img.setAttribute("width", 36);
-            img.setAttribute("height", 36);
+            img.setAttribute("title", title);
+            img.setAttribute("width", 24);
+            img.setAttribute("height", 24);
             liItem.appendChild(img);
             olRow.appendChild(liItem);
             if (i * m + j === n - 1) break;
@@ -64,12 +68,32 @@ function buildIconGrid(data, e) {
     }
     nav.appendChild(ol);
     nav.addEventListener("click", onGridClick);
+    nav.addEventListener("mouseleave", onLeave);
+    document.addEventListener("keypress", checkForEscKey);
     let body = document.getElementsByTagName("body")[0];
     body.appendChild(nav);
 }
 
 function onGridClick(e) {
-    console.log(e.target);
+    let nav = document.getElementById("cs-grid");
+    nav.style.display = "none";
+    nav.removeEventListener("click", onGridClick);
+    sendMessage("doSearch", e.target.parentNode.id);
+}
+
+function onLeave(e) {
+    let nav = e.target;
+    nav.style.display = "none";
+    nav.removeEventListener("mouseleave", onLeave);
+}
+
+function checkForEscKey(e) {
+    console.log(e);
+    if (e.keyCode === 27) {
+        let nav = document.getElementById("cs-grid");
+        nav.style.display = "none";
+        document.removeEventListener("keypress", checkForEscKey);
+    }
 }
 
 function getSelectionText(){

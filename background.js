@@ -22,6 +22,9 @@ let contextsearch_openSearchResultsInNewWindow = false;
 // Listen for messages from the content or options script
 browser.runtime.onMessage.addListener(function(message) {
     switch (message.action) {
+        case "doSearch":
+            searchUsing(message.data); // message.data will contain search engine id
+            break;
         case "notify":
             notify(message.data);
             break;
@@ -107,8 +110,8 @@ function detectStorageSupportAndLoadSearchEngines() {
 	browser.storage.sync.get(null).then(onGot, onNone);
 
     // Load search engines if they're not already loaded in storage sync
-	function onGot(searchEngines){
-        if (!Object.keys(searchEngines).length > 0 || reset) {
+	function onGot(data){
+        if (!Object.keys(data).length > 0 || reset) {
             // Storage sync is empty -> load default list of search engines
             loadSearchEngines(DEFAULT_JSON);
         }
@@ -280,6 +283,22 @@ function processSearch(info, tab){
         displaySearchResults(targetUrl, tab.index);
         targetUrl = "";
     }    
+}
+
+function searchUsing(id) {
+    browser.storage.sync.get(null).then(function(data){
+        searchEngines = sortByIndex(data);
+        var url = searchEngines[id].url + selection;
+        browser.tabs.query({
+            currentWindow: true, 
+            active: true,
+        }).then(function(tabs){
+            for (let tab of tabs) {
+                tabPosition = tab.index;
+            }
+            displaySearchResults(url, tabPosition);
+        });
+    });
 }
 
 /// Helper functions
