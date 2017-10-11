@@ -203,11 +203,11 @@ function rebuildContextMenu() {
                 searchEngines = sortByIndex(data);
                 searchEnginesArray = [];
                 var index = 0;
-                for (var id in searchEngines) {
-                    var strId = "cs-" + index.toString();
-                    var strTitle = searchEngines[id].name;
-                    var url = searchEngines[id].url;
-                    var faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
+                for (let id in searchEngines) {
+                    let strId = "cs-" + index.toString();
+                    let strTitle = searchEngines[id].name;
+                    let url = searchEngines[id].url;
+                    let faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
                     searchEnginesArray.push(id);
                     buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
                     index += 1;
@@ -319,16 +319,17 @@ browser.omnibox.setDefaultSuggestion({
 
 // Update the suggestions whenever the input is changed
 browser.omnibox.onInputChanged.addListener((input, suggest) => {
-    console.log(input);
     if (input.indexOf(" ") > 0) {
-        browser.omnibox.setDefaultSuggestion({description: buildSuggestion(input)[0].description});
-    } else {
-        suggest(buildSuggestion(input));
+        let suggestion = buildSuggestion(input);
+        if (suggestion.length === 1) {
+            suggest(suggestion);
+//            browser.omnibox.setDefaultSuggestion({description: suggestion[0].description});
+        }
     }
 });
 
 // Open the page based on how the user clicks on a suggestion
-browser.omnibox.onInputEntered.addListener((url, disposition) => {
+browser.omnibox.onInputEntered.addListener((input) => {
     browser.tabs.query({
         currentWindow: true, 
         active: true,
@@ -338,18 +339,18 @@ browser.omnibox.onInputEntered.addListener((url, disposition) => {
         }
 
         // Only display search results when there is a valid link inside of the url variable
-        if (url.indexOf("://") > -1) {
-			displaySearchResults(url, tabPosition);
+        if (input.indexOf("://") > -1) {
+			displaySearchResults(input, tabPosition);
 		} else {
 			try {
-				let suggestion = buildSuggestion(url);
+				let suggestion = buildSuggestion(input);
 				if (suggestion.length === 1) {
 					displaySearchResults(suggestion[0].content, tabPosition);
-				} else if (url.indexOf(" ") === -1) {
+				} else if (input.indexOf(" ") === -1) {
 					notify("Usage: cs [keyword] [search terms] (for example, cs w Linux)");
 				}
 			} catch(ex) {
-				console.error("Failed to process " + url);
+				console.error("Failed to process " + input);
 			}
 		}
 
@@ -358,12 +359,12 @@ browser.omnibox.onInputEntered.addListener((url, disposition) => {
 
 function buildSuggestion(text) {
     let result = [];
-    let suggestion = {};
     let keyword = text.split(" ")[0];
     let searchTerms = text.replace(keyword, "").trim();
+    console.log(searchTerms);
 
 	// Only make suggestions available and check for existance of a search engine when there is a space.
-	if(text.indexOf(" ") == -1){
+	if(text.indexOf(" ") === -1){
 		lastAddressBarKeyword = "";
 		return result;
 	}
@@ -375,6 +376,7 @@ function buildSuggestion(text) {
 
     for (let id in searchEngines) {
         if (searchEngines[id].keyword === keyword) {
+            let suggestion = {};
             suggestion["content"] = searchEngines[id].url + searchTerms;
             suggestion["description"] = "Search " + searchEngines[id].name + " for " + searchTerms;
             result.push(suggestion);
