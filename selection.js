@@ -1,23 +1,57 @@
+/// Global variables
 var selectedText = "";
-console.log("Hello from selection.js!");
+var gridMode = false; // By default grid mode is turned off
 
-// Generic Error Handler
+/// Generic Error Handler
 function onError(error) {
     console.log(`${error}`);
 }
 
-function handleRightClick(e) {
+init();
+
+/// Initialise grid mode
+function init() {
+    browser.storage.local.get("gridMode").then(function(data){
+        if (data.gridMode === true || data.gridMode === false) {
+            gridMode = data.gridMode;
+            if (gridMode) { // If gridMode is now set
+                document.addEventListener("contextmenu", handleRightClickWithGrid);
+            } else { // If gridMode is turned off
+                document.addEventListener("contextmenu", handleRightClickWithoutGrid);
+            }
+        }
+    }, onError);
+}
+
+/// Handle gridMode local storage changes
+function onStorageChanges(changes, area) {
+    if (area === "local" && Object.keys(changes).includes("gridMode")) {
+        gridMode = changes["gridMode"].newValue;
+        if (changes["gridMode"].oldValue) { // If gridMode had been set
+            document.removeEventListener("contextmenu", handleRightClickWithGrid);
+        } else { // If gridMode had not been set
+            document.removeEventListener("contextmenu", handleRightClickWithoutGrid);
+        }
+        if (gridMode) { // If gridMode is now set
+            document.addEventListener("contextmenu", handleRightClickWithGrid);
+        } else { // If gridMode is turned off
+            document.addEventListener("contextmenu", handleRightClickWithoutGrid);
+        }
+    }
+}
+
+function handleRightClickWithGrid(e) {
     e.preventDefault();
     e.stopPropagation();
     getSelectionText();
-    browser.storage.local.get("gridMode").then(function(data) {
-        if (data.gridMode) {
-            browser.storage.sync.get(null).then(function(data){
-                buildIconGrid(data, e);
-            }, onError);
-        };
+    browser.storage.sync.get(null).then(function(data){
+        buildIconGrid(data, e);
     }, onError);
     return false;
+}
+
+function handleRightClickWithoutGrid(e) {
+    getSelectionText();
 }
 
 function buildIconGrid(data, e) {
@@ -37,6 +71,7 @@ function buildIconGrid(data, e) {
     let nav = document.createElement("nav");
     nav.setAttribute("id", "cs-grid");
     nav.style.display = "block";
+    nav.style.backgroundColor = "white";
     nav.style.width = width.toString() + "px";
     nav.style.height = height.toString() + "px";
     nav.style.zIndex = 999;
@@ -44,21 +79,26 @@ function buildIconGrid(data, e) {
     nav.style.setProperty("top", e.clientY.toString() + "px");
     nav.style.setProperty("left", e.clientX.toString() + "px");
     let ol = document.createElement("ol");
+    ol.style.margin = "0";
     for (let i=0; i < r ;i++) {
         let liRow = document.createElement("li");
+        liRow.style.listStyleType = "none";
         let olRow = document.createElement("ol");
+        olRow.style.margin = "0";
         for (let j=0; j < m ;j++) {
             let liItem = document.createElement("li");
             liItem.style.display = "inline-block";
+            liItem.style.listStyleType = "none";
             let img = document.createElement("img");
+            img.style.display = "inline-block";
             let id = arrIDs[i * m + j];
             let src = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + searchEngines[id].url;
             let title = searchEngines[id].name;
             liItem.setAttribute("id", id);
             img.setAttribute("src", src);
             img.setAttribute("title", title);
-            img.setAttribute("width", 24);
-            img.setAttribute("height", 24);
+            img.style.width = "24px";
+            img.style.height = "24px";
             liItem.appendChild(img);
             olRow.appendChild(liItem);
             if (i * m + j === n - 1) break;
@@ -152,4 +192,4 @@ function sortByIndex(list) {
     return sortedList;
 }
 
-document.addEventListener("contextmenu", handleRightClick);
+browser.storage.onChanged.addListener(onStorageChanges);

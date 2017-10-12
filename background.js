@@ -49,7 +49,7 @@ function init() {
     browser.runtime.getBrowserInfo().then(gotBrowserInfo);
     browser.storage.onChanged.addListener(onStorageChanges);
 
-    browser.storage.local.get(["tabMode", "tabActive"]).then(queryTabMode, onError);
+    browser.storage.local.get(["tabMode", "tabActive"]).then(fetchTabMode, onError);
     browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
 
     // getBrowserInfo
@@ -60,8 +60,8 @@ function init() {
 }
 
 // Store the default values for tab mode in storage local
-function queryTabMode(data) {
-    if (data != null) {
+function fetchTabMode(data) {
+    if (Object.keys(data).length > 0 && data.tabMode !== null && data.tabActive !== null) {
         setTabMode(data);
     } else {
         let data = {};
