@@ -8,6 +8,7 @@ const tabMode = document.getElementById("tabMode");
 const tabActive = document.getElementById("tabActive");
 const active = document.getElementById("active");
 const gridMode = document.getElementById("gridMode");
+const optionsMenuAtTop = document.getElementById("optionsMenuAtTop");
 let storageSyncCount = 0;
 
 // Send a message to the background script
@@ -306,7 +307,7 @@ function addSearchEngine() {
     url.value = null;
 }
 
-function onHas(data) {
+function onGot(data) {
     switch (data.tabMode) {
         case "openNewTab":
             openNewTab.checked = true;
@@ -321,16 +322,31 @@ function onHas(data) {
             active.style.visibility = "visible";
             break;
         default:
+            openNewTab.checked = true;
+            active.style.visibility = "visible";
             break;
     }
-    tabActive.checked = data.tabActive;
-    gridMode.checked = data.gridMode;
+    if (data.tabActive === true) {
+        tabActive.checked = true;
+    } else { // Default value for tabActive is false
+        tabActive.checked = false;
+    }
+    if (data.gridMode === true) {
+        gridMode.checked = true;
+    } else { // Default value for gridMode is false
+        gridMode.checked = false;
+    }
+    if (data.optionsMenuAtTop === true) {
+        optionsMenuAtTop.checked = true;
+    } else { // Default value for optionsMenuAtTop is false
+        optionsMenuAtTop.checked = false;
+    }
 }
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     browser.storage.sync.get(null).then(listSearchEngines);
-    browser.storage.local.get(["tabMode", "tabActive", "gridMode"]).then(onHas, onError);
+    browser.storage.local.get(["tabMode", "tabActive", "gridMode", "optionsMenuAtTop"]).then(onGot, onError);
 }
 
 function removeHyperlink(event) {
@@ -385,8 +401,12 @@ function updateTabMode() {
 
 function updateGridMode() {
     let gm = gridMode.checked;
-    console.log("grid mode:" + gm);
     browser.storage.local.set({"gridMode": gm}).then(null, onError);
+}
+
+function updateOptionsMenuAtTop() {
+    let omat = optionsMenuAtTop.checked;
+    browser.storage.local.set({"optionsMenuAtTop": omat}).then(null, onError);
 }
 
 function isValidUrl(url) {
@@ -410,6 +430,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
 gridMode.addEventListener("click", updateGridMode);
+optionsMenuAtTop.addEventListener("click", updateOptionsMenuAtTop);
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById("clearAll").addEventListener("click", clearAll);
 document.getElementById("selectAll").addEventListener("click", selectAll);

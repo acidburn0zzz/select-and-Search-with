@@ -10,10 +10,11 @@ var lastAddressBarKeyword = "";
 const DEFAULT_JSON = "defaultSearchEngines.json";
 
 /// Browser specifics
-var reset = false;
+let reset = false;
 let browserVersion = 45;
 
 /// Preferences
+let optionsMenuAtTop = false;
 let contextsearch_openSearchResultsInNewTab = true;
 let contextsearch_makeNewTabOrWindowActive = false;
 let contextsearch_openSearchResultsInNewWindow = false;
@@ -51,6 +52,7 @@ function init() {
 
     browser.storage.local.get(["tabMode", "tabActive"]).then(fetchTabMode, onError);
     browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
+    browser.storage.local.get("optionsMenuAtTop").then(setOptionsMenu, onError);
 
     // getBrowserInfo
     function gotBrowserInfo(info){
@@ -96,7 +98,6 @@ function setTabMode(data) {
 function setGridModeAndBuildContextMenu(data) {
     if (data.gridMode === true || data.gridMode === false) {
         gridMode = data.gridMode;
-        console.log("background.js > grid mode:" + gridMode);
         rebuildContextMenu();
     } else {
         // Set default value for gridMode to false if it is not set to true or false
@@ -177,14 +178,24 @@ function onStorageChanges(changes, area) {
     } else if (area === "local") {
         browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onError);
         browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
+        browser.storage.local.get("optionsMenuAtTop").then(setOptionsMenu, onError);
     }
+}
+
+function setOptionsMenu(data) {
+    if (data.optionsMenuAtTop) {
+        optionsMenuAtTop = true;
+    } else { // If optionsMenuAtTop is false or if it is not set
+        optionsMenuAtTop = false; // Default value for optionsMenuAtTop is false
+    }
+    rebuildContextMenu();
 }
 
 /// Rebuild the context menu using the search engines from storage sync
 function rebuildContextMenu() {
     browser.contextMenus.removeAll();
     browser.contextMenus.onClicked.removeListener(processSearch);
-    if (!gridMode) {
+    if (!gridMode && optionsMenuAtTop) {
         browser.contextMenus.create({
             id: "cs-google-site",
             title: "Search this site with Google",
@@ -219,6 +230,39 @@ function rebuildContextMenu() {
         );
     
         browser.contextMenus.onClicked.addListener(processSearch);
+
+    } else if (!gridMode && !optionsMenuAtTop) {
+        browser.storage.sync.get(null).then(
+            (data) => {
+                searchEngines = sortByIndex(data);
+                searchEnginesArray = [];
+                var index = 0;
+                for (let id in searchEngines) {
+                    let strId = "cs-" + index.toString();
+                    let strTitle = searchEngines[id].name;
+                    let url = searchEngines[id].url;
+                    let faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
+                    searchEnginesArray.push(id);
+                    buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
+                    index += 1;
+                }
+                browser.contextMenus.create({
+                    id: "cs-separator",
+                    type: "separator",
+                    contexts: ["selection"]
+                });
+                browser.contextMenus.create({
+                    id: "cs-google-site",
+                    title: "Search this site with Google",
+                    contexts: ["selection"]
+                });
+                browser.contextMenus.create({
+                    id: "cs-options",
+                    title: "Options...",
+                    contexts: ["selection"]
+                });
+            }
+        );
     }
 }
 
