@@ -13,7 +13,8 @@
 
   "background": {
       "scripts": [
-        "background.js"
+        "background.js",
+        "sort.js"
       ]
   },
 
@@ -41,7 +42,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["selection.js"]
+      "js": ["selection.js", "sort.js"]
     }
   ]
 
