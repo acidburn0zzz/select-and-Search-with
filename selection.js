@@ -52,11 +52,12 @@ function handleRightClickWithGrid(e) {
 		}
 		
 		let isContentSecurityPolicy = false;
-		
+
 		let testElement = document.createElement("nav");
 		let src = "https://s2.googleusercontent.com/s2/favicons?domain_url=https://duckduckgo.com";
 		let img = document.createElement("img");
 		img.setAttribute("src", src);
+		img.style.display = "none";
 		testElement.appendChild(img);
 		
 		let body = document.getElementsByTagName("body")[0];
@@ -65,6 +66,7 @@ function handleRightClickWithGrid(e) {
 			console.log("Page is not allowed to set image due to Content Security Policy. Falling back to context menu items...");
 			isContentSecurityPolicy = true;
 		}
+		testElement.parentElement.removeChild(testElement);
 
 		// Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
 		// Test URL: https://github.com/odebroqueville/contextSearch/
@@ -205,34 +207,6 @@ function sendSelectionTextAndCurrentTabUrl(){
 
 function sendMessage(action, data){
 	browser.runtime.sendMessage({"action": action, "data": data});
-}
-
-/// Sort search engines by index
-function sortByIndex(list) {
-    var sortedList = {};
-    var skip = false;
-    
-    // If there are no indexes, then add some arbitrarily
-    for (var i = 0;i < Object.keys(list).length;i++) {
-		var id = Object.keys(list)[i];
-		if (list[id].index != null) {
-			break;
-		} 
-		if (list[id] != null) {
-			sortedList[id] = list[id];
-			sortedList[id]["index"] = i;
-			skip = true;
-		}
-    }
-
-    for (var i = 0;i < Object.keys(list).length;i++) {
-      for (let id in list) {
-        if (list[id] != null && list[id].index === i) {
-          sortedList[id] = list[id];
-        }
-      }
-    }
-    return sortedList;
 }
 
 browser.storage.onChanged.addListener(onStorageChanges);
