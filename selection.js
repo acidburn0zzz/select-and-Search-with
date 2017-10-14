@@ -41,17 +41,50 @@ function onStorageChanges(changes, area) {
 }
 
 function handleRightClickWithGrid(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    getSelectionText();
-    browser.storage.sync.get(null).then(function(data){
-        buildIconGrid(data, e);
-    }, onError);
-    return false;
+	let selectionTextValue = getSelectionTextValue();
+	if(selectionTextValue != ""){
+		if(e.target.tagName == "A"){
+			// Do additional safety checks.
+			if(e.target.textContent.indexOf(selectionTextValue) == -1 && selectionTextValue.indexOf(e.target.textContent) == -1){
+				// This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
+				return;
+			}
+		}
+		
+		let isContentSecurityPolicy = false;
+		
+		let testElement = document.createElement("nav");
+		let src = "https://s2.googleusercontent.com/s2/favicons?domain_url=https://duckduckgo.com";
+		let img = document.createElement("img");
+		img.setAttribute("src", src);
+		testElement.appendChild(img);
+		
+		let body = document.getElementsByTagName("body")[0];
+		body.appendChild(testElement);
+		if(img.height == 0){
+			console.log("Page is not allowed to set image due to Content Security Policy. Falling back to context menu items...");
+			isContentSecurityPolicy = true;
+		}
+
+		// Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
+		// Test URL: https://github.com/odebroqueville/contextSearch/
+		if(!isContentSecurityPolicy){
+			e.preventDefault();
+			e.stopPropagation();
+			sendSelectionTextAndCurrentTabUrl();
+			browser.storage.sync.get(null).then(function(data){
+				buildIconGrid(data, e);
+			}, onError);
+			return false;
+		}else{
+			// Fall back to context menu items
+			// This is done automatically, we don't have to do anything
+		}
+	}
 }
 
 function handleRightClickWithoutGrid(e) {
-    getSelectionText();
+    sendSelectionTextAndCurrentTabUrl();
 }
 
 function buildIconGrid(data, e) {
@@ -66,14 +99,21 @@ function buildIconGrid(data, e) {
     } else {
         r = m + 1 - r;
     }
-    let width = 24 * m;
-    let height = 24 * r;
+    const PLUS24 = 30; // 24px plus 3px margin/padding
+    let width = PLUS24 * m;
+
+    // Cleanup.
+    let navExisting = document.getElementById("cs-grid");
+    if(navExisting != null){
+		navExisting.parentElement.removeChild(navExisting);
+    }
+
     let nav = document.createElement("nav");
     nav.setAttribute("id", "cs-grid");
     nav.style.display = "block";
     nav.style.backgroundColor = "white";
+    nav.style.border = "1px solid #eee";
     nav.style.width = width.toString() + "px";
-    nav.style.height = height.toString() + "px";
     nav.style.zIndex = 999;
     nav.style.position = "fixed";
     nav.style.setProperty("top", e.clientY.toString() + "px");
@@ -95,7 +135,8 @@ function buildIconGrid(data, e) {
             let src = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + searchEngines[id].url;
             let title = searchEngines[id].name;
             liItem.setAttribute("id", id);
-            img.setAttribute("src", src);
+            liItem.style.padding = "3px";
+			img.setAttribute("src", src);
             img.setAttribute("title", title);
             img.style.width = "24px";
             img.style.height = "24px";
@@ -136,24 +177,26 @@ function checkForEscKey(e) {
     }
 }
 
-function getSelectionText(){
-    
-    if (window.getSelection){ // all modern browsers and IE9+
-        selectedText = window.getSelection().toString();
+function getSelectionTextValue(){
+	var selectedTextValue = ""; // get the current value, not a cached value
+	
+	if (window.getSelection){ // all modern browsers and IE9+
+        selectedTextValue = window.getSelection().toString();
     }
     if (document.activeElement != null && (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT")){
         let selectedTextInput = document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-        if (selectedTextInput != "") selectedText = selectedTextInput;
+        if (selectedTextInput != "") selectedTextValue = selectedTextInput;
     }
     
+    return selectedTextValue;
+}
+
+function sendSelectionTextAndCurrentTabUrl(){
+    selectedText = getSelectionTextValue();
     if (selectedText != "") sendMessage("getSelectionText", selectedText);
 
     // send current tab url to background.js
     const url = window.location.href;
-    sendCurrentTabUrl(url);
-}
-
-function sendCurrentTabUrl(url) {
     const urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
     const domain = urlParts[0];
     targetUrl = "https://www.google.com/search?q=site" + encodeURIComponent(":" + domain + " " + selectedText);

@@ -195,75 +195,61 @@ function setOptionsMenu(data) {
 function rebuildContextMenu() {
     browser.contextMenus.removeAll();
     browser.contextMenus.onClicked.removeListener(processSearch);
-    if (!gridMode && optionsMenuAtTop) {
-        browser.contextMenus.create({
-            id: "cs-google-site",
-            title: "Search this site with Google",
-            contexts: ["selection"]
-        });
-        browser.contextMenus.create({
-            id: "cs-options",
-            title: "Options...",
-            contexts: ["selection"]
-        });
-        browser.contextMenus.create({
-            id: "cs-separator",
-            type: "separator",
-            contexts: ["selection"]
-        });
-    
-        browser.storage.sync.get(null).then(
-            (data) => {
-                searchEngines = sortByIndex(data);
-                searchEnginesArray = [];
-                var index = 0;
-                for (let id in searchEngines) {
-                    let strId = "cs-" + index.toString();
-                    let strTitle = searchEngines[id].name;
-                    let url = searchEngines[id].url;
-                    let faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
-                    searchEnginesArray.push(id);
-                    buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
-                    index += 1;
-                }
-            }
-        );
-    
-        browser.contextMenus.onClicked.addListener(processSearch);
 
-    } else if (!gridMode && !optionsMenuAtTop) {
-        browser.storage.sync.get(null).then(
-            (data) => {
-                searchEngines = sortByIndex(data);
-                searchEnginesArray = [];
-                var index = 0;
-                for (let id in searchEngines) {
-                    let strId = "cs-" + index.toString();
-                    let strTitle = searchEngines[id].name;
-                    let url = searchEngines[id].url;
-                    let faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
-                    searchEnginesArray.push(id);
-                    buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
-                    index += 1;
-                }
-                browser.contextMenus.create({
-                    id: "cs-separator",
-                    type: "separator",
-                    contexts: ["selection"]
-                });
-                browser.contextMenus.create({
-                    id: "cs-google-site",
-                    title: "Search this site with Google",
-                    contexts: ["selection"]
-                });
-                browser.contextMenus.create({
-                    id: "cs-options",
-                    title: "Options...",
-                    contexts: ["selection"]
-                });
-            }
-        );
-    }
+	browser.storage.sync.get(null).then(
+		(data) => {
+			 if (optionsMenuAtTop) {
+				browser.contextMenus.create({
+					id: "cs-google-site",
+					title: "Search this site with Google",
+					contexts: ["selection"]
+				});
+				browser.contextMenus.create({
+					id: "cs-options",
+					title: "Options...",
+					contexts: ["selection"]
+				});
+				browser.contextMenus.create({
+					id: "cs-separator",
+					type: "separator",
+					contexts: ["selection"]
+				});
+			}
+
+			searchEngines = sortByIndex(data);
+			searchEnginesArray = [];
+			var index = 0;
+			for (let id in searchEngines) {
+				let strId = "cs-" + index.toString();
+				let strTitle = searchEngines[id].name;
+				let url = searchEngines[id].url;
+				let faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
+				searchEnginesArray.push(id);
+				buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
+				index += 1;
+			}
+
+			if (!optionsMenuAtTop) {
+				browser.contextMenus.create({
+					id: "cs-separator",
+					type: "separator",
+					contexts: ["selection"]
+				});
+				browser.contextMenus.create({
+					id: "cs-google-site",
+					title: "Search this site with Google",
+					contexts: ["selection"]
+				});
+				browser.contextMenus.create({
+					id: "cs-options",
+					title: "Options...",
+					contexts: ["selection"]
+				});
+			}
+		}
+	);
+
+	browser.contextMenus.onClicked.addListener(processSearch);
 }
 
 /// Sort search engines by index
