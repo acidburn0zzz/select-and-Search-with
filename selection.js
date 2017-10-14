@@ -42,7 +42,7 @@ function onStorageChanges(changes, area) {
 
 function handleRightClickWithGrid(e) {
 	let selectionTextValue = getSelectionTextValue();
-	if(selectionTextValue != ""){
+	if (selectionTextValue != ""){
 		if(e.target.tagName == "A"){
 			// Do additional safety checks.
 			if(e.target.textContent.indexOf(selectionTextValue) == -1 && selectionTextValue.indexOf(e.target.textContent) == -1){
@@ -54,7 +54,7 @@ function handleRightClickWithGrid(e) {
 		let isContentSecurityPolicy = false;
 
 		let testElement = document.createElement("nav");
-		let src = "https://s2.googleusercontent.com/s2/favicons?domain_url=https://duckduckgo.com";
+		let src = "http://www.google.com/s2/favicons?domain=https://duckduckgo.com";
 		let img = document.createElement("img");
 		img.setAttribute("src", src);
 		img.style.display = "none";
@@ -122,11 +122,13 @@ function buildIconGrid(data, e) {
     nav.style.setProperty("left", e.clientX.toString() + "px");
     let ol = document.createElement("ol");
     ol.style.margin = "0";
+    ol.style.padding = "0";
     for (let i=0; i < r ;i++) {
         let liRow = document.createElement("li");
         liRow.style.listStyleType = "none";
         let olRow = document.createElement("ol");
         olRow.style.margin = "0";
+        olRow.style.padding = "0";
         for (let j=0; j < m ;j++) {
             let liItem = document.createElement("li");
             liItem.style.display = "inline-block";
@@ -134,7 +136,10 @@ function buildIconGrid(data, e) {
             let img = document.createElement("img");
             img.style.display = "inline-block";
             let id = arrIDs[i * m + j];
-            let src = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + searchEngines[id].url;
+            let url = searchEngines[id].url;
+            let urlParts = url.replace('http://','').replace('https://','').split(/\//);
+            let domain = urlParts[0];
+            let src = "http://www.google.com/s2/favicons?domain=" + domain;
             let title = searchEngines[id].name;
             liItem.setAttribute("id", id);
             liItem.style.padding = "3px";

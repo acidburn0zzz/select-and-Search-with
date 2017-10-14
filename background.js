@@ -222,8 +222,10 @@ function rebuildContextMenu() {
 			for (let id in searchEngines) {
 				let strId = "cs-" + index.toString();
 				let strTitle = searchEngines[id].name;
-				let url = searchEngines[id].url;
-				let faviconUrl = "https://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
+                let url = searchEngines[id].url;
+                let urlParts = url.replace('http://','').replace('https://','').split(/\//);
+                let domain = urlParts[0];
+				let faviconUrl = "http://www.google.com/s2/favicons?domain=" + domain;
 				searchEnginesArray.push(id);
 				buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
 				index += 1;
