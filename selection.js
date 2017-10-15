@@ -42,35 +42,20 @@ function onStorageChanges(changes, area) {
 
 function handleRightClickWithGrid(e) {
 	let selectionTextValue = getSelectionTextValue();
-	if (selectionTextValue != ""){
-		if(e.target.tagName == "A"){
+	if (selectionTextValue != "") {
+		if (e.target.tagName == "A") {
 			// Do additional safety checks.
-			if(e.target.textContent.indexOf(selectionTextValue) == -1 && selectionTextValue.indexOf(e.target.textContent) == -1){
+			if(e.target.textContent.indexOf(selectionTextValue) === -1 && selectionTextValue.indexOf(e.target.textContent) === -1){
 				// This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
 				return;
 			}
 		}
-		
+        
 		let isContentSecurityPolicy = false;
-
-		let testElement = document.createElement("nav");
-		let src = "http://www.google.com/s2/favicons?domain=https://duckduckgo.com";
-		let img = document.createElement("img");
-		img.setAttribute("src", src);
-		img.style.display = "none";
-		testElement.appendChild(img);
-		
-		let body = document.getElementsByTagName("body")[0];
-		body.appendChild(testElement);
-		if(img.height == 0){
-			console.log("Page is not allowed to set image due to Content Security Policy. Falling back to context menu items...");
-			isContentSecurityPolicy = true;
-		}
-		testElement.parentElement.removeChild(testElement);
 
 		// Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
 		// Test URL: https://github.com/odebroqueville/contextSearch/
-		if(!isContentSecurityPolicy){
+		if (!isContentSecurityPolicy) {
 			e.preventDefault();
 			e.stopPropagation();
 			sendSelectionTextAndCurrentTabUrl();
@@ -78,7 +63,7 @@ function handleRightClickWithGrid(e) {
 				buildIconGrid(data, e);
 			}, onError);
 			return false;
-		}else{
+		} else {
 			// Fall back to context menu items
 			// This is done automatically, we don't have to do anything
 		}
@@ -114,7 +99,7 @@ function buildIconGrid(data, e) {
     nav.setAttribute("id", "cs-grid");
     nav.style.display = "block";
     nav.style.backgroundColor = "white";
-    nav.style.border = "1px solid #eee";
+    nav.style.border = "2px solid #999";
     nav.style.width = width.toString() + "px";
     nav.style.zIndex = 999;
     nav.style.position = "fixed";
@@ -126,6 +111,8 @@ function buildIconGrid(data, e) {
     for (let i=0; i < r ;i++) {
         let liRow = document.createElement("li");
         liRow.style.listStyleType = "none";
+        liRow.style.margin = "0px";
+        liRow.style.padding = "0px";
         let olRow = document.createElement("ol");
         olRow.style.margin = "0";
         olRow.style.padding = "0";
@@ -142,11 +129,17 @@ function buildIconGrid(data, e) {
             let src = "http://www.google.com/s2/favicons?domain=" + domain;
             let title = searchEngines[id].name;
             liItem.setAttribute("id", id);
-            liItem.style.padding = "3px";
+            liItem.style.margin = "0px";
+            liItem.style.padding = "0px";
 			img.setAttribute("src", src);
             img.setAttribute("title", title);
+            img.style.margin = "0px";
+            img.style.padding = "0px";
+            img.style.border = "3px solid #fff";
             img.style.width = "24px";
             img.style.height = "24px";
+            img.addEventListener("mouseover", addBorder);
+            img.addEventListener("mouseleave", removeBorder);
             liItem.appendChild(img);
             olRow.appendChild(liItem);
             if (i * m + j === n - 1) break;
@@ -166,13 +159,17 @@ function onGridClick(e) {
     let nav = document.getElementById("cs-grid");
     nav.style.display = "none";
     nav.removeEventListener("click", onGridClick);
+    nav.removeEventListener("mouseleave", onLeave);
+    nav = null;
     sendMessage("doSearch", e.target.parentNode.id);
 }
 
 function onLeave(e) {
     let nav = e.target;
     nav.style.display = "none";
+    nav.removeEventListener("click", onGridClick);
     nav.removeEventListener("mouseleave", onLeave);
+    nav = null;
 }
 
 function checkForEscKey(e) {
@@ -181,6 +178,22 @@ function checkForEscKey(e) {
         let nav = document.getElementById("cs-grid");
         nav.style.display = "none";
         document.removeEventListener("keypress", checkForEscKey);
+    }
+}
+
+function addBorder(e) {
+    console.log(e);
+    console.log(e.target.tagName);
+    if (e.target.tagName === "IMG") {
+        e.target.style.border = "3px solid #999";
+    }
+}
+
+function removeBorder(e) {
+    console.log(e);
+    console.log(e.target.tagName);
+    if (e.target.tagName === "IMG") {
+        e.target.style.border = "3px solid #fff";
     }
 }
 
