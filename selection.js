@@ -49,24 +49,29 @@ function handleRightClickWithGrid(e) {
 				// This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
 				return;
 			}
-		}
-        
-		let isContentSecurityPolicy = false;
+        }
 
 		// Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
 		// Test URL: https://github.com/odebroqueville/contextSearch/
-		if (!isContentSecurityPolicy) {
-			e.preventDefault();
-			e.stopPropagation();
-			sendSelectionTextAndCurrentTabUrl();
-			browser.storage.sync.get(null).then(function(data){
-				buildIconGrid(data, e);
-			}, onError);
-			return false;
-		} else {
-			// Fall back to context menu items
-			// This is done automatically, we don't have to do anything
-		}
+
+        e.preventDefault();
+        e.stopPropagation();
+        sendSelectionTextAndCurrentTabUrl();
+        browser.storage.sync.get(null).then(function(data){
+            let searchEngines = sortByIndex(data);
+            for (let id in searchEngines) {
+                if (searchEngines[id].base64 === undefined) {
+                    let url = searchEngines[id].url;
+                    let urlParts = url.replace('http://','').replace('https://','').split(/\//);
+                    let domain = urlParts[0];
+                    searchEngines[id]["base64"] = getBase64Image(domain);
+                }
+            }
+            console.log(searchEngines);
+            browser.storage.sync.set(searchEngines).then(null, onError);
+            buildIconGrid(searchEngines, e);
+        }, onError);
+        return false;
 	}
 }
 
@@ -74,9 +79,29 @@ function handleRightClickWithoutGrid(e) {
     sendSelectionTextAndCurrentTabUrl();
 }
 
-function buildIconGrid(data, e) {
-    let searchEngines = sortByIndex(data);
+function getBase64Image(url) {
+    const getFaviconUrl = 'https://24tndrsrgl.execute-api.eu-central-1.amazonaws.com/prod/getFaviconUrl'
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', getFaviconUrl, true);
+    xhr.setRequestHeader("x-api-key", "API KEY GOES HERE");
+    xhr.responseType = 'arraybuffer';
+  
+    xhr.onload = function(e) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var blob = this.response;
+            var str = btoa(String.fromCharCode.apply(null, new Uint8Array(blob)));
+            return str;
+        } else if (xhr.readyState === 4 && xhr.status !== 200) { // Return default icon base64 string corresponding to a globe
+            return "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABs0lEQVR4AWL4//8/RRjO8Iucx+noO0O2qmlbUEnt5r3Juas+hsQD6KaG7dqCKPgx72Pe9GIY27btZBrbtm3btm0nO12D7tVXe63jqtqqU/iDw9K58sEruKkngH0DBljOE+T/qqx/Ln718RZOFasxyd3XRbWzlFMxRbgOTx9QWFzHtZlD+aqLb108sOAIAai6+NbHW7lUHaZkDFJt+wp1DG7R1d0b7Z88EOL08oXwjokcOvvUxYMjBFCamWP5KjKBjKOpZx2HEPj+Ieod26U+dpg6lK2CIwTQH0oECGT5eHj+IgSueJ5fPaPg6PZrz6DGHiGAISE7QPrIvIKVrSvCe2DNHSsehIDatOBna/+OEOgTQE6WAy1AAFiVcf6PhgCGxEvlA9QngLlAQCkLsNWhBZIDz/zg4ggmjHfYxoPGEMPZECW+zjwmFk6Ih194y7VHYGOPvEYlTAJlQwI4MEhgTOzZGiNalRpGgsOYFw5lEfTKybgfBtmuTNdI3MrOTAQmYf/DNcAwDeycVjROgZFt18gMso6V5Z8JpcEk2LPKpOAH0/4bKMCAYnuqm7cHOGHJTBRhAEJN9d/t5zCxAAAAAElFTkSuQmCC";
+        }
+    };
+    xhr.send({"url": url});
+};
+
+function buildIconGrid(searchEngines, e) {
     let arrIDs = Object.keys(searchEngines);
+
+    // Grid dimensions
     let n = arrIDs.length; // Number of search engines
     let m = Math.round(Math.sqrt(n)); // Grid dimension: m x m matrix
     let r = Math.ceil(Math.abs(n-m*m)/m); // Number of rows
@@ -89,9 +114,9 @@ function buildIconGrid(data, e) {
     const PLUS24 = 30; // 24px plus 3px margin/padding
     let width = PLUS24 * m;
 
-    // Cleanup.
+    // Cleanup
     let navExisting = document.getElementById("cs-grid");
-    if(navExisting != null){
+    if (navExisting != null) {
 		navExisting.parentElement.removeChild(navExisting);
     }
 
@@ -123,10 +148,7 @@ function buildIconGrid(data, e) {
             let img = document.createElement("img");
             img.style.display = "inline-block";
             let id = arrIDs[i * m + j];
-            let url = searchEngines[id].url;
-            let urlParts = url.replace('http://','').replace('https://','').split(/\//);
-            let domain = urlParts[0];
-            let src = "http://www.google.com/s2/favicons?domain=" + domain;
+            let src = "data:image/png;base64," + searchEngines[id].base64;
             let title = searchEngines[id].name;
             liItem.setAttribute("id", id);
             liItem.style.margin = "0px";
