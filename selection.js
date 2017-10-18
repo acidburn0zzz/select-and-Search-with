@@ -1,4 +1,6 @@
 /// Global variables
+var searchEngines = {};
+var ajaxCallsRemaining = 0;
 var selectedText = "";
 var gridMode = false; // By default grid mode is turned off
 
@@ -40,12 +42,12 @@ function onStorageChanges(changes, area) {
     }
 }
 
-function handleRightClickWithGrid(e) {
+function handleRightClickWithGrid(event) {
 	let selectionTextValue = getSelectionTextValue();
 	if (selectionTextValue != "") {
-		if (e.target.tagName == "A") {
+		if (event.target.tagName == "A") {
 			// Do additional safety checks.
-			if(e.target.textContent.indexOf(selectionTextValue) === -1 && selectionTextValue.indexOf(e.target.textContent) === -1){
+			if(event.target.textContent.indexOf(selectionTextValue) === -1 && selectionTextValue.indexOf(event.target.textContent) === -1){
 				// This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
 				return;
 			}
@@ -54,22 +56,13 @@ function handleRightClickWithGrid(e) {
 		// Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
 		// Test URL: https://github.com/odebroqueville/contextSearch/
 
-        e.preventDefault();
-        e.stopPropagation();
+        event.preventDefault();
+        event.stopPropagation();
         sendSelectionTextAndCurrentTabUrl();
         browser.storage.sync.get(null).then(function(data){
-            let searchEngines = sortByIndex(data);
-            for (let id in searchEngines) {
-                if (searchEngines[id].base64 === undefined) {
-                    let url = searchEngines[id].url;
-                    let urlParts = url.replace('http://','').replace('https://','').split(/\//);
-                    let domain = urlParts[0];
-                    searchEngines[id]["base64"] = getBase64Image(domain);
-                }
-            }
+            searchEngines = sortByIndex(data);
             console.log(searchEngines);
-            browser.storage.sync.set(searchEngines).then(null, onError);
-            buildIconGrid(searchEngines, e);
+            buildIconGrid(event);
         }, onError);
         return false;
 	}
@@ -79,26 +72,7 @@ function handleRightClickWithoutGrid(e) {
     sendSelectionTextAndCurrentTabUrl();
 }
 
-function getBase64Image(url) {
-    const getFaviconUrl = 'https://24tndrsrgl.execute-api.eu-central-1.amazonaws.com/prod/getFaviconUrl'
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', getFaviconUrl, true);
-    xhr.setRequestHeader("x-api-key", "API KEY GOES HERE");
-    xhr.responseType = 'arraybuffer';
-  
-    xhr.onload = function(e) {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var blob = this.response;
-            var str = btoa(String.fromCharCode.apply(null, new Uint8Array(blob)));
-            return str;
-        } else if (xhr.readyState === 4 && xhr.status !== 200) { // Return default icon base64 string corresponding to a globe
-            return "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABs0lEQVR4AWL4//8/RRjO8Iucx+noO0O2qmlbUEnt5r3Juas+hsQD6KaG7dqCKPgx72Pe9GIY27btZBrbtm3btm0nO12D7tVXe63jqtqqU/iDw9K58sEruKkngH0DBljOE+T/qqx/Ln718RZOFasxyd3XRbWzlFMxRbgOTx9QWFzHtZlD+aqLb108sOAIAai6+NbHW7lUHaZkDFJt+wp1DG7R1d0b7Z88EOL08oXwjokcOvvUxYMjBFCamWP5KjKBjKOpZx2HEPj+Ieod26U+dpg6lK2CIwTQH0oECGT5eHj+IgSueJ5fPaPg6PZrz6DGHiGAISE7QPrIvIKVrSvCe2DNHSsehIDatOBna/+OEOgTQE6WAy1AAFiVcf6PhgCGxEvlA9QngLlAQCkLsNWhBZIDz/zg4ggmjHfYxoPGEMPZECW+zjwmFk6Ih194y7VHYGOPvEYlTAJlQwI4MEhgTOzZGiNalRpGgsOYFw5lEfTKybgfBtmuTNdI3MrOTAQmYf/DNcAwDeycVjROgZFt18gMso6V5Z8JpcEk2LPKpOAH0/4bKMCAYnuqm7cHOGHJTBRhAEJN9d/t5zCxAAAAAElFTkSuQmCC";
-        }
-    };
-    xhr.send({"url": url});
-};
-
-function buildIconGrid(searchEngines, e) {
+function buildIconGrid(e) {
     let arrIDs = Object.keys(searchEngines);
 
     // Grid dimensions

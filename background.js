@@ -8,6 +8,8 @@ var lastAddressBarKeyword = "";
 
 /// Constants
 const DEFAULT_JSON = "defaultSearchEngines.json";
+const AWS_API = "API URL GOES HERE";
+const AWS_API_KEY = "API KEY GOES HERE";
 
 /// Browser specifics
 let reset = false;
@@ -115,6 +117,9 @@ function detectStorageSupportAndLoadSearchEngines() {
         if (!Object.keys(data).length > 0 || reset) {
             // Storage sync is empty -> load default list of search engines
             loadSearchEngines(DEFAULT_JSON);
+        } else {
+            searchEngines = sortByIndex(data);
+            initializeFavicons();
         }
 	}
 
@@ -138,6 +143,8 @@ function loadSearchEngines(jsonFile) {
         if (this.readyState == 4 && this.status == 200) {
             notify("Default list of search engines has been loaded.");
             searchEngines = JSON.parse(this.responseText);
+            // Fetch missing favicon urls and generate corresponding base 64 images
+            initializeFavicons();
             browser.storage.sync.set(searchEngines).then(function() {
                 if (reset) {
                     browser.runtime.sendMessage({"action": "searchEnginesLoaded", "data": searchEngines}).then(null, onError);
@@ -148,6 +155,64 @@ function loadSearchEngines(jsonFile) {
     };
     xhr.send();
 }
+
+/// Get and store favicon urls and base 64 images
+function initializeFavicons() {
+    for (let id in searchEngines) {
+        let faviconUrl = "";
+        let base64ImageString = "";
+        if (searchEngines[id].faviconUrl === undefined || searchEngines[id].faviconUrl.length <= 0) {
+            let url = searchEngines[id].url;
+            let urlParts = url.replace('http://','').replace('https://','').split(/\//);
+            let domain = urlParts[0];
+            faviconUrl = getFaviconUrl(domain);
+            searchEngines[id]["faviconUrl"] = faviconUrl;
+        }
+        if (searchEngines[id].base64 === undefined || searchEngines[id].base64.length <= 0) {
+            base64ImageString = getBase64Image(faviconUrl);
+            searchEngines[id]["base64"] = base64ImageString;
+        }
+    }
+}
+
+/// Get faviconUrl
+function getFaviconUrl(domain) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', AWS_API, true);
+    xhr.setRequestHeader("x-api-key", AWS_API_KEY);
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    xhr.onload = function(e) {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            let faviconUrl = this.response;
+            console.log(faviconUrl);
+            return faviconUrl;
+        }
+    }
+
+    xhr.send({"url": domain});
+}
+
+/// Generate base 64 image string for the favicon with the given url
+function getBase64Image(url) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+  
+    xhr.onload = function(e) {
+        let str = "";
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            let blob = this.response;
+            str = btoa(String.fromCharCode.apply(null, new Uint8Array(blob)));
+            return str;
+            //browser.storage.sync.set({id: searchEngines[id]}).then(null, onError);
+        } else if (xhr.readyState === 4 && xhr.status !== 200) { // Return default icon base64 string corresponding to a globe
+            str = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABs0lEQVR4AWL4//8/RRjO8Iucx+noO0O2qmlbUEnt5r3Juas+hsQD6KaG7dqCKPgx72Pe9GIY27btZBrbtm3btm0nO12D7tVXe63jqtqqU/iDw9K58sEruKkngH0DBljOE+T/qqx/Ln718RZOFasxyd3XRbWzlFMxRbgOTx9QWFzHtZlD+aqLb108sOAIAai6+NbHW7lUHaZkDFJt+wp1DG7R1d0b7Z88EOL08oXwjokcOvvUxYMjBFCamWP5KjKBjKOpZx2HEPj+Ieod26U+dpg6lK2CIwTQH0oECGT5eHj+IgSueJ5fPaPg6PZrz6DGHiGAISE7QPrIvIKVrSvCe2DNHSsehIDatOBna/+OEOgTQE6WAy1AAFiVcf6PhgCGxEvlA9QngLlAQCkLsNWhBZIDz/zg4ggmjHfYxoPGEMPZECW+zjwmFk6Ih194y7VHYGOPvEYlTAJlQwI4MEhgTOzZGiNalRpGgsOYFw5lEfTKybgfBtmuTNdI3MrOTAQmYf/DNcAwDeycVjROgZFt18gMso6V5Z8JpcEk2LPKpOAH0/4bKMCAYnuqm7cHOGHJTBRhAEJN9d/t5zCxAAAAAElFTkSuQmCC";
+            return str
+        }
+    };
+    xhr.send();
+};
 
 /// Build a single context menu item
 function buildContextMenuItem(searchEngine, id, title, faviconUrl){
