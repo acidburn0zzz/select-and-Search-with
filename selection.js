@@ -85,8 +85,8 @@ function buildIconGrid(e) {
     } else {
         r = m + 1 - r;
     }
-    const PLUS24 = 30; // 24px plus 3px margin/padding
-    let width = PLUS24 * m;
+    const ICON32 = 38; // icon width is 32px plus 3px margin/padding
+    let width = ICON32 * m;
 
     // Cleanup
     let navExisting = document.getElementById("cs-grid");
@@ -99,22 +99,21 @@ function buildIconGrid(e) {
     nav.style.display = "block";
     nav.style.backgroundColor = "white";
     nav.style.border = "2px solid #999";
-    nav.style.width = width.toString() + "px";
     nav.style.zIndex = 999;
     nav.style.position = "fixed";
     nav.style.setProperty("top", e.clientY.toString() + "px");
     nav.style.setProperty("left", e.clientX.toString() + "px");
     let ol = document.createElement("ol");
-    ol.style.margin = "0";
-    ol.style.padding = "0";
+    ol.style.margin = "0px";
+    ol.style.padding = "0px";
     for (let i=0; i < r ;i++) {
         let liRow = document.createElement("li");
         liRow.style.listStyleType = "none";
         liRow.style.margin = "0px";
         liRow.style.padding = "0px";
         let olRow = document.createElement("ol");
-        olRow.style.margin = "0";
-        olRow.style.padding = "0";
+        olRow.style.margin = "0px";
+        olRow.style.padding = "0px";
         for (let j=0; j < m ;j++) {
             let liItem = document.createElement("li");
             liItem.style.display = "inline-block";
@@ -122,7 +121,7 @@ function buildIconGrid(e) {
             let img = document.createElement("img");
             img.style.display = "inline-block";
             let id = arrIDs[i * m + j];
-            let src = "data:image/png;base64," + searchEngines[id].base64;
+            let src = searchEngines[id].faviconUrl;
             let title = searchEngines[id].name;
             liItem.setAttribute("id", id);
             liItem.style.margin = "0px";
@@ -132,8 +131,8 @@ function buildIconGrid(e) {
             img.style.margin = "0px";
             img.style.padding = "0px";
             img.style.border = "3px solid #fff";
-            img.style.width = "24px";
-            img.style.height = "24px";
+            img.style.width = "32px";
+            img.style.height = "32px";
             img.addEventListener("mouseover", addBorder);
             img.addEventListener("mouseleave", removeBorder);
             liItem.appendChild(img);
