@@ -121,7 +121,7 @@ function buildIconGrid(e) {
             let img = document.createElement("img");
             img.style.display = "inline-block";
             let id = arrIDs[i * m + j];
-            let src = searchEngines[id].faviconUrl;
+            let src = "data:image/png;base64," + searchEngines[id].base64;
             let title = searchEngines[id].name;
             liItem.setAttribute("id", id);
             liItem.style.margin = "0px";

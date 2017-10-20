@@ -119,12 +119,11 @@ function detectStorageSupportAndLoadSearchEngines() {
         } else {
             searchEngines = sortByIndex(data);
             initializeFavicons();
-            browser.storage.sync.set(searchEngines).then(null, onError);
         }
 	}
 
 	function onNone(error){
-        loadSearchEngines(DEFAULT_JSON);
+        //loadSearchEngines(DEFAULT_JSON);
 		if (error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1) {
 			notify("Please enable storage sync by setting webextensions.storage.sync.enabled to true in about:config. Context Search will not work until you do so.");
 		} else {
@@ -143,7 +142,6 @@ function loadSearchEngines(jsonFile) {
         if (this.readyState == 4 && this.status == 200) {
             notify("Default list of search engines has been loaded.");
             searchEngines = JSON.parse(this.responseText);
-            remainingItems = Object.keys(searchEngines).length;
             // Fetch missing favicon urls and generate corresponding base 64 images
             initializeFavicons();
             browser.storage.sync.set(searchEngines).then(function() {
@@ -159,16 +157,49 @@ function loadSearchEngines(jsonFile) {
 
 /// Get and store favicon urls and base 64 images
 function initializeFavicons() {
+    remainingItems = Object.keys(searchEngines).length;
     for (let id in searchEngines) {
-        if (searchEngines[id].faviconUrl === undefined || searchEngines[id].faviconUrl.length <= 0) {
+        if (searchEngines[id].base64 === undefined || !searchEngines[id].base64.length > 0) {
             let url = searchEngines[id].url;
             let urlParts = url.replace('http://','').replace('https://','').split(/\//);
             let domain = urlParts[0];
             let faviconUrl = "https://icons.better-idea.org/icon?url=" + domain + "&size=24..32..64";
-            searchEngines[id]["faviconUrl"] = faviconUrl;
+            getBase64Image(id, faviconUrl);
         }
     }
-    console.log(searchEngines);
+}
+
+/// Generate base 64 image string for the favicon with the given url
+function getBase64Image(id, url) {
+    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    url = proxyUrl + url;
+    console.log("id: " + id);
+    console.log("url: " + url);
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = "arraybuffer";
+    
+    xhr.onload = function(e) {
+        let str = "";
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            remainingItems -= 1;
+            //console.log("remaining items: " + remainingItems);
+            let blob = xhr.response;
+            str = btoa(String.fromCharCode.apply(null, new Uint8Array(blob)));
+            //console.log("base64 image string >>>" + str + "<<<");
+            searchEngines[id]["base64"] = str;
+        } else if (xhr.readyState === 4 && xhr.status > 299) { // Return default icon base64 string corresponding to a globe
+            remainingItems -= 1;
+            //console.log("remaining items: " + remainingItems);
+            str = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABs0lEQVR4AWL4//8/RRjO8Iucx+noO0O2qmlbUEnt5r3Juas+hsQD6KaG7dqCKPgx72Pe9GIY27btZBrbtm3btm0nO12D7tVXe63jqtqqU/iDw9K58sEruKkngH0DBljOE+T/qqx/Ln718RZOFasxyd3XRbWzlFMxRbgOTx9QWFzHtZlD+aqLb108sOAIAai6+NbHW7lUHaZkDFJt+wp1DG7R1d0b7Z88EOL08oXwjokcOvvUxYMjBFCamWP5KjKBjKOpZx2HEPj+Ieod26U+dpg6lK2CIwTQH0oECGT5eHj+IgSueJ5fPaPg6PZrz6DGHiGAISE7QPrIvIKVrSvCe2DNHSsehIDatOBna/+OEOgTQE6WAy1AAFiVcf6PhgCGxEvlA9QngLlAQCkLsNWhBZIDz/zg4ggmjHfYxoPGEMPZECW+zjwmFk6Ih194y7VHYGOPvEYlTAJlQwI4MEhgTOzZGiNalRpGgsOYFw5lEfTKybgfBtmuTNdI3MrOTAQmYf/DNcAwDeycVjROgZFt18gMso6V5Z8JpcEk2LPKpOAH0/4bKMCAYnuqm7cHOGHJTBRhAEJN9d/t5zCxAAAAAElFTkSuQmCC";
+            searchEngines[id]["base64"] = str;
+        }
+        if (remainingItems === 0) {
+            browser.storage.sync.set(searchEngines).then(null, onError);
+        }
+    }
+
+    xhr.send();
 }
 
 /// Build a single context menu item
@@ -243,8 +274,11 @@ function rebuildContextMenu() {
 			var index = 0;
 			for (let id in searchEngines) {
 				let strId = "cs-" + index.toString();
-				let strTitle = searchEngines[id].name;
-				let faviconUrl = searchEngines[id].faviconUrl;
+                let strTitle = searchEngines[id].name;
+                let url = searchEngines[id].url;
+                let urlParts = url.replace('http://','').replace('https://','').split(/\//);
+                let domain = urlParts[0];
+				let faviconUrl = "https://icons.better-idea.org/icon?url=" + domain + "&size=24..32..64";
 				searchEnginesArray.push(id);
 				buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
 				index += 1;
