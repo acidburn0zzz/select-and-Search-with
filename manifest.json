@@ -11,6 +11,8 @@
     }
   },
 
+  "content_security_policy" : "img-src 'self' https://icons.better-idea.org/*",
+
   "background": {
       "scripts": [
         "background.js",

@@ -5,7 +5,7 @@ var selection = "";
 var targetUrl = "";
 var gridMode = false;
 var lastAddressBarKeyword = "";
-var remainingItems = 0;
+var remainingItems;
 
 /// Constants
 const DEFAULT_JSON = "defaultSearchEngines.json";
@@ -164,7 +164,7 @@ function initializeFavicons() {
             let urlParts = url.replace('http://','').replace('https://','').split(/\//);
             let domain = urlParts[0];
             let faviconUrl = "https://icons.better-idea.org/icon?url=" + domain + "&size=24..32..64";
-            getBase64Image(id, faviconUrl);
+            searchEngines[id].base64 = getBase64Image(id, faviconUrl);
         }
     }
 }
@@ -172,31 +172,30 @@ function initializeFavicons() {
 /// Generate base 64 image string for the favicon with the given url
 function getBase64Image(id, url) {
     const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-    url = proxyUrl + url;
-    console.log("id: " + id);
-    console.log("url: " + url);
+    requestUrl = proxyUrl + url;
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
+    xhr.open('GET', requestUrl, true);
     xhr.responseType = "arraybuffer";
     
-    xhr.onload = function(e) {
-        let str = "";
+    xhr.onloadend = function(e) {
+        console.log("search engine id: " + id);
+        console.log("ready state: " + xhr.readyState);
+        console.log("status: " + xhr.status);
         if (xhr.readyState === 4 && xhr.status === 200) {
-            remainingItems -= 1;
-            //console.log("remaining items: " + remainingItems);
+            console.log("remaining items: " + remainingItems);
             let blob = xhr.response;
-            str = btoa(String.fromCharCode.apply(null, new Uint8Array(blob)));
-            //console.log("base64 image string >>>" + str + "<<<");
-            searchEngines[id]["base64"] = str;
-        } else if (xhr.readyState === 4 && xhr.status > 299) { // Return default icon base64 string corresponding to a globe
-            remainingItems -= 1;
-            //console.log("remaining items: " + remainingItems);
-            str = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABs0lEQVR4AWL4//8/RRjO8Iucx+noO0O2qmlbUEnt5r3Juas+hsQD6KaG7dqCKPgx72Pe9GIY27btZBrbtm3btm0nO12D7tVXe63jqtqqU/iDw9K58sEruKkngH0DBljOE+T/qqx/Ln718RZOFasxyd3XRbWzlFMxRbgOTx9QWFzHtZlD+aqLb108sOAIAai6+NbHW7lUHaZkDFJt+wp1DG7R1d0b7Z88EOL08oXwjokcOvvUxYMjBFCamWP5KjKBjKOpZx2HEPj+Ieod26U+dpg6lK2CIwTQH0oECGT5eHj+IgSueJ5fPaPg6PZrz6DGHiGAISE7QPrIvIKVrSvCe2DNHSsehIDatOBna/+OEOgTQE6WAy1AAFiVcf6PhgCGxEvlA9QngLlAQCkLsNWhBZIDz/zg4ggmjHfYxoPGEMPZECW+zjwmFk6Ih194y7VHYGOPvEYlTAJlQwI4MEhgTOzZGiNalRpGgsOYFw5lEfTKybgfBtmuTNdI3MrOTAQmYf/DNcAwDeycVjROgZFt18gMso6V5Z8JpcEk2LPKpOAH0/4bKMCAYnuqm7cHOGHJTBRhAEJN9d/t5zCxAAAAAElFTkSuQmCC";
-            searchEngines[id]["base64"] = str;
+            let str = btoa(String.fromCharCode.apply(null, new Uint8Array(blob)));
+            console.log("base64 image string >>>" + str + "<<<");
+            remainingItems = remainingItems - 1;
+            if (remainingItems === 0) {
+                console.log(searchEngines);
+            }
+            return str;
         }
-        if (remainingItems === 0) {
-            browser.storage.sync.set(searchEngines).then(null, onError);
-        }
+    }
+
+    xhr.onerror = function(e) {
+        console.log("ERROR:" + e);
     }
 
     xhr.send();
