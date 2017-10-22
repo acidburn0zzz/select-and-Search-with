@@ -129,7 +129,7 @@ function buildIconGrid(e) {
             let urlParts = url.replace('http://','').replace('https://','').split(/\//);
             let domain = urlParts[0];
             var src = "https://icons.better-idea.org/icon?url=" + domain + "&size=24..32..64";
-            if (searchEngines[id].base64 !== null && searchEngines[id].base64 !== undefined) {
+            if (searchEngines[id].base64 !== null && searchEngines[id].base64 !== undefined && searchEngines[id].base64 !== "") {
                 src = "data:image/png;base64," + searchEngines[id].base64;
             }
             let title = searchEngines[id].name;
