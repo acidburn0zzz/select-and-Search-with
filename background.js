@@ -164,41 +164,53 @@ function initializeFavicons() {
             let urlParts = url.replace('http://','').replace('https://','').split(/\//);
             let domain = urlParts[0];
             let faviconUrl = "https://icons.better-idea.org/icon?url=" + domain + "&size=24..32..64";
-            searchEngines[id].base64 = getBase64Image(id, faviconUrl);
+            getBase64Image(id, faviconUrl).then(function (base64String) {
+                searchEngines[id]["base64"] = base64String;
+                if (remainingItems === 0) {
+                    console.log(searchEngines);
+                    browser.storage.sync.set(searchEngines).then(null, onError);
+                }
+            }).catch(function (e) {
+                console.log("Error occured while fetching favicon image.");
+                console.log(e);
+            });
         }
     }
 }
 
 /// Generate base 64 image string for the favicon with the given url
 function getBase64Image(id, url) {
-    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-    requestUrl = proxyUrl + url;
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', requestUrl, true);
-    xhr.responseType = "arraybuffer";
-    
-    xhr.onloadend = function(e) {
-        console.log("search engine id: " + id);
-        console.log("ready state: " + xhr.readyState);
-        console.log("status: " + xhr.status);
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            console.log("remaining items: " + remainingItems);
-            let blob = xhr.response;
-            let str = btoa(String.fromCharCode.apply(null, new Uint8Array(blob)));
-            console.log("base64 image string >>>" + str + "<<<");
-            remainingItems = remainingItems - 1;
-            if (remainingItems === 0) {
-                console.log(searchEngines);
+    var promise = new Promise(
+        function resolver(resolve, reject) {
+            const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+            requestUrl = proxyUrl + url;
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', requestUrl, true);
+            xhr.responseType = "arraybuffer";
+            
+            xhr.onload = function(e) {
+                console.log("search engine id: " + id);
+                console.log("ready state: " + xhr.readyState);
+                console.log("status: " + xhr.status);
+                if (xhr.status === 200) {
+                    console.log("remaining items: " + remainingItems);
+                    let blob = xhr.response;
+                    let str = btoa(String.fromCharCode.apply(null, new Uint8Array(blob)));
+                    console.log("base64 image string >>>" + str + "<<<");
+                    remainingItems = remainingItems - 1;
+                    resolve(str);
+                }
             }
-            return str;
+        
+            xhr.onerror = function(e) {
+                reject(e);
+                console.log("ERROR:" + e);
+            }
+        
+            xhr.send();
         }
-    }
-
-    xhr.onerror = function(e) {
-        console.log("ERROR:" + e);
-    }
-
-    xhr.send();
+    );
+    return promise;
 }
 
 /// Build a single context menu item

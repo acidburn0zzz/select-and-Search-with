@@ -111,13 +111,17 @@ function buildIconGrid(e) {
         liRow.style.listStyleType = "none";
         liRow.style.margin = "0px";
         liRow.style.padding = "0px";
+        liRow.style.height = "38px";
         let olRow = document.createElement("ol");
         olRow.style.margin = "0px";
         olRow.style.padding = "0px";
+        olRow.style.height = "38px";
         for (let j=0; j < m ;j++) {
             let liItem = document.createElement("li");
             liItem.style.display = "inline-block";
             liItem.style.listStyleType = "none";
+            liItem.style.width = "38px";
+            liItem.style.height = "38px";
             let img = document.createElement("img");
             img.style.display = "inline-block";
             let id = arrIDs[i * m + j];
@@ -125,7 +129,7 @@ function buildIconGrid(e) {
             let urlParts = url.replace('http://','').replace('https://','').split(/\//);
             let domain = urlParts[0];
             var src = "https://icons.better-idea.org/icon?url=" + domain + "&size=24..32..64";
-            if (searchEngines[id].base64 !== null) {
+            if (searchEngines[id].base64 !== null && searchEngines[id].base64 !== undefined) {
                 src = "data:image/png;base64," + searchEngines[id].base64;
             }
             let title = searchEngines[id].name;
