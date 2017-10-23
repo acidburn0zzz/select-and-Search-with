@@ -1,6 +1,5 @@
 /// Global variables
 var searchEngines = {};
-var ajaxCallsRemaining = 0;
 var selectedText = "";
 var gridMode = false; // By default grid mode is turned off
 
@@ -42,12 +41,14 @@ function onStorageChanges(changes, area) {
     }
 }
 
-function handleRightClickWithGrid(event) {
-	let selectionTextValue = getSelectionTextValue();
+function handleRightClickWithGrid(e) {
+    let x = e.clientX;
+    let y = e.clientY;
+	let selectionTextValue = getSelectionTextValue(x, y);
 	if (selectionTextValue != "") {
-		if (event.target.tagName == "A") {
+		if (e.target.tagName == "A") {
 			// Do additional safety checks.
-			if(event.target.textContent.indexOf(selectionTextValue) === -1 && selectionTextValue.indexOf(event.target.textContent) === -1){
+			if(e.target.textContent.indexOf(selectionTextValue) === -1 && selectionTextValue.indexOf(e.target.textContent) === -1){
 				// This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
 				return;
 			}
@@ -56,20 +57,21 @@ function handleRightClickWithGrid(event) {
 		// Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
 		// Test URL: https://github.com/odebroqueville/contextSearch/
 
-        event.preventDefault();
-        event.stopPropagation();
-        sendSelectionTextAndCurrentTabUrl();
+        e.preventDefault();
+        e.stopPropagation();
+        sendSelectionTextAndCurrentTabUrl(x, y);
         browser.storage.sync.get(null).then(function(data){
             searchEngines = sortByIndex(data);
-            console.log(searchEngines);
-            buildIconGrid(event);
+            buildIconGrid(e);
         }, onError);
         return false;
 	}
 }
 
 function handleRightClickWithoutGrid(e) {
-    sendSelectionTextAndCurrentTabUrl();
+    let x = e.clientX;
+    let y = e.clientY;
+    sendSelectionTextAndCurrentTabUrl(x, y);
 }
 
 function buildIconGrid(e) {
@@ -202,7 +204,7 @@ function removeBorder(e) {
     }
 }
 
-function getSelectionTextValue(){
+function getSelectionTextValue(x, y){
 	var selectedTextValue = ""; // get the current value, not a cached value
 	
 	if (window.getSelection){ // all modern browsers and IE9+
@@ -213,11 +215,43 @@ function getSelectionTextValue(){
         if (selectedTextInput != "") selectedTextValue = selectedTextInput;
     }
     
-    return selectedTextValue;
+    if (selectedTextValue === "") {
+        selectedTextValue = handleEmptySelection(x, y);
+    }
+
+    selectedText = selectedTextValue;
 }
 
-function sendSelectionTextAndCurrentTabUrl(){
-    selectedText = getSelectionTextValue();
+function handleEmptySelection(x, y) {
+    var range;
+    var node;
+    var offset;
+    var selection = "";
+
+    if (document.caretPositionFromPoint) {
+        range = document.caretPositionFromPoint(x, y);
+        node = range.offsetNode;
+        offset = range.offset;
+    } else if (document.caretRangeFromPoint) {
+        range = document.caretRangeFromPoint(x, y);
+        node = range.startContainer;
+        offset = range.startOffset;
+    }
+  
+    if (node.nodeType == 3) {
+        let text = node.textContent;
+        let strA = text.substring(0, offset + 1).trim();
+        let strB = text.substring(offset + 1, text.length);
+        selection = strA.substring(strA.lastIndexOf(" ") + 1, strA.length);
+        if (strB.charAt(0) !== " ") {
+            selection += strB.substring(0, strB.indexOf(" "));
+        }
+    }
+
+    return selection;
+}
+
+function sendSelectionTextAndCurrentTabUrl(x, y){
     if (selectedText != "") sendMessage("getSelectionText", selectedText);
 
     // send current tab url to background.js

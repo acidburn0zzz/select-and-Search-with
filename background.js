@@ -375,6 +375,7 @@ function searchUsing(id) {
 }
 
 /// Helper functions
+// Display the search results
 function displaySearchResults(targetUrl, tabPosition) {
     browser.windows.getCurrent({populate: false}).then(function(windowInfo) {
         var currentWindowID = windowInfo.id;
