@@ -44,11 +44,11 @@ function onStorageChanges(changes, area) {
 function handleRightClickWithGrid(e) {
     let x = e.clientX;
     let y = e.clientY;
-	let selectionTextValue = getSelectionTextValue(x, y);
-	if (selectionTextValue != "") {
+	getSelectionTextValue(x, y);
+	if (selectedText !== "") {
 		if (e.target.tagName == "A") {
 			// Do additional safety checks.
-			if(e.target.textContent.indexOf(selectionTextValue) === -1 && selectionTextValue.indexOf(e.target.textContent) === -1){
+			if (e.target.textContent.indexOf(selectedText) === -1 && selectedText.indexOf(e.target.textContent) === -1){
 				// This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
 				return;
 			}
@@ -71,6 +71,7 @@ function handleRightClickWithGrid(e) {
 function handleRightClickWithoutGrid(e) {
     let x = e.clientX;
     let y = e.clientY;
+    getSelectionTextValue(x, y);
     sendSelectionTextAndCurrentTabUrl(x, y);
 }
 
@@ -204,7 +205,7 @@ function removeBorder(e) {
     }
 }
 
-function getSelectionTextValue(x, y){
+function getSelectionTextValue(x, y) {
 	var selectedTextValue = ""; // get the current value, not a cached value
 	
 	if (window.getSelection){ // all modern browsers and IE9+
@@ -223,10 +224,8 @@ function getSelectionTextValue(x, y){
 }
 
 function handleEmptySelection(x, y) {
-    var range;
-    var node;
-    var offset;
-    var selection = "";
+    var range, node, offset, selection, startOffset, endOffset;
+    var word = "";
 
     if (document.caretPositionFromPoint) {
         range = document.caretPositionFromPoint(x, y);
@@ -242,13 +241,25 @@ function handleEmptySelection(x, y) {
         let text = node.textContent;
         let strA = text.substring(0, offset + 1).trim();
         let strB = text.substring(offset + 1, text.length);
-        selection = strA.substring(strA.lastIndexOf(" ") + 1, strA.length);
+        startOffset = strA.lastIndexOf(" ") + 1;
+        endOffset = strA.length + strB.indexOf(" ");
+        word = strA.substring(startOffset, strA.length);
         if (strB.charAt(0) !== " ") {
-            selection += strB.substring(0, strB.indexOf(" "));
+            word += strB.substring(0, strB.indexOf(" "));
         }
     }
 
-    return selection;
+    if (word !== "") {
+        selection = window.getSelection();
+        let selectionRange = document.createRange();
+        selectionRange.setStart(node, startOffset);
+        selectionRange.setEnd(node, endOffset);
+        selection.removeAllRanges();
+        selection.addRange(selectionRange);
+    }
+
+    console.log(word);
+    return word;
 }
 
 function sendSelectionTextAndCurrentTabUrl(x, y){
