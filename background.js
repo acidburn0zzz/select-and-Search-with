@@ -347,11 +347,11 @@ function processSearch(info, tab){
     if(!isNaN(id)){
 		let searchEngineUrl = searchEngines[searchEnginesArray[id]].url;
         if (searchEngineUrl.includes("{search terms}")) {
-            targetUrl = searchEngineUrl.replace("{search terms}", encodeURIComponent(selection));
+            targetUrl = searchEngineUrl.replace("{search terms}", encodeUrl(selection));
         } else if (searchEngineUrl.includes("%s")) {
-			targetUrl = searchEngineUrl.replace("%s", encodeURIComponent(selection));
+			targetUrl = searchEngineUrl.replace("%s", encodeUrl(selection));
         } else {
-            targetUrl = searchEngineUrl + encodeURIComponent(selection);
+            targetUrl = searchEngineUrl + encodeUrl(selection);
         }
         displaySearchResults(targetUrl, tab.index);
         targetUrl = "";
@@ -457,7 +457,7 @@ function buildSuggestion(text) {
     console.log(searchTerms);
 
 	// Only make suggestions available and check for existance of a search engine when there is a space.
-	if(text.indexOf(" ") === -1){
+	if (text.indexOf(" ") === -1) {
 		lastAddressBarKeyword = "";
 		return result;
 	}
@@ -487,6 +487,20 @@ function buildSuggestion(text) {
 /// Generic Error Handler
 function onError(error) {
     console.log(`${error}`);
+}
+
+/// Encode a url
+function encodeUrl(url) {
+    if (isEncoded(url)) {
+        return url;
+    }
+    return encodeURIComponent(url);
+}
+
+/// Verify is uri is encoded
+function isEncoded(uri) {
+    uri = uri || "";  
+    return uri !== decodeURIComponent(uri);
 }
 
 /// Notifications

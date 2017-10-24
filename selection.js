@@ -269,12 +269,26 @@ function sendSelectionTextAndCurrentTabUrl(x, y){
     const url = window.location.href;
     const urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
     const domain = urlParts[0];
-    targetUrl = "https://www.google.com/search?q=site" + encodeURIComponent(":" + domain + " " + selectedText);
+    targetUrl = "https://www.google.com/search?q=site" + encodeUrl(":" + domain + " " + selectedText);
     sendMessage("sendCurrentTabUrl", targetUrl);
+}
+
+browser.storage.onChanged.addListener(onStorageChanges);
+
+/// Encode a url
+function encodeUrl(url) {
+    if (isEncoded(url)) {
+        return url;
+    }
+    return encodeURIComponent(url);
+}
+
+/// Verify is uri is encoded
+function isEncoded(uri) {
+    uri = uri || "";  
+    return uri !== decodeURIComponent(uri);
 }
 
 function sendMessage(action, data){
 	browser.runtime.sendMessage({"action": action, "data": data});
 }
-
-browser.storage.onChanged.addListener(onStorageChanges);
