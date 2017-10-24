@@ -224,8 +224,9 @@ function getSelectionTextValue(x, y) {
 }
 
 function handleEmptySelection(x, y) {
-    var range, node, offset, selection, startOffset, endOffset;
-    var word = "";
+    var range, node, offset, text, selection, startOffset, endOffset;
+    var strWord = "", word = "";
+    var pattern = /(\w+)/;
 
     if (document.caretPositionFromPoint) {
         range = document.caretPositionFromPoint(x, y);
@@ -238,19 +239,20 @@ function handleEmptySelection(x, y) {
     }
   
     if (node.nodeType == 3) {
-        let text = node.textContent;
+        text = node.textContent;
         let strA = text.substring(0, offset + 1).trim();
         let strB = text.substring(offset + 1, text.length);
-        startOffset = strA.lastIndexOf(" ") + 1;
-        endOffset = strA.length + strB.indexOf(" ");
-        word = strA.substring(startOffset, strA.length);
+        strWord = strA.substring(strA.lastIndexOf(" ") + 1, strA.length);
         if (strB.charAt(0) !== " ") {
-            word += strB.substring(0, strB.indexOf(" "));
+            strWord += strB.substring(0, strB.indexOf(" "));
         }
+        word = pattern.exec(strWord)[0];
     }
 
     if (word !== "") {
         selection = window.getSelection();
+        startOffset = text.indexOf(word);
+        endOffset = startOffset + word.length;
         let selectionRange = document.createRange();
         selectionRange.setStart(node, startOffset);
         selectionRange.setEnd(node, endOffset);
@@ -258,7 +260,6 @@ function handleEmptySelection(x, y) {
         selection.addRange(selectionRange);
     }
 
-    console.log(word);
     return word;
 }
 
