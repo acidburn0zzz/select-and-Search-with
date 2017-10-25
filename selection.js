@@ -62,7 +62,7 @@ function handleRightClickWithGrid(e) {
         sendSelectionTextAndCurrentTabUrl(x, y);
         browser.storage.sync.get(null).then(function(data){
             searchEngines = sortByIndex(data);
-            buildIconGrid(e);
+            buildIconGrid(x, y);
         }, onError);
         return false;
 	}
@@ -75,7 +75,7 @@ function handleRightClickWithoutGrid(e) {
     sendSelectionTextAndCurrentTabUrl(x, y);
 }
 
-function buildIconGrid(e) {
+function buildIconGrid(x, y) {
     let arrIDs = Object.keys(searchEngines);
 
     // Grid dimensions
@@ -104,8 +104,8 @@ function buildIconGrid(e) {
     nav.style.border = "2px solid #999";
     nav.style.zIndex = 999;
     nav.style.position = "fixed";
-    nav.style.setProperty("top", e.clientY.toString() + "px");
-    nav.style.setProperty("left", e.clientX.toString() + "px");
+    nav.style.setProperty("top", y.toString() + "px");
+    nav.style.setProperty("left", x.toString() + "px");
     let ol = document.createElement("ol");
     ol.style.margin = "0px";
     ol.style.padding = "0px";
@@ -158,9 +158,34 @@ function buildIconGrid(e) {
     nav.appendChild(ol);
     nav.addEventListener("click", onGridClick);
     nav.addEventListener("mouseleave", onLeave);
-    document.addEventListener("keypress", checkForEscKey);
+
+    document.addEventListener("keydown", checkForEscKey);
     let body = document.getElementsByTagName("body")[0];
     body.appendChild(nav);
+
+    // Position icon grid contained in nav element
+    nav.style.left = 0;
+    nav.style.top = 0;
+    let viewportWidth = window.innerWidth;
+    let viewportHeight = window.innerHeight;
+    let navWidth = nav.offsetWidth;
+    let navHeight = nav.offsetHeight;
+    console.log("viewport width: " + viewportWidth);
+    console.log("viewport height: " + viewportHeight);
+    console.log("icon grid width: " + navWidth);
+    console.log("icon grid height: " + navHeight);
+    console.log("x: " + x);
+    console.log("y: " + y);
+    if (x > viewportWidth - navWidth) {
+        nav.style.left = viewportWidth - navWidth + "px";
+    } else {
+        nav.style.left = x + "px";
+    }
+    if (y > viewportHeight - navHeight) {
+        nav.style.top = viewportHeight - navHeight + "px";
+    } else {
+        nav.style.top = y + "px";
+    }
 }
 
 function onGridClick(e) {
@@ -242,7 +267,8 @@ function handleEmptySelection(x, y) {
         text = node.textContent;
         let strA = text.substring(0, offset + 1).trim();
         let strB = text.substring(offset + 1, text.length);
-        strWord = strA.substring(strA.lastIndexOf(" ") + 1, strA.length);
+        startOffset = strA.lastIndexOf(" ") + 1;
+        strWord = strA.substring(startOffset, strA.length);
         if (strB.charAt(0) !== " ") {
             strWord += strB.substring(0, strB.indexOf(" "));
         }
@@ -251,7 +277,6 @@ function handleEmptySelection(x, y) {
 
     if (word !== "") {
         selection = window.getSelection();
-        startOffset = text.indexOf(word);
         endOffset = startOffset + word.length;
         let selectionRange = document.createRange();
         selectionRange.setStart(node, startOffset);
