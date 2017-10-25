@@ -229,7 +229,7 @@ function buildContextMenuItem(searchEngine, id, title, faviconUrl){
             id: id,
             title: title,
             contexts: contexts,
-            icons: { 18: faviconUrl }
+            icons: { 20: faviconUrl }
         });
     } else {
         browser.contextMenus.create({
@@ -508,7 +508,7 @@ function notify(message){
     browser.notifications.create(message.substring(0, 20),
     {
         type: "basic",
-        iconUrl: browser.extension.getURL("icons/icon_96.png"),
+        iconUrl: browser.extension.getURL("icons/icon_64.png"),
         title: "Context Search",
         message: message
     });
