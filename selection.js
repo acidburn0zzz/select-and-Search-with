@@ -289,9 +289,10 @@ function handleEmptySelection(x, y) {
 }
 
 function sendSelectionTextAndCurrentTabUrl(x, y){
+    // Send the selected text to background.js
     if (selectedText != "") sendMessage("getSelectionText", selectedText);
 
-    // send current tab url to background.js
+    // Send url of Google search within current site to background.js
     const url = window.location.href;
     const urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
     const domain = urlParts[0];

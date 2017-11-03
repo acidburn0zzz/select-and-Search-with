@@ -87,7 +87,6 @@ function listSearchEngines(list) {
     divContainer.appendChild(divSearchEngines);
     storageSyncCount = divSearchEngines.childNodes.length;
 
-    //notify("Saved search engines have been restored."); Annoying as hell
 }
 
 function createButton(btnLabel, btnClass, btnTitle) {
@@ -108,6 +107,8 @@ function createLineItem(id, searchEngine) {
     let textName = document.createTextNode(searchEngine.name);
 
     let inputKeyword = document.createElement("input");
+
+    let inputMultiTab = document.createElement("input");
     
     let inputQueryString = document.createElement("input");
 
@@ -127,18 +128,23 @@ function createLineItem(id, searchEngine) {
     labelName.setAttribute("for", id + "-cbx");
     labelName.appendChild(textName);
 
-    inputQueryString.setAttribute("type", "url");
-    inputQueryString.setAttribute("value", searchEngine.url);
-
     inputKeyword.setAttribute("type", "text");
     inputKeyword.setAttribute("id", id + "-kw");
     inputKeyword.setAttribute("class", "keyword");
     inputKeyword.setAttribute("placeholder", "Keyword");
     inputKeyword.setAttribute("value", searchEngine.keyword);
 
+    inputMultiTab.setAttribute("type", "checkbox");
+    inputMultiTab.setAttribute("id", id + "-mt");
+    inputMultiTab.checked = searchEngine.multitab;
+
+    inputQueryString.setAttribute("type", "url");
+    inputQueryString.setAttribute("value", searchEngine.url);
+
     lineItem.appendChild(inputName);
     lineItem.appendChild(labelName);
     lineItem.appendChild(inputKeyword);
+    lineItem.appendChild(inputMultiTab);
     lineItem.appendChild(inputQueryString);
 
     lineItem.appendChild(upButton);
@@ -248,11 +254,13 @@ function readData() {
         if (input != null && input.nodeName === "INPUT" && input.getAttribute("type") === "checkbox") {
             let label = input.nextSibling;
             let keyword = label.nextSibling;
-            let url = keyword.nextSibling;
+            let multiTab = keyword.nextSibling;
+            let url = multiTab.nextSibling;
             searchEngines[lineItems[i].id] = {};
             searchEngines[lineItems[i].id]["index"] = i;
             searchEngines[lineItems[i].id]["name"] = label.textContent;
             searchEngines[lineItems[i].id]["keyword"] = keyword.value;
+            searchEngines[lineItems[i].id]["multitab"] = multiTab.checked;
             searchEngines[lineItems[i].id]["url"] = url.value;
             searchEngines[lineItems[i].id]["show"] = input.checked;
         }
@@ -279,8 +287,10 @@ function addSearchEngine() {
     const show = document.getElementById("show"); // Boolean
     const name = document.getElementById("name"); // String
     const keyword = document.getElementById("keyword"); // String
+    const multitab = document.getElementById("multitab"); // Boolean
     const url = document.getElementById("url"); // String
 
+    // Validate url for query string
     strUrl = url.value;
     let testUrl = "";
     if (strUrl.includes("{search terms}")) {
@@ -295,7 +305,7 @@ function addSearchEngine() {
 
     const id = name.value.replace(" ", "-").toLowerCase();
     let newSearchEngine = {};
-    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "keyword": keyword.value, "url": url.value, "show": show.checked};
+    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "keyword": keyword.value, "multitab": multitab.value , "url": url.value, "show": show.checked};
     let lineItem = createLineItem(id, newSearchEngine[id]);
     divSearchEngines.appendChild(lineItem);
     browser.storage.sync.set(newSearchEngine).then(notify("Search engine added."), onError);
@@ -304,6 +314,7 @@ function addSearchEngine() {
     show.checked = true;
     name.value = null;
     keyword.value = null;
+    multitab.checked = false;
     url.value = null;
 }
 

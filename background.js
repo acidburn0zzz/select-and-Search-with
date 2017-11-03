@@ -268,6 +268,11 @@ function rebuildContextMenu() {
 	browser.storage.sync.get(null).then(
 		(data) => {
 			 if (optionsMenuAtTop) {
+                browser.contextMenus.create({
+					id: "cs-multitab",
+					title: "Multiple tabs search",
+					contexts: ["selection"]
+				});
 				browser.contextMenus.create({
 					id: "cs-google-site",
 					title: "Search this site with Google",
@@ -305,6 +310,11 @@ function rebuildContextMenu() {
 					id: "cs-separator",
 					type: "separator",
 					contexts: ["selection"]
+                });
+                browser.contextMenus.create({
+					id: "cs-multitab",
+					title: "Multiple tabs search",
+					contexts: ["selection"]
 				});
 				browser.contextMenus.create({
 					id: "cs-google-site",
@@ -339,6 +349,8 @@ function processSearch(info, tab){
     } else if (id === "options") {
         browser.runtime.openOptionsPage().then(null, onError);
         return;
+    } else if (id === "multitab") {
+        processMultiTabSearch();
     }
 
     id = parseInt(id);
@@ -358,10 +370,56 @@ function processSearch(info, tab){
     }    
 }
 
+function processMultiTabSearch() {
+    browser.storage.sync.get(null).then(function(data){
+        searchEngines = sortByIndex(data);
+        var multiTabSearchEngineIDs = [];
+        for (let id in searchEngines) {
+            if (searchEngines[id].multitab) {
+                multiTabSearchEngineIDs.push(id);
+            }
+        }
+        var searchEngineUrl = searchEngines[multiTabSearchEngineIDs[0]].url;
+        if (searchEngineUrl.includes("{search terms}")) {
+            targetUrl = searchEngineUrl.replace("{search terms}", encodeUrl(selection));
+        } else if (searchEngineUrl.includes("%s")) {
+            targetUrl = searchEngineUrl.replace("%s", encodeUrl(selection));
+        } else {
+            targetUrl = searchEngineUrl + encodeUrl(selection);
+        }
+        browser.windows.create({
+            titlePreface: 'Search results for "' + selection + '"',
+            url: targetUrl
+        }).then(function() {
+            browser.windows.getCurrent({populate: false}).then(function(windowInfo) {
+                var currentWindowId = windowInfo.id;
+                for (let i=1; i < multiTabSearchEngineIDs.length; i++) {
+                    searchEngineUrl = searchEngines[multiTabSearchEngineIDs[i]].url;
+                    if (searchEngineUrl.includes("{search terms}")) {
+                        targetUrl = searchEngineUrl.replace("{search terms}", encodeUrl(selection));
+                    } else if (searchEngineUrl.includes("%s")) {
+                        targetUrl = searchEngineUrl.replace("%s", encodeUrl(selection));
+                    } else {
+                        targetUrl = searchEngineUrl + encodeUrl(selection);
+                    }
+                    browser.tabs.create({
+                        active: false,
+                        index: i,
+                        url: targetUrl,
+                        windowId: currentWindowId
+                    });
+                }
+            });
+        });
+    });
+}
+
 function searchUsing(id) {
     browser.storage.sync.get(null).then(function(data){
         searchEngines = sortByIndex(data);
         var url = searchEngines[id].url + selection;
+
+        // Get the tab position of the active tab in the current window
         browser.tabs.query({
             currentWindow: true, 
             active: true,
