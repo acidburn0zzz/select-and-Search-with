@@ -257,24 +257,32 @@ function handleEmptySelection(x, y) {
         range = document.caretPositionFromPoint(x, y);
         node = range.offsetNode;
         offset = range.offset;
-    } else if (document.caretRangeFromPoint) {
-        range = document.caretRangeFromPoint(x, y);
-        node = range.startContainer;
-        offset = range.startOffset;
+    } else {
+        return word;
     }
   
-    if (node.nodeType == 3) {
+    if (node.nodeType === 3) {
         text = node.textContent;
-        let strA = text.substring(0, offset + 1).trim();
-        let strB = text.substring(offset + 1, text.length);
+        text = text.replace(/\u00A0/g, " "); // Replace non breaking space (ASCII code 160) with a standrad space character
+        // Test for 'space' character under mouse pointer
+        let testChar = text.charAt(offset);
+        console.log("testChar >>>" + testChar + "<<<");
+        if (testChar === " " || testChar === "") return word;
+
+        // If the character under the mouse pointer is not a 'space', then...
+        let strA = text.substring(0, offset + 1);
+        let strB = text.substring(offset + 1);
         startOffset = strA.lastIndexOf(" ") + 1;
-        strWord = strA.substring(startOffset, strA.length);
-        if (strB.charAt(0) !== " ") {
-            strWord += strB.substring(0, strB.indexOf(" "));
-        }
-        word = pattern.exec(strWord)[0];
+        strWord = strA.split(" ").pop() + strB.split(" ").shift();
+        console.log("strA: " + strA);
+        console.log("strB: " + strB);
+        console.log("word under mouse pointer >>>" + strWord + "<<<");
+        word = pattern.exec(strWord).pop();
+    } else {
+        return word;
     }
 
+    console.log("word >>>" + word + "<<<");
     if (word !== "") {
         selection = window.getSelection();
         endOffset = startOffset + word.length;
