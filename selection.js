@@ -231,7 +231,7 @@ function removeBorder(e) {
 }
 
 function getSelectionTextValue(x, y) {
-	var selectedTextValue = ""; // get the current value, not a cached value
+    var selectedTextValue = ""; // get the current value, not a cached value
 	
 	if (window.getSelection){ // all modern browsers and IE9+
         selectedTextValue = window.getSelection().toString();
@@ -241,11 +241,14 @@ function getSelectionTextValue(x, y) {
         if (selectedTextInput != "") selectedTextValue = selectedTextInput;
     }
     
-    if (selectedTextValue === "") {
-        selectedTextValue = handleEmptySelection(x, y);
-    }
+    browser.storage.local.get("handleEmptySelection").then(function (data) {
+        let hes = data.handleEmptySelection;
+        if (selectedTextValue === "" && hes) {
+            selectedTextValue = handleEmptySelection(x, y);
+        }
+        selectedText = selectedTextValue;
+    }, onError);
 
-    selectedText = selectedTextValue;
 }
 
 function handleEmptySelection(x, y) {
