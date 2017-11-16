@@ -119,6 +119,7 @@ function detectStorageSupportAndLoadSearchEngines() {
         } else {
             searchEngines = sortByIndex(data);
             initializeFavicons();
+            rebuildContextMenu();
         }
 	}
 
@@ -148,6 +149,7 @@ function loadSearchEngines(jsonFile) {
             }
             // Fetch missing favicon urls and generate corresponding base 64 images
             initializeFavicons();
+            rebuildContextMenu();
             browser.storage.sync.set(searchEngines).then(function() {
                 if (reset) {
                     browser.runtime.sendMessage({"action": "searchEnginesLoaded", "data": searchEngines}).then(null, onError);
@@ -359,9 +361,9 @@ function processSearch(info, tab){
     if(!isNaN(id)){
 		let searchEngineUrl = searchEngines[searchEnginesArray[id]].url;
         if (searchEngineUrl.includes("{search terms}")) {
-            targetUrl = searchEngineUrl.replace("{search terms}", encodeUrl(selection));
+            targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
         } else if (searchEngineUrl.includes("%s")) {
-			targetUrl = searchEngineUrl.replace("%s", encodeUrl(selection));
+			targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(selection));
         } else {
             targetUrl = searchEngineUrl + encodeUrl(selection);
         }
@@ -381,9 +383,9 @@ function processMultiTabSearch() {
         }
         var searchEngineUrl = searchEngines[multiTabSearchEngineIDs[0]].url;
         if (searchEngineUrl.includes("{search terms}")) {
-            targetUrl = searchEngineUrl.replace("{search terms}", encodeUrl(selection));
+            targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
         } else if (searchEngineUrl.includes("%s")) {
-            targetUrl = searchEngineUrl.replace("%s", encodeUrl(selection));
+            targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(selection));
         } else {
             targetUrl = searchEngineUrl + encodeUrl(selection);
         }
@@ -396,9 +398,9 @@ function processMultiTabSearch() {
                 for (let i=1; i < multiTabSearchEngineIDs.length; i++) {
                     searchEngineUrl = searchEngines[multiTabSearchEngineIDs[i]].url;
                     if (searchEngineUrl.includes("{search terms}")) {
-                        targetUrl = searchEngineUrl.replace("{search terms}", encodeUrl(selection));
+                        targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
                     } else if (searchEngineUrl.includes("%s")) {
-                        targetUrl = searchEngineUrl.replace("%s", encodeUrl(selection));
+                        targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(selection));
                     } else {
                         targetUrl = searchEngineUrl + encodeUrl(selection);
                     }
@@ -417,7 +419,14 @@ function processMultiTabSearch() {
 function searchUsing(id) {
     browser.storage.sync.get(null).then(function(data){
         searchEngines = sortByIndex(data);
-        var url = searchEngines[id].url + selection;
+        var searchEngineUrl = searchEngines[id].url;
+        if (searchEngineUrl.includes("{search terms}")) {
+            targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
+        } else if (searchEngineUrl.includes("%s")) {
+            targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(selection));
+        } else {
+            targetUrl = searchEngineUrl + encodeUrl(selection);
+        }
 
         // Get the tab position of the active tab in the current window
         browser.tabs.query({
@@ -427,7 +436,7 @@ function searchUsing(id) {
             for (let tab of tabs) {
                 tabPosition = tab.index;
             }
-            displaySearchResults(url, tabPosition);
+            displaySearchResults(targetUrl, tabPosition);
         });
     });
 }

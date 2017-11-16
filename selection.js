@@ -59,7 +59,7 @@ function handleRightClickWithGrid(e) {
 
         e.preventDefault();
         e.stopPropagation();
-        sendSelectionTextAndCurrentTabUrl(x, y);
+        sendSelectionTextAndCurrentTabUrl();
         browser.storage.sync.get(null).then(function(data){
             searchEngines = sortByIndex(data);
             buildIconGrid(x, y);
@@ -72,7 +72,7 @@ function handleRightClickWithoutGrid(e) {
     let x = e.clientX;
     let y = e.clientY;
     getSelectionTextValue(x, y);
-    sendSelectionTextAndCurrentTabUrl(x, y);
+    sendSelectionTextAndCurrentTabUrl();
 }
 
 function buildIconGrid(x, y) {
@@ -299,7 +299,7 @@ function handleEmptySelection(x, y) {
     return word;
 }
 
-function sendSelectionTextAndCurrentTabUrl(x, y){
+function sendSelectionTextAndCurrentTabUrl(){
     // Send the selected text to background.js
     if (selectedText != "") sendMessage("getSelectionText", selectedText);
 
