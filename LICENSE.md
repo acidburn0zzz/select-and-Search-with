@@ -1,3 +1,3 @@
-![Creative Commons License](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png)
+Context Search by <a xmlns:cc="http://creativecommons.org/ns#" href="https://addons.mozilla.org/en-US/firefox/addon/contextual-search/?src=userprofile" property="cc:attributionName" rel="cc:attributionURL">Olivier de Broqueville</a> is open source and licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>. You may use the source code under the terms of the Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license (or any later version of the same license) with one exception: the code cannot be used for commercial purposes unless the author of Context Search gives his written permission.
 
-This work is licensed under a **[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/)**.
+Based on a work at <a xmlns:dct="http://purl.org/dc/terms/" href="https://github.com/odebroqueville/contextSearch" rel=“dct:source">https://github.com/odebroqueville/contextSearch</a>.
