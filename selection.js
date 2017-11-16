@@ -44,35 +44,37 @@ function onStorageChanges(changes, area) {
 function handleRightClickWithGrid(e) {
     let x = e.clientX;
     let y = e.clientY;
-	getSelectionTextValue(x, y);
-	if (selectedText !== "") {
-		if (e.target.tagName == "A") {
-			// Do additional safety checks.
-			if (e.target.textContent.indexOf(selectedText) === -1 && selectedText.indexOf(e.target.textContent) === -1){
-				// This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
-				return;
+    getSelectionTextValue(x, y).then(function(text){
+		if (selectedText !== "") {
+			if (e.target.tagName == "A") {
+				// Do additional safety checks.
+				if (e.target.textContent.indexOf(selectedText) === -1 && selectedText.indexOf(e.target.textContent) === -1){
+					// This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
+					return;
+				}
 			}
-        }
 
-		// Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
-		// Test URL: https://github.com/odebroqueville/contextSearch/
+			// Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
+			// Test URL: https://github.com/odebroqueville/contextSearch/
 
-        e.preventDefault();
-        e.stopPropagation();
-        sendSelectionTextAndCurrentTabUrl();
-        browser.storage.sync.get(null).then(function(data){
-            searchEngines = sortByIndex(data);
-            buildIconGrid(x, y);
-        }, onError);
-        return false;
-	}
+			e.preventDefault();
+			e.stopPropagation();
+			sendSelectionTextAndCurrentTabUrl(x, y);
+			browser.storage.sync.get(null).then(function(data){
+				searchEngines = sortByIndex(data);
+				buildIconGrid(x, y);
+			}, onError);
+			return false;
+		}
+	}, onError);
 }
 
 function handleRightClickWithoutGrid(e) {
     let x = e.clientX;
     let y = e.clientY;
-    getSelectionTextValue(x, y);
-    sendSelectionTextAndCurrentTabUrl();
+    getSelectionTextValue(x, y).then(function(text){
+		sendSelectionTextAndCurrentTabUrl(x, y);
+	}, onError);
 }
 
 function buildIconGrid(x, y) {
@@ -94,7 +96,7 @@ function buildIconGrid(x, y) {
     // Cleanup
     let navExisting = document.getElementById("cs-grid");
     if (navExisting != null) {
-		navExisting.parentElement.removeChild(navExisting);
+        navExisting.parentElement.removeChild(navExisting);
     }
 
     let nav = document.createElement("nav");
@@ -139,7 +141,7 @@ function buildIconGrid(x, y) {
             liItem.setAttribute("id", id);
             liItem.style.margin = "0px";
             liItem.style.padding = "0px";
-			img.setAttribute("src", src);
+            img.setAttribute("src", src);
             img.setAttribute("title", title);
             img.style.margin = "0px";
             img.style.padding = "0px";
@@ -231,24 +233,28 @@ function removeBorder(e) {
 }
 
 function getSelectionTextValue(x, y) {
-    var selectedTextValue = ""; // get the current value, not a cached value
-	
-	if (window.getSelection){ // all modern browsers and IE9+
-        selectedTextValue = window.getSelection().toString();
-    }
-    if (document.activeElement != null && (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT")){
-        let selectedTextInput = document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-        if (selectedTextInput != "") selectedTextValue = selectedTextInput;
-    }
+    return new Promise(function(resolve, reject) {
+        var selectedTextValue = ""; // get the current value, not a cached value
     
-    browser.storage.local.get("handleEmptySelection").then(function (data) {
-        let hes = data.handleEmptySelection;
-        if (selectedTextValue === "" && hes) {
-            selectedTextValue = handleEmptySelection(x, y);
+        if (window.getSelection){ // all modern browsers and IE9+
+            selectedTextValue = window.getSelection().toString();
         }
-        selectedText = selectedTextValue;
-    }, onError);
-
+        if (document.activeElement != null && (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT")){
+            let selectedTextInput = document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
+            if (selectedTextInput != "") selectedTextValue = selectedTextInput;
+        }
+        
+        browser.storage.local.get("handleEmptySelection").then(function (data) {
+            let hes = data.handleEmptySelection;
+            if (selectedTextValue === "" && hes) {
+                selectedTextValue = handleEmptySelection(x, y);
+            }
+            selectedText = selectedTextValue;
+            resolve(selectedText); // resolve the promise (returning to the then function)
+        }, function(error){
+            reject("Failed to get option handleEmptySelection, error was " + error);
+        });
+    });
 }
 
 function handleEmptySelection(x, y) {
@@ -299,7 +305,7 @@ function handleEmptySelection(x, y) {
     return word;
 }
 
-function sendSelectionTextAndCurrentTabUrl(){
+function sendSelectionTextAndCurrentTabUrl(x, y){
     // Send the selected text to background.js
     if (selectedText != "") sendMessage("getSelectionText", selectedText);
 
@@ -328,5 +334,5 @@ function isEncoded(uri) {
 }
 
 function sendMessage(action, data){
-	browser.runtime.sendMessage({"action": action, "data": data});
+    browser.runtime.sendMessage({"action": action, "data": data});
 }
