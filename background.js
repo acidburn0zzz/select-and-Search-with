@@ -523,7 +523,7 @@ function buildSuggestion(text) {
     let searchTerms = text.replace(keyword, "").trim();
     console.log(searchTerms);
 
-	// Only make suggestions available and check for existance of a search engine when there is a space.
+	// Only make suggestions available and check for existence of a search engine when there is a space.
 	if (text.indexOf(" ") === -1) {
 		lastAddressBarKeyword = "";
 		return result;
@@ -537,7 +537,16 @@ function buildSuggestion(text) {
     for (let id in searchEngines) {
         if (searchEngines[id].keyword === keyword) {
             let suggestion = {};
-            suggestion["content"] = searchEngines[id].url + searchTerms;
+            let targetUrl = "";
+            let searchEngineUrl = searchEngines[id].url;
+            if (searchEngineUrl.includes("{search terms}")) {
+                targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(searchTerms));
+            } else if (searchEngineUrl.includes("%s")) {
+                targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(searchTerms));
+            } else {
+                targetUrl = searchEngineUrl + encodeUrl(searchTerms);
+            }
+            suggestion["content"] = targetUrl;
             suggestion["description"] = "Search " + searchEngines[id].name + " for " + searchTerms;
             result.push(suggestion);
             return result;
