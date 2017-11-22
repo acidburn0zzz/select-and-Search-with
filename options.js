@@ -8,7 +8,7 @@ const tabMode = document.getElementById("tabMode");
 const tabActive = document.getElementById("tabActive");
 const active = document.getElementById("active");
 const gridMode = document.getElementById("gridMode");
-const optionsMenuAtTop = document.getElementById("optionsMenuAtTop");
+const optionsMenuLocation = document.getElementById("optionsMenuLocation");
 const handleEmptySelection = document.getElementById("handleEmptySelection");
 let storageSyncCount = 0;
 
@@ -137,6 +137,8 @@ function createLineItem(id, searchEngine) {
 
     inputMultiTab.setAttribute("type", "checkbox");
     inputMultiTab.setAttribute("id", id + "-mt");
+    inputMultiTab.setAttribute("title", "Use this search engine in the multitab feature");
+
     inputMultiTab.checked = searchEngine.multitab;
 
     inputQueryString.setAttribute("type", "url");
@@ -348,11 +350,19 @@ function onGot(data) {
     } else { // Default value for gridMode is false
         gridMode.checked = false;
     }
-    if (data.optionsMenuAtTop === true) {
-        optionsMenuAtTop.checked = true;
-    } else { // Default value for optionsMenuAtTop is false
-        optionsMenuAtTop.checked = false;
+
+    if(data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none"){
+		optionsMenuLocation.value = data.optionsMenuLocation;
+    } else {
+		// Keep this for users that are upgrading from an older Context Search version and to set a default value when it has not yet been set
+        if (data.optionsMenuAtTop === true) {
+			optionsMenuLocation.value = "top";
+		} else {
+			// Default value for optionsMenuLocation is bottom
+			optionsMenuLocation.value = "bottom";
+		}
     }
+
     if (data.handleEmptySelection === true || data.handleEmptySelection === false) {
         handleEmptySelection.checked = data.handleEmptySelection;
     } else {
@@ -365,7 +375,7 @@ function onGot(data) {
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     browser.storage.sync.get(null).then(listSearchEngines);
-    browser.storage.local.get(["tabMode", "tabActive", "gridMode", "optionsMenuAtTop", "handleEmptySelection"]).then(onGot, onError);
+    browser.storage.local.get(["tabMode", "tabActive", "gridMode", "optionsMenuAtTop", "optionsMenuLocation", "handleEmptySelection"]).then(onGot, onError);
 }
 
 function removeHyperlink(event) {
@@ -423,14 +433,13 @@ function updateGridMode() {
     browser.storage.local.set({"gridMode": gm}).then(null, onError);
 }
 
-function updateOptionsMenuAtTop() {
-    let omat = optionsMenuAtTop.checked;
-    browser.storage.local.set({"optionsMenuAtTop": omat}).then(null, onError);
+function updateOptionsMenuLocation() {
+    let omat = optionsMenuLocation.value;
+    browser.storage.local.set({"optionsMenuLocation": omat}).then(null, onError);
 }
 
 function updateEmptySelectionHandler() {
     let hes = handleEmptySelection.checked;
-    console.log("hes updated to: " + hes);
     browser.storage.local.set({"handleEmptySelection": hes}).then(null, onError);
 }
 
@@ -455,7 +464,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
 gridMode.addEventListener("click", updateGridMode);
-optionsMenuAtTop.addEventListener("click", updateOptionsMenuAtTop);
+optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
 handleEmptySelection.addEventListener("click", updateEmptySelectionHandler);
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById("clearAll").addEventListener("click", clearAll);

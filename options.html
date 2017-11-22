@@ -1,147 +1,192 @@
 <!DOCTYPE html>
-
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Context Search Preferences</title>
-    <style>
-      body {
-        font-family: Calibri, Helvetica, Arial, sans-serif;
-        font-size: 10pt;
-        color:darkslategrey;
-      }
+	<head>
+		<meta charset="utf-8">
+		<title>Context Search Preferences</title>
+		<style>
+			body {
+			  font-family: Calibri, Helvetica, Arial, sans-serif;
+			  font-size: 10pt;
+			  color:darkslategrey;
+			}
 
-      fieldset {
-        width: 500px;
-      }
+			.left fieldset {
+			  width: 500px;
+			}
 
-      input[type="checkbox"] {
-        display: inline-block;
-        width: 15px;
-      }
+			input[type="checkbox"] {
+			  display: inline-block;
+			  width: 15px;
+			}
 
-      label, #name {
-        display: inline-block;
-        width: 220px;
-      }
+			#container label, #container #name {
+			  display: inline-block;
+			  width: 220px;
+			}
 
-      input[type="radio"] + label {
-        width: 120px;
-      }
+			input[type="radio"] + label {
+			  width: 120px;
+			}
 
-      input#gridMode + label, input#optionsMenuAtTop + label, input#handleEmptySelection + label {
-        width: 600px;
-      }
+			input#gridMode + label, input#optionsMenuAtTop + label, input#handleEmptySelection + label {
+			  width: 600px;
+			}
 
-      input[type="url"] {
-        display: inline-block;
-        width: 400px;
-        margin-left: 10px;
-      }
+			#container input[type="url"] {
+			  display: inline-block;
+			  width: 400px;
+			  margin-left: 10px;
+			}
 
-      .keyword {
-        width: 100px;
-        margin-left: 10px;
-      }
+			#container .keyword {
+			  width: 100px;
+			  margin-left: 10px;
+			}
 
-      h2 {
-        font-size: 12pt;
-      }
+			h2 {
+			  font-size: 12pt;
+			}
 
-      button {
-        margin-left: 10px;
-      }
+			#container button {
+			  margin-left: 10px;
+			}
 
-      li {
-        margin-bottom: 5px;
-      }
+			#container li {
+			  margin-bottom: 5px;
+			}
 
-	   li:first-child > button.up {
-        visibility: hidden;
-      }
+		    #container li:first-child > button.up {
+			  visibility: hidden;
+			}
 
-      li:last-child > button.down {
-        visibility: hidden;
-      }
+			#container li:last-child > button.down {
+			  visibility: hidden;
+			}
 
-      #upl {
-        margin-top: 10px;
-        margin-bottom: 8px;
-      }
-        
-      #addSearchEngine {
-          margin-left: 40px;
-      }
+			#upl {
+			  margin-top: 10px;
+			  margin-bottom: 8px;
+			}
+			  
+			#addSearchEngine {
+				margin-left: 40px;
+			}
 
-    </style>
-  </head>
+			.flexbox-container {
+				display: -ms-flex;
+				display: -webkit-flex;
+				display: flex;
+			}
 
-<body>
-    <form>
-      <h2>Context Search Preferences</h2>
+			.flexbox-container > div:first-child {
+				width: 30%;
+				padding: 10px;
+			}
 
-      <fieldset>
-        <legend><h4>Where would you like the search results to appear?</h4></legend>
-        <div id="tabMode">
-          <input type="radio" id="openNewTab" name="results" value="openNewTab" checked>
-          <label for="openNewTab">In a new tab</label>
-    
-          <input type="radio" id="sameTab" name="results" value="sameTab">
-          <label for="sameTab">In the same tab</label>
-    
-          <input type="radio" id="openNewWindow" name="results" value="openNewWindow">
-          <label for="openNewWindow">In a new window</label>
-        </div>
-      </fieldset>
+			.flexbox-container > div {
+				width: 70%;
+				padding: 10px;
+			}
 
-      <br />
-      <div id="active">
-        <input type=checkbox id="tabActive"><label for="tabActive">Make the new tab or window active</label>
-      </div>
-      <br />
-      <input type=checkbox id="optionsMenuAtTop"><label for="optionsMenuAtTop">Place options menu at top of context menu</label>
-      <br />
-      <input type=checkbox id="handleEmptySelection"><label for="handleEmptySelection">When no text is selected, right-clicking should select the word behind the mouse pointer</label>
-      <br />
-      <input type=checkbox id="gridMode"><label for="gridMode">Display a grid of icons instead of a list of search engines</label>
-      <p><em>Warning: </em>Please note that enabling this feature will prevent context menus from other extensions to be displayed.</p>
-      <br />
-      <br />
-      <h2>Which search engines would you like to appear in the context menu?</h2>
-      <input type="button" value="Clear All" id="clearAll" />
-      <input type="button" value="Select All" id="selectAll" />
-      <input type="button" value="Reset" id="reset" />
-      <br />
-      <br />
-      <div id="container">
-      </div>
-      <br />
-      <div id="addSearchEngine">
-        <input type="checkbox" id="show" />
-        <input type="text" id="name" placeholder="Search engine name" />
-        <input type="text" id="keyword" class="keyword" placeholder="Keyword" />
-        <input type="checkbox" id="multitab" />
-        <input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" />
-        <button type="button" id="add">Add Search Engine</button>
-      </div>
-      <br />
-      <input type="button" value="Save preferences" id="save" />
+			.flexbox-container > div:first-child {
+				margin-right: 20px;
+			}
 
-      <h2>Import/export search engines</h2>
+		</style>
+	</head>
+	<body>
+		<form>
+		<h2>Context Search Preferences</h2>
 
-      <table>
-		  <tr>
-			<td><label for="upload" id="upl">Import JSON from local disk</label></td>
-			<td><input type="file" id="upload" /></td>
-		  </tr>
-		  <tr>
-			<td><label for="download">Export search engines to JSON</label></td>
-			<td><input type="button" value="Export to local disk" id="download" /></td>
-		  </tr>
-      </table>
-    </form>
-    <script src="options.js"></script>
-    <script src="sort.js"></script>
-</body>
+		<div class="flexbox-container">
+			<div class="left">
+				<fieldset style="display:inline-block">
+					<legend><h4>Where would you like the search results to appear?</h4></legend>
+					<div id="tabMode">
+						<input type="radio" id="openNewTab" name="results" value="openNewTab" checked>
+						<label for="openNewTab">In a new tab</label>
+				
+						<input type="radio" id="sameTab" name="results" value="sameTab">
+						<label for="sameTab">In the same tab</label>
+				
+						<input type="radio" id="openNewWindow" name="results" value="openNewWindow">
+						<label for="openNewWindow">In a new window</label>
+					</div>
+					
+					<div id="active">
+						<input type="checkbox" id="tabActive"><label for="tabActive">Make the new tab or window active</label>
+					</div>
+				</fieldset>
 
+				<fieldset style="display:inline-block">
+					<legend><h4>Context Menu items</h4></legend>
+					<div>
+						<label for="optionsMenuLocation">Where would you like the options menu to appear in the context menu of Context Search?</label><br />
+						<select id="optionsMenuLocation">
+							<option value="bottom" selected>At the bottom</option>
+							<option value="top">At the top</option>
+							<option value="none">Neither - hide the options menu</option>
+						</select>
+					</div>
+				</fieldset>
+				
+				<fieldset style="display:inline-block">
+					<legend><h4>Search engines grid feature</h4></legend>				
+					<div>
+						<input type="checkbox" id="gridMode"><label for="gridMode">Display a grid of icons instead of a list of search engines</label>
+						<p><em>Warning: </em>Please note that enabling this feature will prevent context menus from other extensions to be displayed.</p>
+					</div>
+				</fieldset>
+				
+				<input type="checkbox" id="handleEmptySelection"><label for="handleEmptySelection">When no text is selected, right-clicking should select the word behind the mouse pointer</label>
+				
+				<fieldset>
+					<legend><h4>Import/export search engines</h4></legend>
+					<div>
+						<table>
+						  <tr>
+							<td><label for="upload" id="upl">Import JSON from local disk</label></td>
+							<td><input type="file" id="upload" /></td>
+						  </tr>
+						  <tr>
+							<td><label for="download">Export search engines to JSON</label></td>
+							<td><input type="button" value="Export to local disk" id="download" /></td>
+						  </tr>
+						</table>
+					</div>
+				</fieldset>
+				
+				<br />
+				<input type="button" value="Save preferences" id="save" />
+			</div>
+			<div class="right">
+				
+				<fieldset>
+					<legend><h4>Which search engines would you like to appear in the context menu or grid?</h4></legend>
+					<div>
+				
+					<input type="button" value="Clear All" id="clearAll" />
+					<input type="button" value="Select All" id="selectAll" />
+					<input type="button" value="Reset" id="reset" />
+					<br />
+					<br />
+					<div id="container">
+					</div>
+					<br />
+					<div id="addSearchEngine">
+					  <input type="checkbox" id="show" title="Show search engine in grid or context menu" checked="true" />
+					  <input type="text" id="name" placeholder="Search engine name" />
+					  <input type="text" id="keyword" class="keyword" placeholder="Keyword" />
+					  <input type="checkbox" id="multitab" title="Use this search engine in the multitab feature" />
+					  <input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" />
+					  <button type="button" id="add">Add Search Engine</button>
+					</div>
+				</fieldset>
+				
+			</div>
+			
+		</form>
+		<script src="options.js"></script>
+		<script src="sort.js"></script>
+	</body>
 </html>
