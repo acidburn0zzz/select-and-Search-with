@@ -42,39 +42,42 @@ function onStorageChanges(changes, area) {
 }
 
 function handleRightClickWithGrid(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
     let x = e.clientX;
     let y = e.clientY;
+
     getSelectionTextValue(x, y).then(function(text){
-		if (selectedText !== "") {
-			if (e.target.tagName == "A") {
-				// Do additional safety checks.
-				if (e.target.textContent.indexOf(selectedText) === -1 && selectedText.indexOf(e.target.textContent) === -1){
-					// This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
-					return;
-				}
-			}
+        if (selectedText !== "") {
+            if (e.target.tagName == "A") {
+                // Do additional safety checks.
+                if (e.target.textContent.indexOf(selectedText) === -1 && selectedText.indexOf(e.target.textContent) === -1){
+                    // This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
+                    return;
+                }
+            }
 
-			// Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
-			// Test URL: https://github.com/odebroqueville/contextSearch/
+            // Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
+            // Test URL: https://github.com/odebroqueville/contextSearch/
 
-			e.preventDefault();
-			e.stopPropagation();
-			sendSelectionTextAndCurrentTabUrl(x, y);
-			browser.storage.sync.get(null).then(function(data){
-				searchEngines = sortByIndex(data);
-				buildIconGrid(x, y);
-			}, onError);
-			return false;
-		}
-	}, onError);
+            sendSelectionTextAndCurrentTabUrl();
+            browser.storage.sync.get(null).then(function(data){
+                searchEngines = sortByIndex(data);
+                buildIconGrid(x, y);
+            }, onError);
+            return false;
+        }
+    }, onError);
 }
 
 function handleRightClickWithoutGrid(e) {
     let x = e.clientX;
     let y = e.clientY;
+
     getSelectionTextValue(x, y).then(function(text){
-		sendSelectionTextAndCurrentTabUrl(x, y);
-	}, onError);
+        sendSelectionTextAndCurrentTabUrl();
+    }, onError);
 }
 
 function buildIconGrid(x, y) {
@@ -305,7 +308,7 @@ function handleEmptySelection(x, y) {
     return word;
 }
 
-function sendSelectionTextAndCurrentTabUrl(x, y){
+function sendSelectionTextAndCurrentTabUrl(){
     // Send the selected text to background.js
     if (selectedText != "") sendMessage("getSelectionText", selectedText);
 
