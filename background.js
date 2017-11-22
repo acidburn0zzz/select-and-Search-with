@@ -15,7 +15,7 @@ let reset = false;
 let browserVersion = 45;
 
 /// Preferences
-let optionsMenuAtTop = false;
+let contextsearch_optionsMenuLocation = "";
 let contextsearch_openSearchResultsInNewTab = true;
 let contextsearch_makeNewTabOrWindowActive = false;
 let contextsearch_openSearchResultsInNewWindow = false;
@@ -53,7 +53,7 @@ function init() {
 
     browser.storage.local.get(["tabMode", "tabActive"]).then(fetchTabMode, onError);
     browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
-    browser.storage.local.get("optionsMenuAtTop").then(setOptionsMenu, onError);
+    browser.storage.local.get(["optionsMenuAtTop", "optionsMenuLocation"]).then(setOptionsMenu, onError);
 
     // getBrowserInfo
     function gotBrowserInfo(info){
@@ -161,7 +161,7 @@ function loadSearchEngines(jsonFile) {
     xhr.send();
 }
 
-/// Get and store favicon urls and base 64 images
+/// Get and store favicon urls and base64 images
 function initializeFavicons() {
     remainingItems = Object.keys(searchEngines).length;
     for (let id in searchEngines) {
@@ -172,7 +172,7 @@ function initializeFavicons() {
             let faviconUrl = "https://icons.better-idea.org/icon?url=" + domain + "&size=24..32..64";
             getBase64Image(id, faviconUrl).then(function (base64String) {
                 remainingItems = remainingItems - 1;
-                console.log("remaining items: " + remainingItems);
+                //console.log("remaining items: " + remainingItems);
                 searchEngines[id]["base64"] = base64String;
                 if (remainingItems === 0) {
                     console.log(searchEngines);
@@ -249,15 +249,21 @@ function onStorageChanges(changes, area) {
     } else if (area === "local") {
         browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onError);
         browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
-        browser.storage.local.get("optionsMenuAtTop").then(setOptionsMenu, onError);
+        browser.storage.local.get(["optionsMenuAtTop", "optionsMenuLocation"]).then(setOptionsMenu, onError);
     }
 }
 
 function setOptionsMenu(data) {
-    if (data.optionsMenuAtTop) {
-        optionsMenuAtTop = true;
-    } else { // If optionsMenuAtTop is false or if it is not set
-        optionsMenuAtTop = false; // Default value for optionsMenuAtTop is false
+    if(data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none"){
+		contextsearch_optionsMenuLocation = data.optionsMenuLocation;
+    } else {
+		// Keep this for users that are upgrading from an older Context Search version and to set a default value when it has not yet been set
+        if (data.optionsMenuAtTop === true) {
+			contextsearch_optionsMenuLocation = "top";
+		} else {
+			// Default value for optionsMenuLocation is bottom
+			contextsearch_optionsMenuLocation = "bottom";
+		}
     }
     rebuildContextMenu();
 }
@@ -269,27 +275,8 @@ function rebuildContextMenu() {
 
 	browser.storage.sync.get(null).then(
 		(data) => {
-			 if (optionsMenuAtTop) {
-                browser.contextMenus.create({
-					id: "cs-multitab",
-					title: "Multiple tabs search",
-					contexts: ["selection"]
-				});
-				browser.contextMenus.create({
-					id: "cs-google-site",
-					title: "Search this site with Google",
-					contexts: ["selection"]
-				});
-				browser.contextMenus.create({
-					id: "cs-options",
-					title: "Options...",
-					contexts: ["selection"]
-				});
-				browser.contextMenus.create({
-					id: "cs-separator",
-					type: "separator",
-					contexts: ["selection"]
-				});
+			if (contextsearch_optionsMenuLocation == "top") {
+                rebuildContextOptionsMenu();
 			}
 
 			searchEngines = sortByIndex(data);
@@ -307,32 +294,36 @@ function rebuildContextMenu() {
 				index += 1;
 			}
 
-			if (!optionsMenuAtTop) {
-				browser.contextMenus.create({
-					id: "cs-separator",
-					type: "separator",
-					contexts: ["selection"]
-                });
-                browser.contextMenus.create({
-					id: "cs-multitab",
-					title: "Multiple tabs search",
-					contexts: ["selection"]
-				});
-				browser.contextMenus.create({
-					id: "cs-google-site",
-					title: "Search this site with Google",
-					contexts: ["selection"]
-				});
-				browser.contextMenus.create({
-					id: "cs-options",
-					title: "Options...",
-					contexts: ["selection"]
-				});
+			if (contextsearch_optionsMenuLocation == "bottom") {
+				rebuildContextOptionsMenu();
 			}
 		}
 	);
 
 	browser.contextMenus.onClicked.addListener(processSearch);
+}
+
+function rebuildContextOptionsMenu(){
+	browser.contextMenus.create({
+		id: "cs-multitab",
+		title: "Multiple tabs search",
+		contexts: ["selection"]
+	});
+	browser.contextMenus.create({
+		id: "cs-google-site",
+		title: "Search this site with Google",
+		contexts: ["selection"]
+	});
+	browser.contextMenus.create({
+		id: "cs-options",
+		title: "Options...",
+		contexts: ["selection"]
+	});
+	browser.contextMenus.create({
+		id: "cs-separator",
+		type: "separator",
+		contexts: ["selection"]
+	});
 }
 
 // Perform search based on selected search engine, i.e. selected context menu item
