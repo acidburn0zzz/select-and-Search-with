@@ -15,7 +15,7 @@ let reset = false;
 let browserVersion = 45;
 
 /// Preferences
-let contextsearch_optionsMenuLocation = "";
+let contextsearch_optionsMenuLocation = "bottom";
 let contextsearch_openSearchResultsInNewTab = true;
 let contextsearch_makeNewTabOrWindowActive = false;
 let contextsearch_openSearchResultsInNewWindow = false;
@@ -53,7 +53,7 @@ function init() {
 
     browser.storage.local.get(["tabMode", "tabActive"]).then(fetchTabMode, onError);
     browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
-    browser.storage.local.get(["optionsMenuAtTop", "optionsMenuLocation"]).then(setOptionsMenu, onError);
+    browser.storage.local.get("optionsMenuLocation").then(setOptionsMenu, onError);
 
     // getBrowserInfo
     function gotBrowserInfo(info){
@@ -109,7 +109,7 @@ function setGridModeAndBuildContextMenu(data) {
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
 function detectStorageSupportAndLoadSearchEngines() {
-	browser.storage.sync.get(null).then(onGot, onNone);
+    browser.storage.sync.get(null).then(onGot, onNone);
 
     // Load search engines if they're not already loaded in storage sync
 	function onGot(data){
@@ -175,18 +175,18 @@ function initializeFavicons() {
                 //console.log("remaining items: " + remainingItems);
                 searchEngines[id]["base64"] = base64String;
                 if (remainingItems === 0) {
-                    console.log(searchEngines);
+                    //console.log(searchEngines);
                     browser.storage.sync.set(searchEngines).then(null, onError);
                 }
             }).catch(function (e) {
                 remainingItems = remainingItems - 1;
-                console.log("remaining items: " + remainingItems);
-                console.log("Error occured while fetching favicon image for " + id);
-                console.log(e);
+                //console.log("remaining items: " + remainingItems);
+                //console.log("Error occured while fetching favicon image for " + id);
+                //console.log(e);
             });
         } else {
             remainingItems = remainingItems - 1;
-            console.log("remaining items: " + remainingItems);
+            //console.log("remaining items: " + remainingItems);
         }
     }
 }
@@ -249,21 +249,17 @@ function onStorageChanges(changes, area) {
     } else if (area === "local") {
         browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onError);
         browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
-        browser.storage.local.get(["optionsMenuAtTop", "optionsMenuLocation"]).then(setOptionsMenu, onError);
+        browser.storage.local.get("optionsMenuLocation").then(setOptionsMenu, onError);
     }
 }
 
 function setOptionsMenu(data) {
-    if(data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none"){
+    if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
 		contextsearch_optionsMenuLocation = data.optionsMenuLocation;
     } else {
-		// Keep this for users that are upgrading from an older Context Search version and to set a default value when it has not yet been set
-        if (data.optionsMenuAtTop === true) {
-			contextsearch_optionsMenuLocation = "top";
-		} else {
-			// Default value for optionsMenuLocation is bottom
-			contextsearch_optionsMenuLocation = "bottom";
-		}
+        // Set default to "bottom" if no values are set for optionsMenuLocation
+        contextsearch_optionsMenuLocation = "bottom";
+        browser.storage.local.set({"optionsMenuLocation": "bottom"}).then(null, onError);
     }
     rebuildContextMenu();
 }
@@ -275,7 +271,7 @@ function rebuildContextMenu() {
 
 	browser.storage.sync.get(null).then(
 		(data) => {
-			if (contextsearch_optionsMenuLocation == "top") {
+			if (contextsearch_optionsMenuLocation === "top") {
                 rebuildContextOptionsMenu();
 			}
 
@@ -294,7 +290,7 @@ function rebuildContextMenu() {
 				index += 1;
 			}
 
-			if (contextsearch_optionsMenuLocation == "bottom") {
+			if (contextsearch_optionsMenuLocation === "bottom") {
 				rebuildContextOptionsMenu();
 			}
 		}
@@ -304,7 +300,14 @@ function rebuildContextMenu() {
 }
 
 function rebuildContextOptionsMenu(){
-	browser.contextMenus.create({
+    if (contextsearch_optionsMenuLocation === "bottom") {
+        browser.contextMenus.create({
+            id: "cs-separator",
+            type: "separator",
+            contexts: ["selection"]
+        });
+    }
+    browser.contextMenus.create({
 		id: "cs-multitab",
 		title: "Multiple tabs search",
 		contexts: ["selection"]
@@ -318,12 +321,14 @@ function rebuildContextOptionsMenu(){
 		id: "cs-options",
 		title: "Options...",
 		contexts: ["selection"]
-	});
-	browser.contextMenus.create({
-		id: "cs-separator",
-		type: "separator",
-		contexts: ["selection"]
-	});
+    });
+    if (contextsearch_optionsMenuLocation === "top") {
+        browser.contextMenus.create({
+            id: "cs-separator",
+            type: "separator",
+            contexts: ["selection"]
+        });
+    }
 }
 
 // Perform search based on selected search engine, i.e. selected context menu item

@@ -9,7 +9,6 @@ const tabActive = document.getElementById("tabActive");
 const active = document.getElementById("active");
 const gridMode = document.getElementById("gridMode");
 const optionsMenuLocation = document.getElementById("optionsMenuLocation");
-const handleEmptySelection = document.getElementById("handleEmptySelection");
 let storageSyncCount = 0;
 
 // Send a message to the background script
@@ -362,20 +361,13 @@ function onGot(data) {
 			optionsMenuLocation.value = "bottom";
 		}
     }
-
-    if (data.handleEmptySelection === true || data.handleEmptySelection === false) {
-        handleEmptySelection.checked = data.handleEmptySelection;
-    } else {
-        handleEmptySelection.checked = false;
-        browser.storage.local.set({"handleEmptySelection": false}).then(null, onError);
-    }
     
 }
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     browser.storage.sync.get(null).then(listSearchEngines);
-    browser.storage.local.get(["tabMode", "tabActive", "gridMode", "optionsMenuAtTop", "optionsMenuLocation", "handleEmptySelection"]).then(onGot, onError);
+    browser.storage.local.get(["tabMode", "tabActive", "gridMode", "optionsMenuAtTop", "optionsMenuLocation"]).then(onGot, onError);
 }
 
 function removeHyperlink(event) {
@@ -438,11 +430,6 @@ function updateOptionsMenuLocation() {
     browser.storage.local.set({"optionsMenuLocation": omat}).then(null, onError);
 }
 
-function updateEmptySelectionHandler() {
-    let hes = handleEmptySelection.checked;
-    browser.storage.local.set({"handleEmptySelection": hes}).then(null, onError);
-}
-
 function isValidUrl(url) {
     try {
         (new URL(url));
@@ -465,7 +452,6 @@ tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
 gridMode.addEventListener("click", updateGridMode);
 optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
-handleEmptySelection.addEventListener("click", updateEmptySelectionHandler);
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById("clearAll").addEventListener("click", clearAll);
 document.getElementById("selectAll").addEventListener("click", selectAll);

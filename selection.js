@@ -15,7 +15,7 @@ function init() {
     browser.storage.local.get("gridMode").then(function(data){
         if (data.gridMode === true || data.gridMode === false) {
             gridMode = data.gridMode;
-            if (gridMode) { // If gridMode is now set
+            if (gridMode === true) { // If gridMode is now set
                 document.addEventListener("contextmenu", handleRightClickWithGrid);
             } else { // If gridMode is turned off
                 document.addEventListener("contextmenu", handleRightClickWithoutGrid);
@@ -48,36 +48,34 @@ function handleRightClickWithGrid(e) {
     let x = e.clientX;
     let y = e.clientY;
 
-    getSelectionTextValue(x, y).then(function(text){
-        if (selectedText !== "") {
-            if (e.target.tagName == "A") {
-                // Do additional safety checks.
-                if (e.target.textContent.indexOf(selectedText) === -1 && selectedText.indexOf(e.target.textContent) === -1){
-                    // This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
-                    return;
-                }
+    getSelectionTextValue(x, y);
+    if (selectedText !== "") {
+        if (e.target.tagName == "A") {
+            // Do additional safety checks.
+            if (e.target.textContent.indexOf(selectedText) === -1 && selectedText.indexOf(e.target.textContent) === -1){
+                // This is not safe. There is a selection on the page, but the element that right clicked does not contain a part of the selection
+                return;
             }
-
-            // Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
-            // Test URL: https://github.com/odebroqueville/contextSearch/
-
-            sendSelectionTextAndCurrentTabUrl();
-            browser.storage.sync.get(null).then(function(data){
-                searchEngines = sortByIndex(data);
-                buildIconGrid(x, y);
-            }, onError);
-            return false;
         }
-    }, onError);
+
+        // Test URL: https://bugzilla.mozilla.org/show_bug.cgi?id=1215376
+        // Test URL: https://github.com/odebroqueville/contextSearch/
+
+        sendSelectionTextAndCurrentTabUrl();
+        browser.storage.sync.get(null).then(function(data){
+            searchEngines = sortByIndex(data);
+            buildIconGrid(x, y);
+        }, onError);
+        return false;
+    }
 }
 
 function handleRightClickWithoutGrid(e) {
     let x = e.clientX;
     let y = e.clientY;
 
-    getSelectionTextValue(x, y).then(function(text){
-        sendSelectionTextAndCurrentTabUrl();
-    }, onError);
+    getSelectionTextValue(x, y);
+    sendSelectionTextAndCurrentTabUrl();
 }
 
 function buildIconGrid(x, y) {
@@ -175,12 +173,6 @@ function buildIconGrid(x, y) {
     let viewportHeight = window.innerHeight;
     let navWidth = nav.offsetWidth;
     let navHeight = nav.offsetHeight;
-    console.log("viewport width: " + viewportWidth);
-    console.log("viewport height: " + viewportHeight);
-    console.log("icon grid width: " + navWidth);
-    console.log("icon grid height: " + navHeight);
-    console.log("x: " + x);
-    console.log("y: " + y);
     if (x > viewportWidth - navWidth) {
         nav.style.left = viewportWidth - navWidth + "px";
     } else {
@@ -236,76 +228,17 @@ function removeBorder(e) {
 }
 
 function getSelectionTextValue(x, y) {
-    return new Promise(function(resolve, reject) {
-        var selectedTextValue = ""; // get the current value, not a cached value
+    var selectedTextValue = ""; // get the current value, not a cached value
+
+    if (window.getSelection){ // all modern browsers and IE9+
+        selectedTextValue = window.getSelection().toString();
+    }
+    if (document.activeElement != null && (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT")){
+        let selectedTextInput = document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
+        if (selectedTextInput != "") selectedTextValue = selectedTextInput;
+    }
     
-        if (window.getSelection){ // all modern browsers and IE9+
-            selectedTextValue = window.getSelection().toString();
-        }
-        if (document.activeElement != null && (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT")){
-            let selectedTextInput = document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-            if (selectedTextInput != "") selectedTextValue = selectedTextInput;
-        }
-        
-        browser.storage.local.get("handleEmptySelection").then(function (data) {
-            let hes = data.handleEmptySelection;
-            if (selectedTextValue === "" && hes) {
-                selectedTextValue = handleEmptySelection(x, y);
-            }
-            selectedText = selectedTextValue;
-            resolve(selectedText); // resolve the promise (returning to the then function)
-        }, function(error){
-            reject("Failed to get option handleEmptySelection, error was " + error);
-        });
-    });
-}
-
-function handleEmptySelection(x, y) {
-    var range, node, offset, text, selection, startOffset, endOffset;
-    var strWord = "", word = "";
-    var pattern = /(\w+)/;
-
-    if (document.caretPositionFromPoint) {
-        range = document.caretPositionFromPoint(x, y);
-        node = range.offsetNode;
-        offset = range.offset;
-    } else {
-        return word;
-    }
-  
-    if (node.nodeType === 3) {
-        text = node.textContent;
-        text = text.replace(/\u00A0/g, " "); // Replace non breaking space (ASCII code 160) with a standrad space character
-        // Test for 'space' character under mouse pointer
-        let testChar = text.charAt(offset);
-        console.log("testChar >>>" + testChar + "<<<");
-        if (testChar === " " || testChar === "") return word;
-
-        // If the character under the mouse pointer is not a 'space', then...
-        let strA = text.substring(0, offset + 1);
-        let strB = text.substring(offset + 1);
-        startOffset = strA.lastIndexOf(" ") + 1;
-        strWord = strA.split(" ").pop() + strB.split(" ").shift();
-        console.log("strA: " + strA);
-        console.log("strB: " + strB);
-        console.log("word under mouse pointer >>>" + strWord + "<<<");
-        word = pattern.exec(strWord).pop();
-    } else {
-        return word;
-    }
-
-    console.log("word >>>" + word + "<<<");
-    if (word !== "") {
-        selection = window.getSelection();
-        endOffset = startOffset + word.length;
-        let selectionRange = document.createRange();
-        selectionRange.setStart(node, startOffset);
-        selectionRange.setEnd(node, endOffset);
-        selection.removeAllRanges();
-        selection.addRange(selectionRange);
-    }
-
-    return word;
+    selectedText = selectedTextValue;
 }
 
 function sendSelectionTextAndCurrentTabUrl(){

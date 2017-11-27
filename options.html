@@ -11,7 +11,12 @@
 			}
 
 			.left fieldset {
-			  width: 500px;
+				height: 100px;
+			  width: 410px;
+			}
+
+			.right fieldset {
+				width: 1010px;
 			}
 
 			input[type="checkbox"] {
@@ -21,25 +26,30 @@
 
 			#container label, #container #name {
 			  display: inline-block;
-			  width: 220px;
+			  width: 210px;
+			}
+
+			#addSearchEngine #name {
+				display: inline-block;
+			  width: 195px;
 			}
 
 			input[type="radio"] + label {
 			  width: 120px;
 			}
 
-			input#gridMode + label, input#optionsMenuAtTop + label, input#handleEmptySelection + label {
+			input#gridMode + label, input#optionsMenuAtTop + label {
 			  width: 600px;
 			}
 
-			#container input[type="url"] {
+			#container input[type="url"], #addSearchEngine #url {
 			  display: inline-block;
 			  width: 400px;
 			  margin-left: 10px;
 			}
 
-			#container .keyword {
-			  width: 100px;
+			#container .keyword, #addSearchEngine #keyword {
+			  width: 80px;
 			  margin-left: 10px;
 			}
 
@@ -55,7 +65,7 @@
 			  margin-bottom: 5px;
 			}
 
-		    #container li:first-child > button.up {
+		  #container li:first-child > button.up {
 			  visibility: hidden;
 			}
 
@@ -72,25 +82,32 @@
 				margin-left: 40px;
 			}
 
-			.flexbox-container {
-				display: -ms-flex;
-				display: -webkit-flex;
-				display: flex;
+			#flexbox-container {
+				margin-left: 10px;
 			}
 
-			.flexbox-container > div:first-child {
-				width: 30%;
-				padding: 10px;
+			@media screen and (min-width: 1500px) {
+				#flexbox-container {
+					display: -ms-flex;
+					display: -webkit-flex;
+					display: flex;
+				}
+
+				#flexbox-container > div:first-child {
+					width: 30%;
+					padding: 10px;
+				}
+
+				#flexbox-container > div {
+					width: 70%;
+					padding: 10px;
+				}
+
+				#flexbox-container > div:first-child {
+					margin-right: 10px;
+				}
 			}
 
-			.flexbox-container > div {
-				width: 70%;
-				padding: 10px;
-			}
-
-			.flexbox-container > div:first-child {
-				margin-right: 20px;
-			}
 
 		</style>
 	</head>
@@ -98,10 +115,10 @@
 		<form>
 		<h2>Context Search Preferences</h2>
 
-		<div class="flexbox-container">
+		<div id="flexbox-container">
 			<div class="left">
 				<fieldset style="display:inline-block">
-					<legend><h4>Where would you like the search results to appear?</h4></legend>
+					<legend><h4>Where should search results appear?</h4></legend>
 					<div id="tabMode">
 						<input type="radio" id="openNewTab" name="results" value="openNewTab" checked>
 						<label for="openNewTab">In a new tab</label>
@@ -119,7 +136,7 @@
 				</fieldset>
 
 				<fieldset style="display:inline-block">
-					<legend><h4>Context Menu items</h4></legend>
+					<legend><h4>Position of options in context menu</h4></legend>
 					<div>
 						<label for="optionsMenuLocation">Where would you like the options menu to appear in the context menu of Context Search?</label><br />
 						<select id="optionsMenuLocation">
@@ -131,14 +148,12 @@
 				</fieldset>
 				
 				<fieldset style="display:inline-block">
-					<legend><h4>Search engines grid feature</h4></legend>				
+					<legend><h4>Search engines icon grid mode</h4></legend>				
 					<div>
 						<input type="checkbox" id="gridMode"><label for="gridMode">Display a grid of icons instead of a list of search engines</label>
 						<p><em>Warning: </em>Please note that enabling this feature will prevent context menus from other extensions to be displayed.</p>
 					</div>
 				</fieldset>
-				
-				<input type="checkbox" id="handleEmptySelection"><label for="handleEmptySelection">When no text is selected, right-clicking should select the word behind the mouse pointer</label>
 				
 				<fieldset>
 					<legend><h4>Import/export search engines</h4></legend>
@@ -159,32 +174,31 @@
 				<br />
 				<input type="button" value="Save preferences" id="save" />
 			</div>
+
 			<div class="right">
-				
 				<fieldset>
 					<legend><h4>Which search engines would you like to appear in the context menu or grid?</h4></legend>
 					<div>
-				
-					<input type="button" value="Clear All" id="clearAll" />
-					<input type="button" value="Select All" id="selectAll" />
-					<input type="button" value="Reset" id="reset" />
-					<br />
-					<br />
-					<div id="container">
-					</div>
-					<br />
-					<div id="addSearchEngine">
-					  <input type="checkbox" id="show" title="Show search engine in grid or context menu" checked="true" />
-					  <input type="text" id="name" placeholder="Search engine name" />
-					  <input type="text" id="keyword" class="keyword" placeholder="Keyword" />
-					  <input type="checkbox" id="multitab" title="Use this search engine in the multitab feature" />
-					  <input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" />
-					  <button type="button" id="add">Add Search Engine</button>
+						<input type="button" value="Clear All" id="clearAll" />
+						<input type="button" value="Select All" id="selectAll" />
+						<input type="button" value="Reset" id="reset" />
+						<br />
+						<br />
+						<div id="container">
+						</div>
+						<br />
+						<div id="addSearchEngine">
+							<input type="checkbox" id="show" title="Show search engine in grid or context menu" checked="true" />
+							<input type="text" id="name" placeholder="Search engine name" />
+							<input type="text" id="keyword" class="keyword" placeholder="Keyword" />
+							<input type="checkbox" id="multitab" title="Use this search engine in the multitab feature" />
+							<input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" />
+							<button type="button" id="add">Add Search Engine</button>
+						</div>
 					</div>
 				</fieldset>
-				
 			</div>
-			
+		</div>	
 		</form>
 		<script src="options.js"></script>
 		<script src="sort.js"></script>
