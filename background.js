@@ -33,12 +33,15 @@ browser.runtime.onMessage.addListener(function(message) {
         case "getSelectionText":
             if (message.data) selection = message.data;
             break;
-        case "sendCurrentTabUrl":
-            if (message.data) targetUrl = message.data;
-            break;
         case "reset":
             reset = true;
             loadSearchEngines(DEFAULT_JSON);
+            break;
+        case "sendCurrentTabUrl":
+            if (message.data) targetUrl = message.data;
+            break;
+        case "testSearchEngine":
+            testSearchEngine(message.data);
             break;
         default:
             break;
@@ -355,14 +358,7 @@ function processSearch(info, tab){
     
     // At this point, it should be a number
     if(!isNaN(id)){
-		let searchEngineUrl = searchEngines[searchEnginesArray[id]].url;
-        if (searchEngineUrl.includes("{search terms}")) {
-            targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
-        } else if (searchEngineUrl.includes("%s")) {
-			targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(selection));
-        } else {
-            targetUrl = searchEngineUrl + encodeUrl(selection);
-        }
+		targetUrl = getSearchEngineUrl(searchEngines[searchEnginesArray[id]].url, selection);
         displaySearchResults(targetUrl, tab.index);
     }
 }
@@ -370,36 +366,23 @@ function processSearch(info, tab){
 function processMultiTabSearch() {
     browser.storage.sync.get(null).then(function(data){
         searchEngines = sortByIndex(data);
-        var multiTabSearchEngineIDs = [];
+        let multiTabSearchEngineIDs = [];
         for (let id in searchEngines) {
             if (searchEngines[id].multitab) {
                 multiTabSearchEngineIDs.push(id);
             }
         }
-        var searchEngineUrl = searchEngines[multiTabSearchEngineIDs[0]].url;
-        if (searchEngineUrl.includes("{search terms}")) {
-            targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
-        } else if (searchEngineUrl.includes("%s")) {
-            targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(selection));
-        } else {
-            targetUrl = searchEngineUrl + encodeUrl(selection);
-        }
+        let searchEngineUrl = getSearchEngineUrl(searchEngines[multiTabSearchEngineIDs[0]].url, selection);
 
         browser.windows.create({
             titlePreface: 'Search results for "' + selection + '"',
             url: targetUrl
         }).then(function() {
             browser.windows.getCurrent({populate: false}).then(function(windowInfo) {
-                var currentWindowId = windowInfo.id;
+                let currentWindowId = windowInfo.id;
                 for (let i=1; i < multiTabSearchEngineIDs.length; i++) {
-                    searchEngineUrl = searchEngines[multiTabSearchEngineIDs[i]].url;
-                    if (searchEngineUrl.includes("{search terms}")) {
-                        targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
-                    } else if (searchEngineUrl.includes("%s")) {
-                        targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(selection));
-                    } else {
-                        targetUrl = searchEngineUrl + encodeUrl(selection);
-                    }
+                    targetUrl = getSearchEngineUrl(searchEngines[multiTabSearchEngineIDs[i]].url, selection);
+
                     browser.tabs.create({
                         active: false,
                         index: i,
@@ -410,6 +393,16 @@ function processMultiTabSearch() {
             });
         });
     });
+}
+
+function getSearchEngineUrl(searchEngineUrl, selection){
+	if (searchEngineUrl.includes("{search terms}")) {
+		return searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
+	} else if (searchEngineUrl.includes("%s")) {
+		return searchEngineUrl.replace(/%s/g, encodeUrl(selection));
+	} else {
+		return searchEngineUrl + encodeUrl(selection);
+	}
 }
 
 function searchUsing(id) {
@@ -553,6 +546,12 @@ function buildSuggestion(text) {
 	}
 
     return result;
+}
+
+function testSearchEngine(engineData){
+	// engineData contains a url property
+	let tempTargetUrl = getSearchEngineUrl(engineData.url, "test");
+	browser.tabs.create({url: tempTargetUrl});
 }
 
 /// Generic Error Handler
