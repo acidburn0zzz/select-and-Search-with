@@ -284,6 +284,10 @@ function saveOptions(notification) {
     }
 }
 
+function testSearchEngine() {
+	sendMessage("testSearchEngine", { url: document.getElementById("url").value });
+}
+
 function addSearchEngine() {
     const divSearchEngines = document.getElementById("searchEngines");
     const show = document.getElementById("show"); // Boolean
@@ -447,7 +451,10 @@ function handleMessage(message) {
     }
 }
 
+/// WebExtension event handlers
 browser.runtime.onMessage.addListener(handleMessage);
+
+/// Event handlers
 tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
 gridMode.addEventListener("click", updateGridMode);
@@ -456,6 +463,7 @@ document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById("clearAll").addEventListener("click", clearAll);
 document.getElementById("selectAll").addEventListener("click", selectAll);
 document.getElementById("reset").addEventListener("click", reset);
+document.getElementById("test").addEventListener("click", testSearchEngine);
 document.getElementById("add").addEventListener("click", addSearchEngine);
 document.getElementById("save").addEventListener("click", save);
 document.getElementById("download").addEventListener("click", saveToLocalDisk);

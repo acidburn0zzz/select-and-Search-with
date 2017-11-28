@@ -108,6 +108,11 @@
 					margin-right: 10px;
 				}
 			}
+
+			.buttonrow button {
+				margin-top: 4px;
+				margin-bottom: 4px;
+			}
 		</style>
 	</head>
 	<body>
@@ -187,12 +192,20 @@
 						</div>
 						<br />
 						<div id="addSearchEngine">
-							<input type="checkbox" id="show" title="Show search engine in grid or context menu" checked="true" />
-							<input type="text" id="name" placeholder="Search engine name" />
-							<input type="text" id="keyword" class="keyword" placeholder="Keyword" />
-							<input type="checkbox" id="multitab" title="Use this search engine in the multitab feature" />
-							<input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" />
-							<button type="button" id="add">Add Search Engine</button>
+							<div>
+								<h4 style="margin:0">Add a new search engine</h4>
+							</div>
+								<div><input type="checkbox" id="show" title="Show search engine in grid or context menu" checked="true" />
+								<input type="text" id="name" placeholder="Search engine name" />
+								<input type="text" id="keyword" class="keyword" placeholder="Keyword" />
+								<input type="checkbox" id="multitab" title="Use this search engine in the multitab feature" />
+								<input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" />
+							</div>
+							<div class="buttonrow">
+								<!-- Display on a new line -->
+								<button type="button" id="test" style="margin-left: 26px;">Test Search Engine</button>
+								<button type="button" id="add">Add Search Engine</button>
+							</div>
 						</div>
 					</div>
 				</fieldset>
