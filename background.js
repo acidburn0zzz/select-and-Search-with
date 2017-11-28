@@ -342,13 +342,13 @@ function processSearch(info, tab){
 
     if (id === "google-site" && targetUrl != "") {
         displaySearchResults(targetUrl, tab.index);
-        targetUrl = "";
         return;
     } else if (id === "options") {
         browser.runtime.openOptionsPage().then(null, onError);
         return;
     } else if (id === "multitab") {
         processMultiTabSearch();
+        return;
     }
 
     id = parseInt(id);
@@ -364,8 +364,7 @@ function processSearch(info, tab){
             targetUrl = searchEngineUrl + encodeUrl(selection);
         }
         displaySearchResults(targetUrl, tab.index);
-        targetUrl = "";
-    }    
+    }
 }
 
 function processMultiTabSearch() {
@@ -385,6 +384,7 @@ function processMultiTabSearch() {
         } else {
             targetUrl = searchEngineUrl + encodeUrl(selection);
         }
+
         browser.windows.create({
             titlePreface: 'Search results for "' + selection + '"',
             url: targetUrl
@@ -460,7 +460,7 @@ function displaySearchResults(targetUrl, tabPosition) {
             });
         } else {
             // Open search results in the same tab
-            console.log("Opening search results in same tab");
+            console.log("Opening search results in same tab, url is " + targetUrl);
             browser.tabs.update({url: targetUrl});
         }
     }, onError);
@@ -533,7 +533,6 @@ function buildSuggestion(text) {
     for (let id in searchEngines) {
         if (searchEngines[id].keyword === keyword) {
             let suggestion = {};
-            let targetUrl = "";
             let searchEngineUrl = searchEngines[id].url;
             if (searchEngineUrl.includes("{search terms}")) {
                 targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(searchTerms));
@@ -558,7 +557,7 @@ function buildSuggestion(text) {
 
 /// Generic Error Handler
 function onError(error) {
-    console.log(`${error}`);
+    console.error(`${error}`);
 }
 
 /// Encode a url

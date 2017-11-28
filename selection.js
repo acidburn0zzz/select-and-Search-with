@@ -237,7 +237,7 @@ function getSelectionTextValue(x, y) {
         let selectedTextInput = document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
         if (selectedTextInput != "") selectedTextValue = selectedTextInput;
     }
-    
+
     selectedText = selectedTextValue;
 }
 
