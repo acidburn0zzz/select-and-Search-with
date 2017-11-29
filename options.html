@@ -11,10 +11,11 @@
 			}
 
 			.left fieldset {
-				width: 97%;
+				width: 480px;
+				margin-right: 10px;
 			}
 			.right fieldset {
-				width: 97%;
+				width: 1000px;
 			}
 
 			input[type="checkbox"] {
@@ -84,27 +85,37 @@
 				margin-left: 10px;
 			}
 
-			#flexbox-container > div:first-child, #flexbox-container > div {
-				width: 95%;
+			#flexbox-container > div.left > div.preferences {
+				display: -ms-flex;
+				display: -webkit-flex;
+				display: flex;
+				flex-wrap: wrap;
+				flex-direction: row;
+				align-content: flex-start;
+				padding: 10px;
+				margin-right: 10px;
+			}
+
+			#flexbox-container > div.right {
 				padding: 10px;
 			}
 
-			@media screen and (min-width: 1500px) {
+			@media screen and (min-width: 1520px) {
 				#flexbox-container {
 					display: -ms-flex;
 					display: -webkit-flex;
 					display: flex;
 				}
 
-				#flexbox-container > div:first-child {
+				#flexbox-container .left {
 					width: 30%;
 				}
 
-				#flexbox-container > div {
+				#flexbox-container .right {
 					width: 70%;
 				}
 
-				#flexbox-container > div:first-child {
+				#flexbox-container > div.left {
 					margin-right: 10px;
 				}
 			}
@@ -121,60 +132,61 @@
 
 		<div id="flexbox-container">
 			<div class="left">
-				<fieldset style="display:inline-block">
-					<legend><h4>Where should search results appear?</h4></legend>
-					<div id="tabMode">
-						<input type="radio" id="openNewTab" name="results" value="openNewTab" checked>
-						<label for="openNewTab">In a new tab</label>
+				<div class="preferences">
+					<fieldset style="display:inline-block">
+						<legend><h4>Where should search results appear?</h4></legend>
+						<div id="tabMode">
+							<input type="radio" id="openNewTab" name="results" value="openNewTab" checked>
+							<label for="openNewTab">In a new tab</label>
 
-						<input type="radio" id="sameTab" name="results" value="sameTab">
-						<label for="sameTab">In the same tab</label>
+							<input type="radio" id="sameTab" name="results" value="sameTab">
+							<label for="sameTab">In the same tab</label>
 
-						<input type="radio" id="openNewWindow" name="results" value="openNewWindow">
-						<label for="openNewWindow">In a new window</label>
-					</div>
+							<input type="radio" id="openNewWindow" name="results" value="openNewWindow">
+							<label for="openNewWindow">In a new window</label>
+						</div>
 
-					<div id="active">
-						<input type="checkbox" id="tabActive"><label for="tabActive">Make the new tab or window active</label>
-					</div>
-				</fieldset>
+						<div id="active">
+							<input type="checkbox" id="tabActive"><label for="tabActive">Make the new tab or window active</label>
+						</div>
+					</fieldset>
 
-				<fieldset style="display:inline-block">
-					<legend><h4>Position of options in context menu</h4></legend>
-					<div>
-						<label for="optionsMenuLocation">Where would you like the options menu to appear in the context menu of Context Search?</label><br />
-						<select id="optionsMenuLocation">
-							<option value="bottom" selected>At the bottom</option>
-							<option value="top">At the top</option>
-							<option value="none">Neither - hide the options menu</option>
-						</select>
-					</div>
-				</fieldset>
+					<fieldset style="display:inline-block">
+						<legend><h4>Position of options in context menu</h4></legend>
+						<div>
+							<label for="optionsMenuLocation">Where would you like the options menu to appear in the context menu of Context Search?</label><br />
+							<select id="optionsMenuLocation">
+								<option value="bottom" selected>At the bottom</option>
+								<option value="top">At the top</option>
+								<option value="none">Neither - hide the options menu</option>
+							</select>
+						</div>
+					</fieldset>
 
-				<fieldset style="display:inline-block">
-					<legend><h4>Search engines icon grid mode</h4></legend>
-					<div>
-						<input type="checkbox" id="gridMode"><label for="gridMode">Display a grid of icons instead of a list of search engines</label>
-						<p><em>Warning: </em>Please note that enabling this feature will prevent context menus from other extensions to be displayed.</p>
-					</div>
-				</fieldset>
+					<fieldset style="display:inline-block">
+						<legend><h4>Search engines icon grid mode</h4></legend>
+						<div>
+							<input type="checkbox" id="gridMode"><label for="gridMode">Display a grid of icons instead of a list of search engines</label>
+							<p><em>Warning: </em>Please note that enabling this feature will prevent context menus from other extensions to be displayed.</p>
+						</div>
+					</fieldset>
 
-				<fieldset>
-					<legend><h4>Import/export search engines</h4></legend>
-					<div>
-						<table>
-						  <tr>
-							<td><label for="upload" id="upl">Import JSON from local disk</label></td>
-							<td><input type="file" id="upload" /></td>
-						  </tr>
-						  <tr>
-							<td><label for="download">Export search engines to JSON</label></td>
-							<td><input type="button" value="Export to local disk" id="download" /></td>
-						  </tr>
-						</table>
-					</div>
-				</fieldset>
-
+					<fieldset>
+						<legend><h4>Import/export search engines</h4></legend>
+						<div>
+							<table>
+							<tr>
+								<td><label for="upload" id="upl">Import JSON from local disk</label></td>
+								<td><input type="file" id="upload" /></td>
+							</tr>
+							<tr>
+								<td><label for="download">Export search engines to JSON</label></td>
+								<td><input type="button" value="Export to local disk" id="download" /></td>
+							</tr>
+							</table>
+						</div>
+					</fieldset>
+				</div>	
 				<br />
 				<input type="button" value="Save preferences" id="save" />
 			</div>
