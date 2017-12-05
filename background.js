@@ -31,7 +31,7 @@ browser.runtime.onMessage.addListener(function(message) {
             notify(message.data);
             break;
         case "getSelectionText":
-            if (message.data) selection = message.data.trim();
+            if (message.data) selection = message.data;
             break;
         case "reset":
             reset = true;

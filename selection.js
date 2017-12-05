@@ -238,7 +238,7 @@ function getSelectionTextValue(x, y) {
         if (selectedTextInput != "") selectedTextValue = selectedTextInput;
     }
 
-    selectedText = selectedTextValue;
+    selectedText = selectedTextValue.trim();
 }
 
 function sendSelectionTextAndCurrentTabUrl(){
