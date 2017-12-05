@@ -31,7 +31,7 @@ browser.runtime.onMessage.addListener(function(message) {
             notify(message.data);
             break;
         case "getSelectionText":
-            if (message.data) selection = message.data;
+            if (message.data) selection = message.data.trim();
             break;
         case "reset":
             reset = true;
@@ -340,7 +340,7 @@ function processSearch(info, tab){
 
     // Prefer info.selectionText over selection received by content script for these lengths (more reliable)
     if (info.selectionText.length < 150 || info.selectionText.length > 150) {
-        selection = info.selectionText;
+        selection = info.selectionText.trim();
     }
 
     if (id === "google-site" && targetUrl != "") {
