@@ -9,6 +9,7 @@ const tabActive = document.getElementById("tabActive");
 const active = document.getElementById("active");
 const gridMode = document.getElementById("gridMode");
 const optionsMenuLocation = document.getElementById("optionsMenuLocation");
+const getFavicons = document.getElementById("getFavicons");
 let storageSyncCount = 0;
 
 // Send a message to the background script
@@ -299,8 +300,8 @@ function addSearchEngine() {
     // Validate url for query string
     strUrl = url.value;
     let testUrl = "";
-    if (strUrl.includes("{search terms}")) {
-        testUrl = strUrl.replace("{search terms}", "test");
+    if (strUrl.includes("{searchTerms}")) {
+        testUrl = strUrl.replace("{searchTerms}", "test");
     } else {
         testUrl = strUrl + "test";
     }
@@ -371,7 +372,7 @@ function onGot(data) {
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     browser.storage.sync.get(null).then(listSearchEngines);
-    browser.storage.local.get(["tabMode", "tabActive", "gridMode", "optionsMenuAtTop", "optionsMenuLocation"]).then(onGot, onError);
+    browser.storage.local.get(["tabMode", "tabActive", "gridMode", "optionsMenuAtTop", "optionsMenuLocation", "favicons"]).then(onGot, onError);
 }
 
 function removeHyperlink(event) {
@@ -424,6 +425,11 @@ function updateTabMode() {
     browser.storage.local.set(data);
 }
 
+function updateGetFavicons() {
+    let fav = getFavicons.checked;
+    browser.storage.local.set({"favicons": fav}).then(null, onError);
+}
+
 function updateGridMode() {
     let gm = gridMode.checked;
     browser.storage.local.set({"gridMode": gm}).then(null, onError);
@@ -455,6 +461,7 @@ function handleMessage(message) {
 browser.runtime.onMessage.addListener(handleMessage);
 
 /// Event handlers
+getFavicons.addEventListener("click", updateGetFavicons);
 tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
 gridMode.addEventListener("click", updateGridMode);

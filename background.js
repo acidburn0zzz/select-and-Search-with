@@ -396,8 +396,8 @@ function processMultiTabSearch() {
 }
 
 function getSearchEngineUrl(searchEngineUrl, selection){
-	if (searchEngineUrl.includes("{search terms}")) {
-		return searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
+	if (searchEngineUrl.includes("{searchTerms}")) {
+		return searchEngineUrl.replace(/{searchTerms}/g, encodeUrl(selection));
 	} else if (searchEngineUrl.includes("%s")) {
 		return searchEngineUrl.replace(/%s/g, encodeUrl(selection));
 	} else {
@@ -409,8 +409,8 @@ function searchUsing(id) {
     browser.storage.sync.get(null).then(function(data){
         searchEngines = sortByIndex(data);
         var searchEngineUrl = searchEngines[id].url;
-        if (searchEngineUrl.includes("{search terms}")) {
-            targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(selection));
+        if (searchEngineUrl.includes("{searchTerms}")) {
+            targetUrl = searchEngineUrl.replace(/{searchTerms}/g, encodeUrl(selection));
         } else if (searchEngineUrl.includes("%s")) {
             targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(selection));
         } else {
@@ -527,8 +527,8 @@ function buildSuggestion(text) {
         if (searchEngines[id].keyword === keyword) {
             let suggestion = {};
             let searchEngineUrl = searchEngines[id].url;
-            if (searchEngineUrl.includes("{search terms}")) {
-                targetUrl = searchEngineUrl.replace(/{search terms}/g, encodeUrl(searchTerms));
+            if (searchEngineUrl.includes("{searchTerms}")) {
+                targetUrl = searchEngineUrl.replace(/{searchTerms}/g, encodeUrl(searchTerms));
             } else if (searchEngineUrl.includes("%s")) {
                 targetUrl = searchEngineUrl.replace(/%s/g, encodeUrl(searchTerms));
             } else {
