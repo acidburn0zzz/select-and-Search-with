@@ -6,6 +6,7 @@ var targetUrl = "";
 var gridMode = false;
 var lastAddressBarKeyword = "";
 var remainingItems;
+var getFavicons = true;
 
 /// Constants
 const DEFAULT_JSON = "defaultSearchEngines.json";
@@ -57,12 +58,17 @@ function init() {
     browser.storage.local.get(["tabMode", "tabActive"]).then(fetchTabMode, onError);
     browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
     browser.storage.local.get("optionsMenuLocation").then(setOptionsMenu, onError);
+    browser.storage.local.get("favicons").then(setGetFavicons, onError);
 
     // getBrowserInfo
     function gotBrowserInfo(info){
         let v = info.version;
         browserVersion = parseInt(v.slice(0, v.search(".") - 1));
     }
+}
+
+function setGetFavicons(data) {
+    getFavicons = data.favicons;
 }
 
 // Store the default values for tab mode in storage local
@@ -229,7 +235,7 @@ function buildContextMenuItem(searchEngine, id, title, faviconUrl){
 
     if (!searchEngine.show) return;
 
-    if (browserVersion > 55){
+    if (browserVersion > 55 && getFavicons === true){
         browser.contextMenus.create({
             id: id,
             title: title,
@@ -253,6 +259,7 @@ function onStorageChanges(changes, area) {
         browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onError);
         browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
         browser.storage.local.get("optionsMenuLocation").then(setOptionsMenu, onError);
+        browser.storage.local.get("favicons").then(setGetFavicons, onError);
     }
 }
 

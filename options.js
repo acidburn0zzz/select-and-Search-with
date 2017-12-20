@@ -344,18 +344,20 @@ function onGot(data) {
             active.style.visibility = "visible";
             break;
     }
+
     if (data.tabActive === true) {
         tabActive.checked = true;
     } else { // Default value for tabActive is false
         tabActive.checked = false;
     }
+
     if (data.gridMode === true) {
         gridMode.checked = true;
     } else { // Default value for gridMode is false
         gridMode.checked = false;
     }
 
-    if(data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none"){
+    if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
 		optionsMenuLocation.value = data.optionsMenuLocation;
     } else {
 		// Keep this for users that are upgrading from an older Context Search version and to set a default value when it has not yet been set
@@ -366,6 +368,13 @@ function onGot(data) {
 			optionsMenuLocation.value = "bottom";
 		}
     }
+
+    if (data.favicons === false) {
+        getFavicons.checked = true;
+    } else {
+        // Default setting is to fetch favicons for context menu list
+        getFavicons.checked = true;
+    } 
     
 }
 
