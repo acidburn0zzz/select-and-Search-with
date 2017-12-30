@@ -49,5 +49,9 @@ Here is an example of a JSON file containing 3 search engines:
 }
 ```
 
-The firefox add-on may be found here:
-https://addons.mozilla.org/fr/firefox/addon/contextual-search/?src=ss
+The Firefox add-on may be found here:
+https://addons.mozilla.org/firefox/addon/contextual-search/
+
+## Planned features
+
+* Integration with Firefox search engines, which will be implemented when it becomes possible. See https://github.com/odebroqueville/contextSearch/issues/60
