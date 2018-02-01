@@ -178,7 +178,7 @@ function initializeFavicons() {
             let url = searchEngines[id].url;
             let urlParts = url.replace('http://','').replace('https://','').split(/\//);
             let domain = urlParts[0];
-            let faviconUrl = "https://icons.better-idea.org/icon?url=" + domain + "&size=24..32..64";
+            let faviconUrl = "https://get-favicons.herokuapp.com/icon?url=" + domain + "&size=24..32..64";
             getBase64Image(id, faviconUrl).then(function (base64String) {
                 remainingItems = remainingItems - 1;
                 //console.log("remaining items: " + remainingItems);
@@ -294,7 +294,7 @@ function rebuildContextMenu() {
                 let url = searchEngines[id].url;
                 let urlParts = url.replace('http://','').replace('https://','').split(/\//);
                 let domain = urlParts[0];
-				let faviconUrl = "https://icons.better-idea.org/icon?url=" + domain + "&size=24..32..64";
+				let faviconUrl = "https://get-favicons.herokuapp.com/icon?url=" + domain + "&size=24..32..64";
 				searchEnginesArray.push(id);
 				buildContextMenuItem(searchEngines[id], strId, strTitle, faviconUrl);
 				index += 1;
