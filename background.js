@@ -68,7 +68,11 @@ function init() {
 }
 
 function setGetFavicons(data) {
-    getFavicons = data.favicons;
+	if(data.favicons != null) {
+		getFavicons = data.favicons;
+	} else {
+		getFavicons = true; // default is true
+	}
 }
 
 // Store the default values for tab mode in storage local
