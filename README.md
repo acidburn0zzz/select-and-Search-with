@@ -8,7 +8,7 @@ Right-clicking on selected text in a web page will give you the option to perfor
 
 Use the check boxes in the extension's preferences to select which search engines you'd like to appear in the context menu. Don't forget to save your changes to the browser using the "Save prefernces" button. You also have the possibility to <b><em>remove search engines</em></b> you don't use at all and to <em>add custom search engines</em> individually. You can also set whether you'd like to <b><em>open your searches in a new tab or window in the foreground or in the background</em></b>, or to specify if you'd like the search results to appear in the same tab.
 
-You can now <b><em>add search query strings containing the parameters %s or {search terms}</em></b> where you'd like your search keywords to appear.
+You can now <b><em>add search query strings containing the parameters %s or {searchTerms}</em></b> where you'd like your search keywords to appear.
 
 You have the possibility to <b><em>import a JSON file containing your own list of search engines</em></b>. It is recommended to first <b><em>export the list of search engines</em></b> you'd like to keep from the default list and completing that list with your own favourite search engines. Exporting the file will also allow you to become familiar with the required format for each search engine. You essentially need 5 items for each search engine: an id, an index, a name, a query string url and, finally, you need to choose a boolean value (true or false) to specify if you want the search engine to be displayed in the context menu.
 
