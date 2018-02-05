@@ -3,7 +3,7 @@
   "manifest_version": 2,
   "name": "Context Search",
   "description": "Searches the selected text using a search engine from a pre-specified list",
-  "version": "3.56",
+  "version": "3.57",
   "author": "Olivier de Broqueville",
   "applications": {
     "gecko": {
@@ -11,7 +11,7 @@
     }
   },
 
-  "content_security_policy" : "script-src 'self'; object-src 'self'; img-src 'self' https://icons.better-idea.org/*",
+  "content_security_policy" : "script-src 'self'; object-src 'self'; img-src 'self' https://get-favicons.herokuapp.com/*",
 
   "background": {
       "scripts": [
