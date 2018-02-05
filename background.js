@@ -377,35 +377,21 @@ function processSearch(info, tab){
 function processMultiTabSearch() {
     browser.storage.sync.get(null).then(function(data){
         searchEngines = sortByIndex(data);
-        let multiTabSearchEngineIDs = [];
+        let multiTabSearchEngineUrls = [];
         for (let id in searchEngines) {
             if (searchEngines[id].multitab) {
-                multiTabSearchEngineIDs.push(id);
+                multiTabSearchEngineUrls.push(getSearchEngineUrl(searchEngines[id].url, selection));
             }
         }
-        let searchEngineUrl = getSearchEngineUrl(searchEngines[multiTabSearchEngineIDs[0]].url, selection);
-
+        console.log(multiTabSearchEngineUrls);
         browser.windows.create({
             titlePreface: 'Search results for "' + selection + '"',
-            url: targetUrl
-        }).then(function() {
-            browser.windows.getCurrent({populate: false}).then(function(windowInfo) {
-                let currentWindowId = windowInfo.id;
-                for (let i=1; i < multiTabSearchEngineIDs.length; i++) {
-                    targetUrl = getSearchEngineUrl(searchEngines[multiTabSearchEngineIDs[i]].url, selection);
-
-                    browser.tabs.create({
-                        active: false,
-                        index: i,
-                        url: targetUrl,
-                        windowId: currentWindowId
-                    });
-                }
-            });
-        });
-    });
+            url: multiTabSearchEngineUrls
+        }).then(null, onError);
+    }, onError);
 }
 
+// Handle search terms if there are any
 function getSearchEngineUrl(searchEngineUrl, selection){
 	if (searchEngineUrl.includes("{searchTerms}")) {
 		return searchEngineUrl.replace(/{searchTerms}/g, encodeUrl(selection));
