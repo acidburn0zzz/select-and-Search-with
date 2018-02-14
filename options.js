@@ -1,6 +1,12 @@
 /// Global variables
 const divContainer = document.getElementById("container");
 const divAddSearchEngine = document.getElementById("addSearchEngine");
+const divSearchEngines = document.getElementById("searchEngines");
+const show = document.getElementById("show"); // Boolean
+const name = document.getElementById("name"); // String
+const keyword = document.getElementById("keyword"); // String
+const multitab = document.getElementById("multitab"); // Boolean
+const url = document.getElementById("url"); // String
 const openNewTab = document.getElementById("openNewTab");
 const openNewWindow = document.getElementById("openNewWindow");
 const sameTab = document.getElementById("sameTab");
@@ -290,12 +296,6 @@ function testSearchEngine() {
 }
 
 function addSearchEngine() {
-    const divSearchEngines = document.getElementById("searchEngines");
-    const show = document.getElementById("show"); // Boolean
-    const name = document.getElementById("name"); // String
-    const keyword = document.getElementById("keyword"); // String
-    const multitab = document.getElementById("multitab"); // Boolean
-    const url = document.getElementById("url"); // String
 
     // Validate url for query string
     strUrl = url.value;
@@ -323,6 +323,15 @@ function addSearchEngine() {
     keyword.value = null;
     multitab.checked = false;
     url.value = null;
+}
+
+function clear() {
+    // Clear check boxes and text box entries
+    show.checked = false;
+    name.value = "";
+    keyword.value = "";
+    multitab.checked = false;
+    url.value = "";
 }
 
 function onGot(data) {
@@ -481,6 +490,7 @@ document.getElementById("selectAll").addEventListener("click", selectAll);
 document.getElementById("reset").addEventListener("click", reset);
 document.getElementById("test").addEventListener("click", testSearchEngine);
 document.getElementById("add").addEventListener("click", addSearchEngine);
+document.getElementById("clear").addEventListener("click", clear);
 document.getElementById("save").addEventListener("click", save);
 document.getElementById("download").addEventListener("click", saveToLocalDisk);
 document.getElementById("upload").addEventListener("change", handleFileUpload);
