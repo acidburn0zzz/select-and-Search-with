@@ -128,84 +128,84 @@
 	</head>
 	<body>
 		<form>
-		<h2>Context Search Preferences</h2>
+		<h2 data-i18n = "pageTitle">Context Search Preferences</h2>
 
 		<div id="flexbox-container">
 			<div class="left">
 				<div class="preferences">
 					<fieldset style="display:inline-block">
-						<legend><h4>Where should search results appear?</h4></legend>
+						<legend><h4 data-i18n = "header1">Where should search results appear?</h4></legend>
 						<div id="tabMode">
 							<input type="radio" id="openNewTab" name="results" value="openNewTab" checked>
-							<label for="openNewTab">In a new tab</label>
+							<label for="openNewTab" data-i18n = "newTab">In a new tab</label>
 
 							<input type="radio" id="sameTab" name="results" value="sameTab">
-							<label for="sameTab">In the same tab</label>
+							<label for="sameTab" data-i18n = "sameTab">In the same tab</label>
 
 							<input type="radio" id="openNewWindow" name="results" value="openNewWindow">
-							<label for="openNewWindow">In a new window</label>
+							<label for="openNewWindow" data-i18n = "newWindow">In a new window</label>
 						</div>
 
 						<div id="active">
-							<input type="checkbox" id="tabActive"><label for="tabActive">Make the new tab or window active</label>
+							<input type="checkbox" id="tabActive"><label for="tabActive" data-i18n = "active">Make the new tab or window active</label>
 						</div>
 					</fieldset>
 
 					<fieldset style="display:inline-block">
-						<legend><h4>Display favicons in context menu list</h4></legend>
+						<legend><h4 data-i18n = "header2">Display favicons in context menu list</h4></legend>
 						<div>
-							<input type="checkbox" id="getFavicons"><label for="getFavicons">Fetch favicons using the 'besticon' API</label>
-							<p><em>N.B.: </em>This feature requires firefox 56 or above.</p>
+							<input type="checkbox" id="getFavicons"><label for="getFavicons" data-i18n="getFavicons">Fetch favicons using the 'besticon' API</label>
+							<p><em data-i18n="note">This feature requires firefox 56 or above.</em></p>
 						</div>
 					</fieldset>
 
 					<fieldset style="display:inline-block">
-						<legend><h4>Position of options in context menu list</h4></legend>
+						<legend><h4 data-i18n = "header3">Position of options in context menu list</h4></legend>
 						<div>
-							<label for="optionsMenuLocation">Where would you like the options menu to appear in the context menu of Context Search?</label><br />
+							<label for="optionsMenuLocation" data-i18n = "subheader3.1">Where would you like the options menu to appear in the context menu of Context Search?</label><br />
 							<select id="optionsMenuLocation">
-								<option value="bottom" selected>At the bottom</option>
-								<option value="top">At the top</option>
-								<option value="none">Neither - hide the options menu</option>
+								<option value="bottom" selected data-i18n = "bottom">At the bottom</option>
+								<option value="top" data-i18n = "top">At the top</option>
+								<option value="none" data-i18n = "hide">Neither - hide the options menu</option>
 							</select>
 						</div>
 					</fieldset>
 
 					<fieldset style="display:inline-block">
-						<legend><h4>Search engines icon grid mode</h4></legend>
+						<legend><h4 data-i18n = "header4">Search engines icon grid mode</h4></legend>
 						<div>
-							<input type="checkbox" id="gridMode"><label for="gridMode">Display a grid of icons instead of a list of search engines</label>
-							<p><em>Warning: </em>Please note that enabling this feature will prevent context menus from other extensions to be displayed.</p>
+							<input type="checkbox" id="gridMode"><label for="gridMode" data-i18n="gridMode">Display a grid of icons instead of a list of search engines</label>
+							<p><em data-i18n="warning">Warning: Please note that enabling this feature will prevent context menus from other extensions to be displayed.</em></p>
 						</div>
 					</fieldset>
 
 					<fieldset>
-						<legend><h4>Import/export search engines</h4></legend>
+						<legend><h4 data-i18n = "header5">Import/export search engines</h4></legend>
 						<div>
 							<table>
 							<tr>
-								<td><label for="upload" id="upl">Import JSON from local disk</label></td>
+								<td><label for="upload" id="upl" data-i18n = "import">Import JSON from local disk</label></td>
 								<td><input type="file" id="upload" /></td>
 							</tr>
 							<tr>
-								<td><label for="download">Export search engines to JSON</label></td>
-								<td><input type="button" value="Export to local disk" id="download" /></td>
+								<td><label for="download" data-i18n = "export">Export search engines to JSON</label></td>
+								<td><button type="button" id="download" data-i18n="download">Export to local disk</button></td>
 							</tr>
 							</table>
 						</div>
 					</fieldset>
 				</div>	
 				<br />
-				<input type="button" value="Save preferences" id="save" />
+				<button type="button" id="save" data-i18n="savePreferences">Save preferences</button>
 			</div>
 
 			<div class="right">
 				<fieldset>
-					<legend><h4>Which search engines would you like to appear in the context menu or grid?</h4></legend>
+					<legend><h4 data-i18n = "header6">Which search engines would you like to appear in the context menu or grid?</h4></legend>
 					<div>
-						<input type="button" value="Clear All" id="clearAll" />
-						<input type="button" value="Select All" id="selectAll" />
-						<input type="button" value="Reset" id="reset" />
+						<button type="button" id="clearAll" data-i18n = "clearAll">Clear All</button>
+						<button type="button" id="selectAll" data-i18n = "selectAll">Select All</button>
+						<button type="button" id="reset" data-i18n = "reset">Reset</button>
 						<br />
 						<br />
 						<div id="container">
@@ -213,18 +213,18 @@
 						<br />
 						<div id="addSearchEngine">
 							<div>
-								<h4 style="margin:0">Add a new search engine</h4>
+								<h4 style="margin:0" data-i18n = "subheader6.1">Add a new search engine</h4>
 							</div>
-								<div><input type="checkbox" id="show" title="Show search engine in grid or context menu" checked="true" />
-								<input type="text" id="name" placeholder="Search engine name" />
-								<input type="text" id="keyword" class="keyword" placeholder="Keyword" />
-								<input type="checkbox" id="multitab" title="Use this search engine in the multitab feature" />
-								<input type="url" id="url" placeholder="Search engine URL" title="Should start with https://" pattern="https?://.+" />
+								<div><input type="checkbox" id="show" data-i18n-title="showSearchEngine" checked="true" />
+								<input type="text" id="name" data-i18n-placeholder="searchEngineName" />
+								<input type="text" id="keyword" class="keyword" data-i18n-placeholder="keyword" />
+								<input type="checkbox" id="multitab" data-i18n-title="multiplSearchEngines" />
+								<input type="url" id="url" data-i18n-placeholder="searchEngineURL" data-i18n-title="startWith" pattern="https?://.+" />
 							</div>
 							<div class="buttonrow">
 								<!-- Display on a new line -->
-								<button type="button" id="test" style="margin-left: 26px;">Test Search Engine</button>
-								<button type="button" id="add">Add Search Engine</button>
+								<button type="button" id="test" style="margin-left: 26px;" data-i18n = "testSearchEngine">Test Search Engine</button>
+								<button type="button" id="add" data-i18n = "addSearchEngine">Add Search Engine</button>
 								<button type="button" id="clear">Clear</button>
 							</div>
 						</div>

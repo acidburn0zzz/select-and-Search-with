@@ -475,6 +475,21 @@ function handleMessage(message) {
     }
 }
 
+function i18n() {
+    let i18nElements = document.querySelectorAll('[data-i18n]');
+
+    for (let i in i18nElements) {
+        try {
+            if (i18nElements[i].getAttribute == null) continue;
+            let i18n_attrib = i18nElements[i].getAttribute("data-i18n");
+            let message = browser.i18n.getMessage(i18n_attrib);
+            i18nElements[i].textContent = message;
+        } catch(ex) {
+            console.error("i18n id " + IDS[id] + " not found");
+        }
+    }
+}
+
 /// WebExtension event handlers
 browser.runtime.onMessage.addListener(handleMessage);
 
