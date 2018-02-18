@@ -490,6 +490,8 @@ function i18n() {
     }
 }
 
+i18n();
+
 /// WebExtension event handlers
 browser.runtime.onMessage.addListener(handleMessage);
 
