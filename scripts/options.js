@@ -23,14 +23,9 @@ const move = browser.i18n.getMessage("move");
 const up = browser.i18n.getMessage("up");
 const down = browser.i18n.getMessage("down");
 const remove = browser.i18n.getMessage("remove");
-const multiple = browser.i18n.getMessage("multipleSearchEnginesSearch");
-const savedPrefs = browser.i18n.getMessage("notifySavedPreferences");
-const searchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
-
-// Base64 SVG button images
-//const upImage = "PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgYmFzZVByb2ZpbGU9InRpbnkiIGhlaWdodD0iMjRweCIgaWQ9IkxheWVyXzEiIHZlcnNpb249IjEuMiIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PHBhdGggZD0iTTEyLDMuMTcyTDUuNTg2LDkuNTg2Yy0wLjc4MSwwLjc4MS0wLjc4MSwyLjA0NywwLDIuODI4czIuMDQ3LDAuNzgxLDIuODI4LDBMMTAsMTAuODI4djcuMjQyYzAsMS4xMDQsMC44OTUsMiwyLDIgIGMxLjEwNCwwLDItMC44OTYsMi0ydi03LjI0MmwxLjU4NiwxLjU4NkMxNS45NzcsMTIuODA1LDE2LjQ4OCwxMywxNywxM3MxLjAyMy0wLjE5NSwxLjQxNC0wLjU4NmMwLjc4MS0wLjc4MSwwLjc4MS0yLjA0NywwLTIuODI4ICBMMTIsMy4xNzJ6Ii8+PC9zdmc+";
-//const downImage = "PD94bWwgdmVyc2lvbj0iMS4wIiA/PjxzdmcgYmFzZVByb2ZpbGU9InRpbnkiIGhlaWdodD0iMjRweCIgaWQ9IkxheWVyXzEiIHZlcnNpb249IjEuMiIgdmlld0JveD0iMCAwIDI0IDI0IiB3aWR0aD0iMjRweCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+PHBhdGggZD0iTTE4LjQxNCwxMC42NTZjLTAuNzgxLTAuNzgxLTIuMDQ3LTAuNzgxLTIuODI4LDBMMTQsMTIuMjQyVjVjMC0xLjEwNS0wLjg5Ni0yLTItMmMtMS4xMDUsMC0yLDAuODk1LTIsMnY3LjI0MmwtMS41ODYtMS41ODYgIGMtMC43ODEtMC43ODEtMi4wNDctMC43ODEtMi44MjgsMHMtMC43ODEsMi4wNDcsMCwyLjgyOEwxMiwxOS44OThsNi40MTQtNi40MTRDMTkuMTk1LDEyLjcwMywxOS4xOTUsMTEuNDM4LDE4LjQxNCwxMC42NTZ6Ii8+PC9zdmc+";
-//const removeImage = "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAABi0lEQVQ4jZ3UQWjPYRzH8Ve0k4NyGeUoWVIOKAdKNuUwSrk5aOXggKw11hri5uLg4iCHLSelJBsOy2ESKVFqkVKUVnbgsEgzh//n3+9n/X+//fjWt97fns/zeb4936eH+tiCR5hJPsTmFfb8FTvRW8rHWFqWk8s0O6rMDnTY3DT3dTLcgD4c+sfsxfqqLkf+o7uhKjM4URK+KfEXzJXq1yU+Xmd4JKKP6MLv1GfSyRJ+YFXpgP46w70RzaVeSH0Kg+H5rH1PvbvOcGtEC6nnO3T4OWuLqWvfZbfiblbjU/gshsPvsaakW1dn2FUSrsW78CDOKYbVPnhR6z5r41vEGxXTHFI8qefYFP66khl8iLgHz8LDGA0/wfbwbBPDFxHvwnT4PMbCU9gTftrEcDLi/XgQHsGF8F0cDN9rYjgR8WHcCY/iUvg2joZvNTG8FvExjIfHcDl8EwPhq00M29M8iRvhi7gSvo7TGnwM7diGX1rPYzYbXyk+i7d4iZ9aP3qj6NMayExF3lfxqf4B1nmtJThBNE0AAAAASUVORK5CYII=";
+const multipleSearchEnginesSearch = browser.i18n.getMessage("multipleSearchEnginesSearch");
+const notifySavedPreferences = browser.i18n.getMessage("notifySavedPreferences");
+const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
 
 // Send a message to the background script
 function sendMessage(action, data) {
@@ -158,7 +153,7 @@ function createLineItem(id, searchEngine) {
 
     inputMultiTab.setAttribute("type", "checkbox");
     inputMultiTab.setAttribute("id", id + "-mt");
-    inputMultiTab.setAttribute("title", "Use this search engine in the multitab feature");
+    inputMultiTab.setAttribute("title", multipleSearchEnginesSearch);
 
     inputMultiTab.checked = searchEngine.multitab;
 
@@ -211,20 +206,12 @@ function swapIndexes(previousItem, nextItem) {
     let tmp = null;
     let newObj = {};
 
-    //console.log(previousItem);
-    //console.log(nextItem);
-
     browser.storage.sync.get([previousItem, nextItem]).then(function(data){
-        //console.log(data);
         firstObj = data[previousItem];
         secondObj = data[nextItem];
-        //console.log("firstObj: " + JSON.stringify(firstObj));
-        //console.log("secondObj: " + JSON.stringify(secondObj));
         tmp = JSON.parse(JSON.stringify(firstObj["index"])); // creating a new temporary object to avoid passing firstObj by reference
         firstObj["index"] = secondObj["index"];
         secondObj["index"] = tmp;
-        //console.log("firstObj: " + JSON.stringify(firstObj));
-        //console.log("secondObj: " + JSON.stringify(secondObj));
         newObj[previousItem] = firstObj;
         newObj[nextItem] = secondObj;
         }, onError).then(function(){
@@ -300,7 +287,7 @@ function save(){
 function saveOptions(notification) {
     let searchEngines = readData();
     if (notification == true) {
-        browser.storage.sync.set(searchEngines).then(notify("Saved preferences."), onError);
+        browser.storage.sync.set(searchEngines).then(notify(notifySavedPreferences), onError);
     } else {
         browser.storage.sync.set(searchEngines).then(null, onError);
     }
@@ -330,7 +317,7 @@ function addSearchEngine() {
     newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "keyword": keyword.value, "multitab": multitab.value , "url": url.value, "show": show.checked};
     let lineItem = createLineItem(id, newSearchEngine[id]);
     divSearchEngines.appendChild(lineItem);
-    browser.storage.sync.set(newSearchEngine).then(notify("Search engine added."), onError);
+    browser.storage.sync.set(newSearchEngine).then(notify(notifySearchEngineAdded), onError);
 
     // Clear HTML input fields to add a search engine
     show.checked = true;

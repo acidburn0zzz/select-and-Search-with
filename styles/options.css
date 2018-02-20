@@ -12,6 +12,10 @@ body {
     width: 1020px;
 }
 
+.icon {
+    font-size: 1.5em;
+}
+
 input[type="checkbox"] {
     display: inline-block;
     width: 15px;
@@ -52,13 +56,6 @@ h2 {
 
 #container button {
     margin-left: 10px;
-}
-
-button.up, button.down, button.remove {
-    height: 30px;
-    width: 30px;
-    border: 0;
-    background-color: white;
 }
 
 #container li {
