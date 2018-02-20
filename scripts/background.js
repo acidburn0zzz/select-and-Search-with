@@ -329,7 +329,7 @@ function rebuildContextOptionsMenu(){
     }
     browser.contextMenus.create({
 		id: "cs-multitab",
-		title: "Multiple tabs search",
+		title: "Search with multiple search engines",
 		contexts: ["selection"]
 	});
 	browser.contextMenus.create({
