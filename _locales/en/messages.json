@@ -204,7 +204,7 @@
     "description": ""
   },
   "omniboxDescription": {
-    "message": "Search using Context Search with keywords. Usage: cs [keyword] [search terms] (e.g. "cs w Linux" searches Wikipedia for the term "Linux")",
+    "message": "Search using Context Search with keywords. Usage: cs [keyword] [search terms] (e.g. 'cs w Linux' searches Wikipedia for the term 'Linux')",
     "description": ""
   },
   "notifyUsage": {

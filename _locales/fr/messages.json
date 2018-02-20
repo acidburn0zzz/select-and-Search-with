@@ -111,10 +111,6 @@
    "message": "Ré-initialisation",
    "description": ""
  },
- "remove": {
-    "message": "Supprimer",
-    "description": ""
-  },
   "subheader6.1": {
     "message": "Ajouter un nouveau moteur de recherche",
     "description": ""
@@ -154,5 +150,73 @@
  "clear": {
     "message": "Effacer",
    "description": ""
- }
+ },
+ "move": {
+  "message": "Déplacer",
+  "description": ""
+},
+"up": {
+  "message": "vers le haut",
+  "description": ""
+},
+"down": {
+  "message": "vers le bas",
+  "description": ""
+},
+"remove": {
+  "message": "Supprimer",
+  "description": ""
+},
+"multipleSearchEnginesSearch": {
+  "message": "Inclure ce moteur de recherche pour la recherche multiple",
+  "description": ""
+},
+"notifySavedPreferences": {
+  "message": "Préférences sauvegardées.",
+  "description": ""
+},
+"notifySearchEngineAdded": {
+  "message": "Moteur de recherche ajouté.",
+  "description": ""
+},
+"notifyEnableStorageSync": {
+  "message": "Assurez-vous que le paramètre 'webextension.storage.sync.enabled' a la valeur 'true' dans 'about:config', sinon Context Search ne fonctionnera pas.",
+  "description": ""
+},
+"notifySearchEnginesLoaded": {
+  "message": "Les moteurs de recherche par défaut ont été chargés.",
+  "description": ""
+},
+"titleMultipleSearchEngines": {
+  "message": "Recherche multiple",
+  "description": ""
+},
+"titleGoogleSearch": {
+  "message": "Rechercher dans ce site avec Google",
+  "description": ""
+},
+"titleOptions": {
+  "message": "Options",
+  "description": ""
+},
+"windowTitle": {
+  "message": "Résultats de recherche pour",
+  "description": ""
+},
+"omniboxDescription": {
+  "message": "Effectuer une recherche avec Context Search à l'aide de mots clé. Utilisation: cs [mot clé] [mots à rechercher] (par ex.: 'cs w Linux' recherche le mot 'Linux' dans Wikipedia)",
+  "description": ""
+},
+"notifyUsage": {
+  "message": "Utilisation: cs [mot clé] [mots à rechercher] (par ex.: 'cs w Linux')",
+  "description": ""
+},
+"notifySearchEngineWithKeyword": {
+  "message": "Le moteur de recherche avec le mot clé",
+  "description": ""
+},
+"notifyUnknown": {
+  "message": "est inconnu.",
+  "description": ""
+}
 }
