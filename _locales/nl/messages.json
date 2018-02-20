@@ -111,10 +111,6 @@
    "message": "Resetten",
    "description": ""
  },
- "remove": {
-    "message": "Verwijderen",
-    "description": ""
-  },
   "subheader6.1": {
     "message": "Een nieuwe zoekmachine toevoegen",
     "description": ""
@@ -154,5 +150,73 @@
  "clear": {
     "message": "Leegmaken",
    "description": ""
- }
+ },
+ "move": {
+  "message": "Verplaats",
+  "description": ""
+},
+"up": {
+  "message": "naar boven",
+  "description": ""
+},
+"down": {
+  "message": "naar beneden",
+  "description": ""
+},
+"remove": {
+  "message": "Verwijderen",
+  "description": ""
+},
+"multipleSearchEnginesSearch": {
+  "message": "Gebruik deze zoekmachine bij het zoeken met meerdere zoekmachines",
+  "description": ""
+},
+"notifySavedPreferences": {
+  "message": "Voorkeuren opgeslagen.",
+  "description": ""
+},
+"notifySearchEngineAdded": {
+  "message": "Zoekmachine toegevoegd.",
+  "description": ""
+},
+"notifyEnableStorageSync": {
+  "message": "Gelieve ervoor te zorgen dat de optie 'webextensions.storage.sync.enabled' op true gezet is in 'about:config', anders zal Context Search niet werken.",
+  "description": ""
+},
+"notifySearchEnginesLoaded": {
+  "message": "De standaardlijst van zoekmachines werd geladen.",
+  "description": ""
+},
+"titleMultipleSearchEngines": {
+  "message": "Zoeken met meerdere zoekmachines",
+  "description": ""
+},
+"titleGoogleSearch": {
+  "message": "Zoek op deze site met Google",
+  "description": ""
+},
+"titleOptions": {
+  "message": "Opties",
+  "description": ""
+},
+"windowTitle": {
+  "message": "Zoekresultaten voor ",
+  "description": ""
+},
+"omniboxDescription": {
+  "message": "Zoek met Context Search via kernwoorden. Gebruik: cs [kernwoord] [zoektermen] (bijvoorbeeld 'cs w Linux' zoekt op Wikipedia naar de term 'Linux')",
+  "description": ""
+},
+"notifyUsage": {
+  "message": "Gebruik: cs [kernwoord] [zoektermen] (bijvoorbeeld cs w Linux)",
+  "description": ""
+},
+"notifySearchEngineWithKeyword": {
+  "message": "Zoekmachine met kernwoord",
+  "description": ""
+},
+"notifyUnknown": {
+  "message": "is onbekend.",
+  "description": ""
+}
 }
