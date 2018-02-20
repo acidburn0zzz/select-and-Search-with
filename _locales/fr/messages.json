@@ -35,7 +35,7 @@
     "message": "Position des options dans le menu contextuel",
    "description": ""
  },
- "subheader3.1": {
+ "subheader31": {
     "message": "Où aimeriez-vous que le menu des options apparaisse dans le menu contextuel?",
    "description": ""
  },
@@ -111,7 +111,7 @@
    "message": "Ré-initialisation",
    "description": ""
  },
-  "subheader6.1": {
+  "subheader61": {
     "message": "Ajouter un nouveau moteur de recherche",
     "description": ""
   },

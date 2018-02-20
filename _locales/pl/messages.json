@@ -35,7 +35,7 @@
     "message": "Pozycja opcji w menu kontekstowym",
    "description": ""
  },
- "subheader3.1": {
+ "subheader31": {
     "message": "Gdzie chciałbyś, aby menu opcji pojawiło się w menu kontekstowym?",
    "description": ""
  },
@@ -115,7 +115,7 @@
     "message": "Usuń",
     "description": ""
   },
-  "subheader6.1": {
+  "subheader61": {
     "message": "Dodaj nową wyszukiwarkę",
     "description": ""
   },

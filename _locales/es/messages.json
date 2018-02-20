@@ -35,7 +35,7 @@
     "message": "Posición de las opciones en el menú contestual",
     "description": ""
   },
-  "subheader3.1": {
+  "subheader31": {
     "message": "¿Dónde quiere que aparezca el menú de opciones dentro del menú contextual?",
     "description": ""
   },
@@ -111,7 +111,7 @@
     "message": "Reiniciar",
     "description": ""
   },
-  "subheader6.1": {
+  "subheader61": {
     "message": "Añadir un nuevo buscador",
     "description": ""
   },

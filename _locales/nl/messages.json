@@ -35,7 +35,7 @@
     "message": "Positie van de opties in het contextmenu",
    "description": ""
  },
- "subheader3.1": {
+ "subheader31": {
     "message": "Waar moet het optiemenu verschijnen in het contextmenu?",
    "description": ""
  },
@@ -111,7 +111,7 @@
    "message": "Resetten",
    "description": ""
  },
-  "subheader6.1": {
+  "subheader61": {
     "message": "Een nieuwe zoekmachine toevoegen",
     "description": ""
   },

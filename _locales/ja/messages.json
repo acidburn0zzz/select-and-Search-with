@@ -35,7 +35,7 @@
     "message": "Position of options in the context menu",
     "description": ""
   },
-  "subheader3.1": {
+  "subheader31": {
     "message": "Where would you like the options menu to appear in the context menu?",
     "description": ""
   },
@@ -111,7 +111,7 @@
     "message": "Reset",
     "description": ""
   },
-  "subheader6.1": {
+  "subheader61": {
     "message": "Add a new search engine",
     "description": ""
   },
