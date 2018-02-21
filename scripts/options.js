@@ -1,7 +1,7 @@
 /// Global variables
 const divContainer = document.getElementById("container");
 const divAddSearchEngine = document.getElementById("addSearchEngine");
-const divSearchEngines = document.getElementById("searchEngines");
+let divSearchEngines = document.getElementById("searchEngines");
 const show = document.getElementById("show"); // Boolean
 const name = document.getElementById("name"); // String
 const keyword = document.getElementById("keyword"); // String
@@ -298,6 +298,7 @@ function testSearchEngine() {
 }
 
 function addSearchEngine() {
+    let divSearchEngines = document.getElementById("searchEngines");
 
     // Validate url for query string
     strUrl = url.value;
