@@ -4,219 +4,219 @@
     "description": "Name of the extension"
   },
   "extensionDescription": {
-    "message": "Searches the selected text using a search engine from a pre-specified list.",
+    "message": "使用预先指定的列表中的搜索引擎搜索选定的文本",
     "description": "Description of the extension"
   },
   "pageTitle": {
-    "message": "Context Search Preferences",
+    "message": "Context Search 偏好设置",
     "description": ""
   },
   "header1": {
-    "message": "Where should search results appear?",
+    "message": "在哪里显示搜索结果？",
     "description": ""
   },
   "newTab": {
-    "message": "In a new tab",
+    "message": "新标签页",
     "description": ""
   },
   "sameTab": {
-    "message": "In the same tab",
+    "message": "当前标签页",
     "description": ""
   },
   "newWindow": {
-    "message": "In a new window",
+    "message": "新窗口",
     "description": ""
   },
   "active": {
-    "message": "Make the new tab or window active",
+    "message": "使新选项卡或窗口处于活动状态",
     "description": ""
   },
   "header3": {
-    "message": "Position of options in the context menu",
+    "message": "选项在右键菜单列表中的位置",
     "description": ""
   },
   "subheader31": {
-    "message": "Where would you like the options menu to appear in the context menu?",
+    "message": "您希望搜索选项菜单项出现在上下文菜单中的哪个位置？",
     "description": ""
   },
   "bottom": {
-    "message": "At the bottom",
+    "message": "底部",
     "description": ""
   },
   "top": {
-    "message": "At the top",
+    "message": "顶部",
     "description": ""
   },
   "hide": {
-    "message": "Neither (hide the options menu)",
+    "message": "两者都不（隐藏搜索选项菜单项）",
     "description": ""
   },
   "header5": {
-    "message": "Import/export search engines",
+    "message": "导入/导出搜索引擎",
     "description": ""
   },
   "import": {
-    "message": "Import JSON from local disk",
+    "message": "从本地硬盘导入 JSON",
     "description": ""
   },
   "export": {
-    "message": "Export search engines to JSON",
+    "message": "导出搜索引擎到 JSON",
     "description": ""
   },
   "download": {
-    "message": "Export to local disk",
+    "message": "导出到本地硬盘",
     "description": ""
   },
   "header2": {
-    "message": "Display favicons in context menu list",
+    "message": "在上下文菜单列表中显示搜索引擎图标",
     "description": ""
   },
   "getFavicons": {
-    "message": "Fetch favicons using the 'besticon' API",
+    "message": "通过 'besticon' API 获取搜索引擎图标",
     "description": ""
   },
   "note": {
-    "message": "This feature requires firefox 56 or above.",
+    "message": "这个特性需要 Firefox 56 或更高的版本。",
     "description": ""
   },
   "header4": {
-    "message": "Search engines icon grid mode",
+    "message": "搜索引擎图标网格模式",
     "description": ""
   },
   "gridMode": {
-    "message": "Display a grid of icons instead of a list of search engines",
+    "message": "用网格形式显示搜索引擎图标，而不是列表形式",
     "description": ""
   },
   "warning": {
-    "message": "Warning: Please note that enabling this feature will prevent context menus from other extensions to be displayed.",
+    "message": "警告：请注意，启用此特性会隐藏其他扩展的上下文菜单。",
     "description": ""
   },
   "savePreferences": {
-    "message": "Save preferences",
+    "message": "保存偏好设置",
     "description": ""
   },
   "header6": {
-    "message": "Which search engines would you like to appear in the context menu or grid?",
+    "message": "您想要在上下文菜单或网格中显示哪些搜索引擎？",
     "description": ""
   },
   "clearAll": {
-    "message": "Clear All",
+    "message": "清除所有",
     "description": ""
   },
   "selectAll": {
-    "message": "Select All",
+    "message": "全选",
     "description": ""
   },
   "reset": {
-    "message": "Reset",
+    "message": "重置",
     "description": ""
   },
   "subheader61": {
-    "message": "Add a new search engine",
+    "message": "添加一个新的搜索引擎",
     "description": ""
   },
   "showSearchEngine": {
-    "message": "Show search engine in grid or context menu",
+    "message": "在网格或上下文菜单中显示搜索引擎",
     "description": ""
   },
   "searchEngineName": {
-    "message": "Search engine name",
+    "message": "搜索引擎名称",
     "description": ""
   },
   "keyword": {
-    "message": "Keyword",
+    "message": "关键词",
     "description": ""
   },
   "multipleSearchEngines": {
-    "message": "Use this search engine for a search with multiple search engines",
+    "message": "在组合搜索中使用此搜索引擎",
     "description": ""
   },
   "searchEngineURL": {
-    "message": "Search engine URL",
+    "message": "搜索引擎网址",
     "description": ""
   },
   "startWith": {
-    "message": "Should start with 'https://'",
+    "message": "应以 'https://' 开头",
     "description": ""
   },
   "testSearchEngine": {
-    "message": "Test search engine",
+    "message": "测试搜索引擎",
     "description": ""
   },
   "addSearchEngine": {
-    "message": "Add search engine",
+    "message": "添加搜索引擎",
     "description": ""
   },
   "clear": {
-    "message": "Clear",
+    "message": "清除",
     "description": ""
   },
   "move": {
-    "message": "Move",
+    "message": "将",
     "description": ""
   },
   "up": {
-    "message": "up",
+    "message": "向上移动",
     "description": ""
   },
   "down": {
-    "message": "down",
+    "message": "向下移动",
     "description": ""
   },
   "remove": {
-    "message": "Remove",
+    "message": "移除",
     "description": ""
   },
   "multipleSearchEnginesSearch": {
-    "message": "Include this search engine for a multiple search engines search",
+    "message": "将此搜索引擎包含在组合搜索引擎中",
     "description": ""
   },
   "notifySavedPreferences": {
-    "message": "Saved preferences.",
+    "message": "偏好设置已保存",
     "description": ""
   },
   "notifySearchEngineAdded": {
-    "message": "Search engine added.",
+    "message": "搜索引擎已添加",
     "description": ""
   },
   "notifyEnableStorageSync": {
-    "message": "Please ensure that the flag 'webextensions.storage.sync.enabled' is set to 'true' in 'about:config', otherwise Context Search won't work.",
+    "message": "请确保 'about:config' 中的 'webextensions.storage.sync.enabled' 标志设为 'true'，否则 Context Search 将无法正常工作",
     "description": ""
   },
   "notifySearchEnginesLoaded": {
-    "message": "Default list of search engines has been loaded.",
+    "message": "搜索引擎默认列表已加载。",
     "description": ""
   },
   "titleMultipleSearchEngines": {
-    "message": "Multiple search engines search",
+    "message": "组合搜索",
     "description": ""
   },
   "titleGoogleSearch": {
-    "message": "Search this site with Google",
+    "message": "用 Google 搜索此站点",
     "description": ""
   },
   "titleOptions": {
-    "message": "Options",
+    "message": "选项",
     "description": ""
   },
   "windowTitle": {
-    "message": "Search results for",
+    "message": "搜索结果",
     "description": ""
   },
   "omniboxDescription": {
-    "message": "Search using Context Search with keywords. Usage: cs [keyword] [search terms] (e.g. 'cs w Linux' searches Wikipedia for the term 'Linux')",
+    "message": "使用关键词通过 Context Search 进行搜索。用法：cs [关键词] [搜索条件]（例如 'cs w Linux' 表示通过维基百科搜索 'Linux'）",
     "description": ""
   },
   "notifyUsage": {
-    "message": "Usage: cs [keyword] [search terms] (for example: cs w Linux)",
+    "message": "用法：cs [关键词] [搜索条件]（例如 'cs w Linux'）",
     "description": ""
   },
   "notifySearchEngineWithKeyword": {
-    "message": "Search engine with keyword",
+    "message": "关键词对应的搜索引擎",
     "description": ""
   },
   "notifyUnknown": {
-    "message": "is unknown.",
+    "message": "是未知的。",
     "description": ""
   }
 }
