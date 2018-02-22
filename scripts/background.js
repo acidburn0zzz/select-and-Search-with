@@ -57,7 +57,9 @@ browser.runtime.onMessage.addListener(function(message) {
             testSearchEngine(message.data);
             break;
         case "addNewFavicon":
-            browser.storage.sync.get().then(addNewFavicon(message.data), onError);
+            browser.storage.sync.get().then((se) => {
+                addNewFavicon(se, message.data);
+            }, onError);
             break;
         default:
             break;
@@ -216,8 +218,8 @@ function initializeFavicons() {
 }
 
 /// Add favicon to newly added search engine
-function addNewFavicon(id, data) {
-    searchEngines = data;
+function addNewFavicon(se, id) {
+    searchEngines = se;
     console.log(id);
     console.log(searchEngines);
     let url = searchEngines[id].url;
