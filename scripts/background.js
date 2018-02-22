@@ -56,6 +56,9 @@ browser.runtime.onMessage.addListener(function(message) {
         case "testSearchEngine":
             testSearchEngine(message.data);
             break;
+        case "addNewFavicon":
+            browser.storage.sync.get().then(addNewFavicon(message.data), onError);
+            break;
         default:
             break;
     }
@@ -210,6 +213,21 @@ function initializeFavicons() {
             remainingItems = remainingItems - 1;
         }
     }
+}
+
+/// Add favicon to newly added search engine
+function addNewFavicon(id, data) {
+    searchEngines = data;
+    console.log(id);
+    console.log(searchEngines);
+    let url = searchEngines[id].url;
+    let urlParts = url.replace('http://','').replace('https://','').split(/\//);
+    let domain = urlParts[0];
+    let faviconUrl = "https://get-favicons.herokuapp.com/icon?url=" + domain + "&size=16..32..128";
+    getBase64Image(id, faviconUrl).then(function (base64String) {
+        searchEngines[id]["base64"] = base64String;
+        browser.storage.sync.set(searchEngines).then(null, onError);
+    }, onError);
 }
 
 /// Generate base 64 image string for the favicon with the given url

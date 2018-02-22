@@ -1,7 +1,6 @@
 /// Global variables
 const divContainer = document.getElementById("container");
 const divAddSearchEngine = document.getElementById("addSearchEngine");
-let divSearchEngines = document.getElementById("searchEngines");
 const show = document.getElementById("show"); // Boolean
 const name = document.getElementById("name"); // String
 const keyword = document.getElementById("keyword"); // String
@@ -16,7 +15,9 @@ const active = document.getElementById("active");
 const gridMode = document.getElementById("gridMode");
 const optionsMenuLocation = document.getElementById("optionsMenuLocation");
 const getFavicons = document.getElementById("getFavicons");
+let divSearchEngines = document.getElementById("searchEngines");
 let storageSyncCount = 0;
+var searchEngines = {};
 
 // Translation variables
 const move = browser.i18n.getMessage("move");
@@ -90,9 +91,9 @@ function sortByIndex(list) {
 
 function listSearchEngines(list) {
     let divSearchEngines = document.getElementById("searchEngines");
-    if(divSearchEngines != null) divContainer.removeChild(divSearchEngines);
+    if (divSearchEngines != null) divContainer.removeChild(divSearchEngines);
 
-    let searchEngines = sortByIndex(list);
+    searchEngines = sortByIndex(list);
     divSearchEngines = document.createElement("ol");
     divSearchEngines.setAttribute("id", "searchEngines");
     for (let id in searchEngines) {
@@ -255,7 +256,9 @@ function removeSearchEngine(e) {
 }
 
 function readData() {
-    let searchEngines = {};
+    let oldSearchEngines = {};
+    oldSearchEngines = searchEngines;
+    searchEngines = {};
 
     let divSearchEngines = document.getElementById("searchEngines");
     let lineItems = divSearchEngines.childNodes;
@@ -274,6 +277,7 @@ function readData() {
             searchEngines[lineItems[i].id]["multitab"] = multiTab.checked;
             searchEngines[lineItems[i].id]["url"] = url.value;
             searchEngines[lineItems[i].id]["show"] = input.checked;
+            searchEngines[lineItems[i].id]["base64"] = oldSearchEngines[lineItems[i].id].base64;
         }
     }
     return sortByIndex(searchEngines);
@@ -285,11 +289,11 @@ function save(){
 }
 
 function saveOptions(notification) {
-    let searchEngines = readData();
+    let newSearchEngines = readData();
     if (notification == true) {
-        browser.storage.sync.set(searchEngines).then(notify(notifySavedPreferences), onError);
+        browser.storage.sync.set(newSearchEngines).then(notify(notifySavedPreferences), onError);
     } else {
-        browser.storage.sync.set(searchEngines).then(null, onError);
+        browser.storage.sync.set(newSearchEngines).then(null, onError);
     }
 }
 
@@ -315,26 +319,25 @@ function addSearchEngine() {
 
     const id = name.value.replace(" ", "-").toLowerCase();
     let newSearchEngine = {};
-    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "keyword": keyword.value, "multitab": multitab.value , "url": url.value, "show": show.checked};
+    newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "keyword": keyword.value, "multitab": multitab.checked , "url": url.value, "show": show.checked};
     let lineItem = createLineItem(id, newSearchEngine[id]);
     divSearchEngines.appendChild(lineItem);
-    browser.storage.sync.set(newSearchEngine).then(notify(notifySearchEngineAdded), onError);
-
+    browser.storage.sync.set(newSearchEngine).then(function() {
+        sendMessage("addNewFavicon", id);
+        notify(notifySearchEngineAdded);
+    }, onError);
+    
     // Clear HTML input fields to add a search engine
-    show.checked = true;
-    name.value = null;
-    keyword.value = null;
-    multitab.checked = false;
-    url.value = null;
+    clear();
 }
 
 function clear() {
     // Clear check boxes and text box entries
     show.checked = false;
-    name.value = "";
-    keyword.value = "";
+    name.value = null;
+    keyword.value = null;
     multitab.checked = false;
-    url.value = "";
+    url.value = null;
 }
 
 function onGot(data) {
@@ -425,7 +428,7 @@ function handleFileUpload() {
         let jsonFile = upload.files[0];
         let reader = new FileReader();
         reader.onload = function(event) {
-            let searchEngines = JSON.parse(event.target.result);
+            searchEngines = JSON.parse(event.target.result);
             listSearchEngines(searchEngines);
             saveOptions();
         };
