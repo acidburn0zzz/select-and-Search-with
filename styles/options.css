@@ -8,12 +8,17 @@ body {
     width: 480px;
     margin-right: 10px;
 }
-.right fieldset {
-    width: 1020px;
+.right {
+    width: 1070px;
 }
 
 .icon {
     font-size: 1.5em;
+}
+
+.indentation {
+    display: inline-block;
+    width: 50px;
 }
 
 input[type="checkbox"] {
@@ -51,10 +56,11 @@ input#gridMode + label, input#optionsMenuAtTop + label {
 }
 
 h2 {
+    padding-left: 10px;
     font-size: 12pt;
 }
 
-#container button {
+#flexbox-container button {
     margin-left: 10px;
 }
 
@@ -70,6 +76,10 @@ h2 {
     visibility: hidden;
 }
 
+select#optionsMenuLocation, #active {
+    margin-top: 10px;
+}
+
 #upl {
     margin-top: 10px;
     margin-bottom: 8px;
@@ -79,11 +89,8 @@ h2 {
     margin-left: 40px;
 }
 
-#flexbox-container {
-    margin-left: 10px;
-}
-
 #flexbox-container > div.left > div.preferences {
+    max-width: 1030px;
     display: -ms-flex;
     display: -webkit-flex;
     display: flex;
@@ -91,14 +98,13 @@ h2 {
     flex-direction: row;
     align-content: flex-start;
     padding: 10px;
-    margin-right: 10px;
 }
 
 #flexbox-container > div.right {
     padding: 10px;
 }
 
-@media screen and (min-width: 1520px) {
+@media screen and (min-width: 1570px) {
     #flexbox-container {
         display: -ms-flex;
         display: -webkit-flex;

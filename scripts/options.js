@@ -120,14 +120,19 @@ function createButton(ioniconClass, btnClass, btnTitle) {
 function createLineItem(id, searchEngine) {
     let lineItem = document.createElement("li");
 
+    // 'show' checkbox
     let inputName = document.createElement("input");
+
+    // spacer to create an indentation for search engines in a folder
+    let spacer = document.createElement("span");
+    spacer.setAttribute("class", "indentation");
+
+    // 'name' of the search engine
     let labelName = document.createElement("label");
     let textName = document.createTextNode(searchEngine.name);
 
     let inputKeyword = document.createElement("input");
-
     let inputMultiTab = document.createElement("input");
-    
     let inputQueryString = document.createElement("input");
 
     let upButton = createButton("ion-ios-arrow-up", "up", move + " " + searchEngine.name + " " + up);
@@ -162,6 +167,7 @@ function createLineItem(id, searchEngine) {
     inputQueryString.setAttribute("value", searchEngine.url);
 
     lineItem.appendChild(inputName);
+    if (searchEngine.parentFolder != null && searchEngine.parentFolder != undefined) lineItem.appendChild(spacer);
     lineItem.appendChild(labelName);
     lineItem.appendChild(inputKeyword);
     lineItem.appendChild(inputMultiTab);
