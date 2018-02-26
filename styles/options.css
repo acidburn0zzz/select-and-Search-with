@@ -4,12 +4,20 @@ body {
     color:darkslategrey;
 }
 
+.hide {
+    display: none;
+}
+
 .left fieldset {
     width: 480px;
     margin-right: 10px;
 }
 .right {
     width: 1070px;
+}
+
+#addItemContainer {
+    margin-top: 15px;
 }
 
 .icon {

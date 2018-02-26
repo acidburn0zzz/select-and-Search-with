@@ -90,22 +90,37 @@
 						<br />
 						<div id="container">
 						</div>
-						<br />
-						<div id="addSearchEngine">
-							<div>
-								<h4 style="margin:0" data-i18n="subheader61">Add a new search engine or folder</h4>
-							</div>
-							
-							<div><input type="checkbox" id="show" data-i18n-title="showSearchEngine" checked="true" />
-								<input type="text" id="name" data-i18n-placeholder="searchEngineName" />
-								<input type="text" id="keyword" class="keyword" data-i18n-placeholder="keyword" />
-								<input type="checkbox" id="multitab" data-i18n-title="multipleSearchEngines" checked="false" />
-								<input type="url" id="url" data-i18n-placeholder="searchEngineURL" data-i18n-title="startWith" pattern="https?://.+" />
-							</div>
+					</div>
+				</fieldset>
+				<fieldset id="addItemContainer">
+					<legend><h4 style="margin:0" data-i18n="subheader61">Add a new search engine or folder</h4></legend>
+					<div id="addItem">
+						<div>
+							<span>Add: </span>
+							<select id="itemToAdd">
+								<option value="se" selected data-i18n="searchEngine">a search engine</option>
+								<option value="folder" data-i18n="folder">a folder</option>
+							</select>
+						</div>
+						<div id="se">
+							<input type="checkbox" id="show" data-i18n-title="showSearchEngine" checked="true" />
+							<input type="text" id="name" data-i18n-placeholder="searchEngineName" />
+							<input type="text" id="keyword" class="keyword" data-i18n-placeholder="keyword" />
+							<input type="checkbox" id="multitab" data-i18n-title="multipleSearchEngines" checked="false" />
+							<input type="url" id="url" data-i18n-placeholder="searchEngineURL" data-i18n-title="startWith" pattern="https?://.+" />
 							<div class="buttonrow">
 								<!-- Display on a new line -->
-								<button type="button" id="test" style="margin-left: 26px;" data-i18n = "testSearchEngine">Test Search Engine</button>
-								<button type="button" id="add" data-i18n="addSearchEngine">Add Search Engine</button>
+								<button type="button" id="test" style="margin-left: 26px;" data-i18n="testSearchEngine">Test Search Engine</button>
+								<button type="button" id="addSearchEngine" data-i18n="addSearchEngine">Add Search Engine</button>
+								<button type="button" id="clear" data-i18n="clear">Clear</button>
+							</div>
+						</div>
+						<div id="folder" class="hide">
+							<input type="checkbox" id="show" data-i18n-title="showFolder" checked="true" />
+							<input type="text" id="name" data-i18n-placeholder="folderName" />
+							<div class="buttonrow">
+								<!-- Display on a new line -->
+								<button type="button" id="addFolder" style="margin-left: 26px;" data-i18n="addFolder">Add Folder</button>
 								<button type="button" id="clear" data-i18n="clear">Clear</button>
 							</div>
 						</div>

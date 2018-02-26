@@ -112,7 +112,7 @@
     "description": ""
   },
   "subheader61": {
-    "message": "Add a new search engine",
+    "message": "Add a new search engine or folder",
     "description": ""
   },
   "showSearchEngine": {
@@ -217,6 +217,26 @@
   },
   "notifyUnknown": {
     "message": "is unknown.",
+    "description": ""
+  },
+  "searchEngine": {
+    "message": "a search engine",
+    "description": ""
+  },
+  "folder": {
+    "message": "a folder",
+    "description": ""
+  },
+  "showFolder": {
+    "message": "Show the folder in the contextual menu",
+    "description": ""
+  },
+  "folderName": {
+    "message": "Folder name",
+    "description": ""
+  },
+  "addFolder": {
+    "message": "Add folder",
     "description": ""
   }
 }

@@ -1,6 +1,8 @@
 /// Global variables
 const divContainer = document.getElementById("container");
-const divAddSearchEngine = document.getElementById("addSearchEngine");
+const itemToAdd = document.getElementById("itemToAdd");
+const se = document.getElementById("se");
+const folder = document.getElementById("folder");
 const show = document.getElementById("show"); // Boolean
 const name = document.getElementById("name"); // String
 const keyword = document.getElementById("keyword"); // String
@@ -27,6 +29,27 @@ const remove = browser.i18n.getMessage("remove");
 const multipleSearchEnginesSearch = browser.i18n.getMessage("multipleSearchEnginesSearch");
 const notifySavedPreferences = browser.i18n.getMessage("notifySavedPreferences");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
+
+/// Message event handlers
+browser.runtime.onMessage.addListener(handleMessage);
+
+/// Other Event handlers
+itemToAdd.addEventListener("change", displayRelevantItem);
+getFavicons.addEventListener("click", updateGetFavicons);
+tabMode.addEventListener("click", updateTabMode);
+tabActive.addEventListener("click", updateTabMode);
+gridMode.addEventListener("click", updateGridMode);
+optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
+document.addEventListener('DOMContentLoaded', restoreOptions);
+document.getElementById("clearAll").addEventListener("click", clearAll);
+document.getElementById("selectAll").addEventListener("click", selectAll);
+document.getElementById("reset").addEventListener("click", reset);
+document.getElementById("test").addEventListener("click", testSearchEngine);
+document.getElementById("addSearchEngine").addEventListener("click", addSearchEngine);
+document.getElementById("clear").addEventListener("click", clear);
+document.getElementById("save").addEventListener("click", save);
+document.getElementById("download").addEventListener("click", saveToLocalDisk);
+document.getElementById("upload").addEventListener("change", handleFileUpload);
 
 // Send a message to the background script
 function sendMessage(action, data) {
@@ -87,6 +110,16 @@ function sortByIndex(list) {
     }
   
     return sortedList;
+}
+
+function displayRelevantItem() {
+    if (itemToAdd.value === "se") {
+        folder.setAttribute("class", "hide");
+        se.removeAttribute("class");
+    } else {
+        se.setAttribute("class", "hide");
+        folder.removeAttribute("class");
+    }
 }
 
 function listSearchEngines(list) {
@@ -522,22 +555,4 @@ function translateContent(attribute, type) {
 
 i18n();
 
-/// WebExtension event handlers
-browser.runtime.onMessage.addListener(handleMessage);
 
-/// Event handlers
-getFavicons.addEventListener("click", updateGetFavicons);
-tabMode.addEventListener("click", updateTabMode);
-tabActive.addEventListener("click", updateTabMode);
-gridMode.addEventListener("click", updateGridMode);
-optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
-document.addEventListener('DOMContentLoaded', restoreOptions);
-document.getElementById("clearAll").addEventListener("click", clearAll);
-document.getElementById("selectAll").addEventListener("click", selectAll);
-document.getElementById("reset").addEventListener("click", reset);
-document.getElementById("test").addEventListener("click", testSearchEngine);
-document.getElementById("add").addEventListener("click", addSearchEngine);
-document.getElementById("clear").addEventListener("click", clear);
-document.getElementById("save").addEventListener("click", save);
-document.getElementById("download").addEventListener("click", saveToLocalDisk);
-document.getElementById("upload").addEventListener("change", handleFileUpload);
