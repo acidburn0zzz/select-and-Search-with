@@ -1,142 +1,120 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Context Search Preferences</title>
-    <link rel="stylesheet" href="../styles/ionicons.min.css">
-    <link rel="stylesheet" href="../styles/options.css">
-  </head>
-  <body>
-    <form>
-      <h2 data-i18n="pageTitle">Context Search Preferences</h2>
-      <div id="flexbox-container">
-        <div class="left">
-          <div class="preferences">
-            <fieldset style="display:inline-block"> <legend>
-                <h4 data-i18n="header1">Where should search results appear?</h4>
-              </legend>
-              <div id="tabMode"> <input id="openNewTab" name="results" value="openNewTab"
+	<head>
+		<meta charset="utf-8">
+		<title>Context Search Preferences</title>
+		<link rel="stylesheet" href="../styles/ionicons.min.css">
+		<link rel="stylesheet" href="../styles/options.css">
+	</head>
+	<body>
+		<form>
+		<h2 data-i18n="pageTitle">Context Search Preferences</h2>
 
-                  checked="checked" type="radio"> <label for="openNewTab" data-i18n="newTab">In
-                  a new tab</label> <input id="sameTab" name="results" value="sameTab"
+		<div id="flexbox-container">
+			<div class="left">
+				<div class="preferences">
+					<fieldset style="display:inline-block">
+						<legend><h4 data-i18n="header1">Where should search results appear?</h4></legend>
+						<div id="tabMode">
+							<input type="radio" id="openNewTab" name="results" value="openNewTab" checked>
+							<label for="openNewTab" data-i18n="newTab">In a new tab</label>
 
-                  type="radio"> <label for="sameTab" data-i18n="sameTab">In the
-                  same tab</label> <input id="openNewWindow" name="results" value="openNewWindow"
+							<input type="radio" id="sameTab" name="results" value="sameTab">
+							<label for="sameTab" data-i18n="sameTab">In the same tab</label>
 
-                  type="radio"> <label for="openNewWindow" data-i18n="newWindow">In
-                  a new window</label> </div>
-              <div id="active"> <input id="tabActive" type="checkbox"><label for="tabActive"
+							<input type="radio" id="openNewWindow" name="results" value="openNewWindow">
+							<label for="openNewWindow" data-i18n="newWindow">In a new window</label>
+						</div>
 
-                  data-i18n="active">Make the new tab or window active</label> </div>
-            </fieldset>
-            <fieldset style="display:inline-block"> <legend>
-                <h4 data-i18n="header2">Display favicons in context menu list</h4>
-              </legend>
-              <div> <input id="getFavicons" type="checkbox"><label for="getFavicons"
+						<div id="active">
+							<input type="checkbox" id="tabActive"><label for="tabActive" data-i18n="active">Make the new tab or window active</label>
+						</div>
+					</fieldset>
 
-                  data-i18n="getFavicons">Fetch favicons using the 'besticon'
-                  API</label>
-                <p><em data-i18n="note">This feature requires firefox 56 or
-                    above.</em></p>
-              </div>
-            </fieldset>
-            <fieldset style="display:inline-block"> <legend>
-                <h4 data-i18n="header3">Position of options in context menu list</h4>
-              </legend>
-              <div> <label for="optionsMenuLocation" data-i18n="subheader31">Where
-                  would you like the options menu to appear in the context menu
-                  of Context Search?</label><br>
-                <select id="optionsMenuLocation">
-                  <option value="bottom" selected="selected" data-i18n="bottom">At
-                    the bottom</option>
-                  <option value="top" data-i18n="top">At the top</option>
-                  <option value="none" data-i18n="hide">Neither - hide the
-                    options menu</option>
-                </select>
-              </div>
-            </fieldset>
-            <fieldset style="display:inline-block"> <legend>
-                <h4 data-i18n="header4">Search engines icon grid mode</h4>
-              </legend>
-              <div> <input id="gridMode" type="checkbox"><label for="gridMode"
+					<fieldset style="display:inline-block">
+						<legend><h4 data-i18n="header2">Display favicons in context menu list</h4></legend>
+						<div>
+							<input type="checkbox" id="getFavicons"><label for="getFavicons" data-i18n="getFavicons">Fetch favicons using the 'besticon' API</label>
+							<p><em data-i18n="note">This feature requires firefox 56 or above.</em></p>
+						</div>
+					</fieldset>
 
-                  data-i18n="gridMode">Display a grid of icons instead of a list
-                  of search engines</label>
-                <p><em data-i18n="warning">Warning: Please note that enabling
-                    this feature will prevent context menus from other
-                    extensions to be displayed.</em></p>
-              </div>
-            </fieldset>
-            <fieldset> <legend>
-                <h4 data-i18n="header5">Import/export search engines</h4>
-              </legend>
-              <div>
-                <table>
-                  <tbody>
-                    <tr>
-                      <td><label for="upload" id="upl" data-i18n="import">Import
-                          JSON from local disk</label></td>
-                      <td><input id="upload" type="file"></td>
-                    </tr>
-                    <tr>
-                      <td><label for="download" data-i18n="export">Export search
-                          engines to JSON</label></td>
-                      <td><button type="button" id="download" data-i18n="download">Export
-                          to local disk</button></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </fieldset>
-          </div>
-          <br>
-          <button type="button" id="save" data-i18n="savePreferences">Save
-            preferences</button> </div>
-        <div class="right">
-          <fieldset> <legend>
-              <h4 data-i18n="header6">Which search engines would you like to
-                appear in the context menu or grid?</h4>
-            </legend>
-            <div> <button type="button" id="clearAll" data-i18n="clearAll">Clear
-                All</button> <button type="button" id="selectAll" data-i18n="selectAll">Select
-                All</button> <button type="button" id="reset" data-i18n="reset">Reset</button>
-              <br>
-              <br>
-            </div>
-            <p><label data-i18n="multisearch"><b>*multi-search</b> - it's a
-                search with multiple search engines simultaneously.</label></p>
-            <div id="container"> </div>
-            <br>
-            <div id="addSearchEngine">
-              <div>
-                <h4 style="margin:0" data-i18n="subheader61">Add a new search
-                  engine</h4>
-              </div>
-              <div><input id="show" data-i18n-title="showSearchEngine" checked="true"
+					<fieldset style="display:inline-block">
+						<legend><h4 data-i18n="header3">Position of options in context menu list</h4></legend>
+						<div>
+							<label for="optionsMenuLocation" data-i18n="subheader31">Where would you like the options menu to appear in the context menu of Context Search?</label><br />
+							<select id="optionsMenuLocation">
+								<option value="bottom" selected data-i18n="bottom">At the bottom</option>
+								<option value="top" data-i18n="top">At the top</option>
+								<option value="none" data-i18n="hide">Neither - hide the options menu</option>
+							</select>
+						</div>
+					</fieldset>
 
-                  type="checkbox"> <input id="name" data-i18n-placeholder="searchEngineName"
+					<fieldset style="display:inline-block">
+						<legend><h4 data-i18n="header4">Search engines icon grid mode</h4></legend>
+						<div>
+							<input type="checkbox" id="gridMode"><label for="gridMode" data-i18n="gridMode">Display a grid of icons instead of a list of search engines</label>
+							<p><em data-i18n="warning">Warning: Please note that enabling this feature will prevent context menus from other extensions to be displayed.</em></p>
+						</div>
+					</fieldset>
 
-                  type="text"> <input id="keyword" class="keyword" data-i18n-placeholder="keyword"
+					<fieldset>
+						<legend><h4 data-i18n="header5">Import/export search engines</h4></legend>
+						<div>
+							<table>
+							<tr>
+								<td><label for="upload" id="upl" data-i18n="import">Import JSON from local disk</label></td>
+								<td><input type="file" id="upload" /></td>
+							</tr>
+							<tr>
+								<td><label for="download" data-i18n="export">Export search engines to JSON</label></td>
+								<td><button type="button" id="download" data-i18n="download">Export to local disk</button></td>
+							</tr>
+							</table>
+						</div>
+					</fieldset>
+				</div>	
+				<br />
+				<button type="button" id="save" data-i18n="savePreferences">Save preferences</button>
+			</div>
 
-                  type="text"> <input id="multitab" data-i18n-title="multipleSearchEngines"
-
-                  checked="false" type="checkbox"> <input id="url" data-i18n-placeholder="searchEngineURL"
-
-                  data-i18n-title="startWith" pattern="https?://.+" type="url">
-              </div>
-              <div class="buttonrow">
-                <!-- Display on a new line --> <button type="button" id="test"
-
-                  style="margin-left: 26px;" data-i18n="testSearchEngine">Test
-                  Search Engine</button> <button type="button" id="add" data-i18n="addSearchEngine">Add
-                  Search Engine</button> <button type="button" id="clear" data-i18n="clear">Clear</button>
-              </div>
-            </div>
-          </fieldset>
-        </div>
-      </div>
-    </form>
-    <script src="../scripts/options.js"></script>
-    <script src="../scripts/sort.js"></script>
-  </body>
+			<div class="right">
+				<fieldset>
+					<legend><h4 data-i18n="header6">Which search engines would you like to appear in the context menu or grid?</h4></legend>
+					<div>
+						<button type="button" id="clearAll" data-i18n="clearAll">Clear All</button>
+						<button type="button" id="selectAll" data-i18n="selectAll">Select All</button>
+						<button type="button" id="reset" data-i18n="reset">Reset</button>
+						<br />
+						<br />
+            <p><label data-i18n="multisearch"><b>*multi-search</b> - it's a search with multiple search engines simultaneously.</label></p>
+						<div id="container">
+						</div>
+						<br />
+						<div id="addSearchEngine">
+							<div>
+								<h4 style="margin:0" data-i18n="subheader61">Add a new search engine</h4>
+							</div>
+								<div><input type="checkbox" id="show" data-i18n-title="showSearchEngine" checked="true" />
+								<input type="text" id="name" data-i18n-placeholder="searchEngineName" />
+								<input type="text" id="keyword" class="keyword" data-i18n-placeholder="keyword" />
+								<input type="checkbox" id="multitab" data-i18n-title="multipleSearchEngines" checked="false" />
+								<input type="url" id="url" data-i18n-placeholder="searchEngineURL" data-i18n-title="startWith" pattern="https?://.+" />
+							</div>
+							<div class="buttonrow">
+								<!-- Display on a new line -->
+								<button type="button" id="test" style="margin-left: 26px;" data-i18n = "testSearchEngine">Test Search Engine</button>
+								<button type="button" id="add" data-i18n="addSearchEngine">Add Search Engine</button>
+								<button type="button" id="clear" data-i18n="clear">Clear</button>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+		</div>
+		</form>
+		<script src="../scripts/options.js"></script>
+		<script src="../scripts/sort.js"></script>
+	</body>
 </html>
