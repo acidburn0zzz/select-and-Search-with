@@ -7,6 +7,10 @@
     "message": "Busca el texto seleccionado usando un buscador de una lista predeterminada.",
     "description": "Description of the extension"
   },
+  "multisearch": {
+    "message": " is a search with multiple search engines simultaneously.",
+    "description": "multi-search - it's a search with multiple search engines simultaneously."
+  },
   "pageTitle": {
     "message": "Preferencias de Context Search",
     "description": ""

@@ -7,6 +7,10 @@
     "message": "使用预先指定的列表中的搜索引擎搜索选定的文本",
     "description": "Description of the extension"
   },
+  "multisearch": {
+    "message": " is a search with multiple search engines simultaneously.",
+    "description": "multi-search - it's a search with multiple search engines simultaneously."
+  },
   "pageTitle": {
     "message": "Context Search 偏好设置",
     "description": ""

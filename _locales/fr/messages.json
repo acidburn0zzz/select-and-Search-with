@@ -7,6 +7,10 @@
    "message": "Effectue une recherche du texte sélectionné en utilisant le moteur de recherche choisi dans une liste pré-définie.",
    "description": "Description of the extension"
  },
+ "multisearch": {
+  "message": " est une recherche avec plusieurs moteurs de recherche simultanément.",
+  "description": "multi-search - it's a search with multiple search engines simultaneously."
+},
  "pageTitle": {
    "message": "Préférences de Context Search",
    "description": ""

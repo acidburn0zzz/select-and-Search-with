@@ -3,13 +3,13 @@
     "message": "Контекстний Пошук",
     "description": "Name of the extension"
   },
-  "multisearch": {
-    "message": "*мульти-пошук - це пошук кількома пошуковими системами одночасно.",
-    "description": "multi-search - it's a search with multiple search engines simultaneously."
-  },
   "extensionDescription": {
     "message": "Пошук виділеного тексту пошуковою системою з попередньо визначеного списку.",
     "description": "Description of the extension"
+  },
+  "multisearch": {
+    "message": " це пошук кількома пошуковими системами одночасно.",
+    "description": "multi-search - it's a search with multiple search engines simultaneously."
   },
   "pageTitle": {
     "message": "Параметри контекстного пошуку",
