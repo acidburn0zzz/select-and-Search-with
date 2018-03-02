@@ -1,0 +1,226 @@
+{
+  "extensionName": {
+    "message": "Контекстний Пошук",
+    "description": "Name of the extension"
+  },
+  "multisearch": {
+    "message": "*мульти-пошук - це пошук кількома пошуковими системами одночасно.",
+    "description": "multi-search - it's a search with multiple search engines simultaneously."
+  },
+  "extensionDescription": {
+    "message": "Пошук виділеного тексту пошуковою системою з попередньо визначеного списку.",
+    "description": "Description of the extension"
+  },
+  "pageTitle": {
+    "message": "Параметри контекстного пошуку",
+    "description": ""
+  },
+  "header1": {
+    "message": "Де повинні з'явитися результати пошуку?",
+    "description": ""
+  },
+  "newTab": {
+    "message": "У новій вкладці",
+    "description": ""
+  },
+  "sameTab": {
+    "message": "В тій же вкладці",
+    "description": ""
+  },
+  "newWindow": {
+    "message": "У новому вікні",
+    "description": ""
+  },
+  "active": {
+    "message": "Зробити активною нову вкладку / вікно",
+    "description": ""
+  },
+  "header3": {
+    "message": "Розташування опцій в контекстному меню",
+    "description": ""
+  },
+  "subheader31": {
+    "message": "Де б ви хотіли бачити опції контекстного меню?",
+    "description": ""
+  },
+  "bottom": {
+    "message": "Знизу",
+    "description": ""
+  },
+  "top": {
+    "message": "Зверху",
+    "description": ""
+  },
+  "hide": {
+    "message": "Ніде (приховати меню опцій)",
+    "description": ""
+  },
+  "header5": {
+    "message": "імпорт / експорт пошукових систем",
+    "description": ""
+  },
+  "import": {
+    "message": "Імпорт JSON з локального диска",
+    "description": ""
+  },
+  "export": {
+    "message": "Експорт пошукових систем в JSON",
+    "description": ""
+  },
+  "download": {
+    "message": "Експорт на локальний диск",
+    "description": ""
+  },
+  "header2": {
+    "message": "Відображення фавіконів в списку контекстного меню",
+    "description": ""
+  },
+  "getFavicons": {
+    "message": "Отримувати фавікони за допомогою 'besticon' API",
+    "description": ""
+  },
+  "note": {
+    "message": "Ця функція вимагає firefox 56 або вище.",
+    "description": ""
+  },
+  "header4": {
+    "message": "Відображення пошукових систем сіткою іконок",
+    "description": ""
+  },
+  "gridMode": {
+    "message": "Відображення пошукових систем сіткою іконок замість списку",
+    "description": ""
+  },
+  "warning": {
+    "message": "Увага! Активація цієї функції блокуватиме відображення контекстних меню інших розширень.",
+    "description": ""
+  },
+  "savePreferences": {
+    "message": "Зберегти налаштування",
+    "description": ""
+  },
+  "header6": {
+    "message": "Які пошукові системи ви хотіли б бачити в контекстному меню чи сітці іконок?",
+    "description": ""
+  },
+  "clearAll": {
+    "message": "Очистити все",
+    "description": ""
+  },
+  "selectAll": {
+    "message": "Вибрати все",
+    "description": ""
+  },
+  "reset": {
+    "message": "Скидання",
+    "description": ""
+  },
+  "subheader61": {
+    "message": "Додати нову пошукову систему",
+    "description": ""
+  },
+  "showSearchEngine": {
+    "message": "Показувати пошукову систему в сітці іконок або в контекстному меню",
+    "description": ""
+  },
+  "searchEngineName": {
+    "message": "Назва пошукової системи",
+    "description": ""
+  },
+  "keyword": {
+    "message": "Ключове слово",
+    "description": ""
+  },
+  "multipleSearchEngines": {
+    "message": "Використовувати цю пошукову систему для мульти-пошуку",
+    "description": ""
+  },
+  "searchEngineURL": {
+    "message": "URL пошукової системи",
+    "description": ""
+  },
+  "startWith": {
+    "message": "Повинно починатися з 'https://'",
+    "description": ""
+  },
+  "testSearchEngine": {
+    "message": "Тестувати пошукову систему",
+    "description": ""
+  },
+  "addSearchEngine": {
+    "message": "Додати пошукову систему",
+    "description": ""
+  },
+  "clear": {
+    "message": "Очистити",
+    "description": ""
+  },
+  "move": {
+    "message": "Перемістити",
+    "description": ""
+  },
+  "up": {
+    "message": "вгору",
+    "description": ""
+  },
+  "down": {
+    "message": "вниз",
+    "description": ""
+  },
+  "remove": {
+    "message": "Видалити",
+    "description": ""
+  },
+  "multipleSearchEnginesSearch": {
+    "message": "Додати цю пошукову систему до мульти-пошуку",
+    "description": ""
+  },
+  "notifySavedPreferences": {
+    "message": "Збережені налаштування.",
+    "description": ""
+  },
+  "notifySearchEngineAdded": {
+    "message": "Пошукову систему додано.",
+    "description": ""
+  },
+  "notifyEnableStorageSync": {
+    "message": "Переконайтеся, що в 'about:config' рядок 'webextensions.storage.sync.enabled' має значення 'true', інакше контекстний пошук не буде працювати.",
+    "description": ""
+  },
+  "notifySearchEnginesLoaded": {
+    "message": "Завантажено список пошукових систем за замовчуванням.",
+    "description": ""
+  },
+  "titleMultipleSearchEngines": {
+    "message": "Мульти-пошук",
+    "description": ""
+  },
+  "titleGoogleSearch": {
+    "message": "Пошук по сайту з допомогою Google",
+    "description": ""
+  },
+  "titleOptions": {
+    "message": "Параметри",
+    "description": ""
+  },
+  "windowTitle": {
+    "message": "Результати пошуку для",
+    "description": ""
+  },
+  "omniboxDescription": {
+    "message": "Пошук з використанням контекстного пошуку за ключовими словами. Приклад: cs [ключовик] [мета пошуку] (наприклад 'cs w Linux' шукає у Вікіпедії по слову 'Linux')",
+    "description": ""
+  },
+  "notifyUsage": {
+    "message": "Приклад: cs [ключовик] [мета пошуку] (наприклад: cs w Linux)",
+    "description": ""
+  },
+  "notifySearchEngineWithKeyword": {
+    "message": "Пошукова система з ключовим словом",
+    "description": ""
+  },
+  "notifyUnknown": {
+    "message": "невідомо.",
+    "description": ""
+  }
+}

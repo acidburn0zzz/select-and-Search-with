@@ -1,222 +1,226 @@
 {
   "extensionName": {
-    "message": "Context Search",
+    "message": "Контекстный Поиск",
     "description": "Name of the extension"
   },
+  "multisearch": {
+    "message": "*мульти-поиск - это поиск несколькими поисковыми системами одновременно.",
+    "description": "multi-search - it's a search with multiple search engines simultaneously."
+  },
   "extensionDescription": {
-    "message": "Searches the selected text using a search engine from a pre-specified list.",
+    "message": "Поиск выделенного текста с помощью поисковой системы из предварительно указанного списка.",
     "description": "Description of the extension"
   },
   "pageTitle": {
-    "message": "Context Search Preferences",
+    "message": "Параметры контекстного поиска",
     "description": ""
   },
   "header1": {
-    "message": "Where should search results appear?",
+    "message": "Где должны появиться результаты поиска?",
     "description": ""
   },
   "newTab": {
-    "message": "In a new tab",
+    "message": "В новой вкладке",
     "description": ""
   },
   "sameTab": {
-    "message": "In the same tab",
+    "message": "В той же вкладке",
     "description": ""
   },
   "newWindow": {
-    "message": "In a new window",
+    "message": "В новом окне",
     "description": ""
   },
   "active": {
-    "message": "Make the new tab or window active",
+    "message": "Сделать активной новую вкладку / окно",
     "description": ""
   },
   "header3": {
-    "message": "Position of options in the context menu",
+    "message": "Расположение опций в контекстном меню",
     "description": ""
   },
   "subheader31": {
-    "message": "Where would you like the options menu to appear in the context menu?",
+    "message": "Где бы вы хотели видеть опции в контекстном меню?",
     "description": ""
   },
   "bottom": {
-    "message": "At the bottom",
+    "message": "Снизу",
     "description": ""
   },
   "top": {
-    "message": "At the top",
+    "message": "Сверху",
     "description": ""
   },
   "hide": {
-    "message": "Neither (hide the options menu)",
+    "message": "Нигде (скрыть меню опций)",
     "description": ""
   },
   "header5": {
-    "message": "Import/export search engines",
+    "message": "импорт / экспорт поисковых систем",
     "description": ""
   },
   "import": {
-    "message": "Import JSON from local disk",
+    "message": "Импорт JSON с локального диска",
     "description": ""
   },
   "export": {
-    "message": "Export search engines to JSON",
+    "message": "Экспорт поисковых систем в JSON",
     "description": ""
   },
   "download": {
-    "message": "Export to local disk",
+    "message": "Экспорт на локальный диск",
     "description": ""
   },
   "header2": {
-    "message": "Display favicons in context menu list",
+    "message": "Отображение фавиконов в списке контекстного меню",
     "description": ""
   },
   "getFavicons": {
-    "message": "Fetch favicons using the 'besticon' API",
+    "message": "Получать фавиконы с помощью 'besticon' API",
     "description": ""
   },
   "note": {
-    "message": "This feature requires firefox 56 or above.",
+    "message": "Эта функция требует firefox 56 или выше.",
     "description": ""
   },
   "header4": {
-    "message": "Search engines icon grid mode",
+    "message": "Отображение поисковых систем сеткой иконок",
     "description": ""
   },
   "gridMode": {
-    "message": "Display a grid of icons instead of a list of search engines",
+    "message": "Отображение поисковых систем сеткой иконок вместо списка",
     "description": ""
   },
   "warning": {
-    "message": "Warning: Please note that enabling this feature will prevent context menus from other extensions to be displayed.",
+    "message": "Обратите внимание, что включение этой функции блокирует отображение контекстных меню других расширений.",
     "description": ""
   },
   "savePreferences": {
-    "message": "Save preferences",
+    "message": "Сохранить настройки",
     "description": ""
   },
   "header6": {
-    "message": "Which search engines would you like to appear in the context menu or grid?",
+    "message": "Какие поисковые системы вы хотели бы видеть в контекстном меню или сетке иконок?",
     "description": ""
   },
   "clearAll": {
-    "message": "Clear All",
+    "message": "Очистить всё",
     "description": ""
   },
   "selectAll": {
-    "message": "Select All",
+    "message": "Выбрать всё",
     "description": ""
   },
   "reset": {
-    "message": "Reset",
+    "message": "Сброс",
     "description": ""
   },
   "subheader61": {
-    "message": "Add a new search engine",
+    "message": "Добавить новую поисковую систему",
     "description": ""
   },
   "showSearchEngine": {
-    "message": "Show search engine in grid or context menu",
+    "message": "Показывать поисковую систему в сетке иконок или контекстном меню",
     "description": ""
   },
   "searchEngineName": {
-    "message": "Search engine name",
+    "message": "Название поисковой системы",
     "description": ""
   },
   "keyword": {
-    "message": "Keyword",
+    "message": "Ключевое слово",
     "description": ""
   },
   "multipleSearchEngines": {
-    "message": "Use this search engine for a search with multiple search engines",
+    "message": "Использовать эту поисковую систему для мульти-поиска",
     "description": ""
   },
   "searchEngineURL": {
-    "message": "Search engine URL",
+    "message": "URL поисковой системы",
     "description": ""
   },
   "startWith": {
-    "message": "Should start with 'https://'",
+    "message": "Должно начинаться с 'https://'",
     "description": ""
   },
   "testSearchEngine": {
-    "message": "Test search engine",
+    "message": "Тестировать поисковую систему",
     "description": ""
   },
   "addSearchEngine": {
-    "message": "Add search engine",
+    "message": "Добавить поисковую систему",
     "description": ""
   },
   "clear": {
-    "message": "Clear",
+    "message": "Очистить",
     "description": ""
   },
   "move": {
-    "message": "Move",
+    "message": "Переместить",
     "description": ""
   },
   "up": {
-    "message": "up",
+    "message": "вверх",
     "description": ""
   },
   "down": {
-    "message": "down",
+    "message": "вниз",
     "description": ""
   },
   "remove": {
-    "message": "Remove",
+    "message": "Удалить",
     "description": ""
   },
   "multipleSearchEnginesSearch": {
-    "message": "Include this search engine for a multiple search engines search",
+    "message": "Добавить эту поисковую систему в мульти-поиск",
     "description": ""
   },
   "notifySavedPreferences": {
-    "message": "Saved preferences.",
+    "message": "Сохраненные настройки.",
     "description": ""
   },
   "notifySearchEngineAdded": {
-    "message": "Search engine added.",
+    "message": "Поисковая система добавлена.",
     "description": ""
   },
   "notifyEnableStorageSync": {
-    "message": "Please ensure that the flag 'webextensions.storage.sync.enabled' is set to 'true' in 'about:config', otherwise Context Search won't work.",
+    "message": "Убедитесь, что в 'about:config' строка 'webextensions.storage.sync.enabled' имеет значение 'true', в противном случае контекстный поиск не будет работать.",
     "description": ""
   },
   "notifySearchEnginesLoaded": {
-    "message": "Default list of search engines has been loaded.",
+    "message": "Загружен список поисковых систем по умолчанию.",
     "description": ""
   },
   "titleMultipleSearchEngines": {
-    "message": "Multiple search engines search",
+    "message": "Мульти-поиск",
     "description": ""
   },
   "titleGoogleSearch": {
-    "message": "Search this site with Google",
+    "message": "Поиск по сайту с помощью Google",
     "description": ""
   },
   "titleOptions": {
-    "message": "Options",
+    "message": "Параметры",
     "description": ""
   },
   "windowTitle": {
-    "message": "Search results for",
+    "message": "Результаты поиска для",
     "description": ""
   },
   "omniboxDescription": {
-    "message": "Search using Context Search with keywords. Usage: cs [keyword] [search terms] (e.g. 'cs w Linux' searches Wikipedia for the term 'Linux')",
+    "message": "Поиск с использованием контекстного поиска с ключевыми словами. Пример: cs [ключевик] [цель поиска] (например 'cs w Linux' ищет в Википедии по слову 'Linux')",
     "description": ""
   },
   "notifyUsage": {
-    "message": "Usage: cs [keyword] [search terms] (for example: cs w Linux)",
+    "message": "Пример: cs [ключевик] [цель поиска] (например: cs w Linux)",
     "description": ""
   },
   "notifySearchEngineWithKeyword": {
-    "message": "Search engine with keyword",
+    "message": "Поисковая система с ключевым словом",
     "description": ""
   },
   "notifyUnknown": {
-    "message": "is unknown.",
+    "message": "неизвестно.",
     "description": ""
   }
 }
