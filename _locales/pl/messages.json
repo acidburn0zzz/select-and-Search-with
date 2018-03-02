@@ -132,7 +132,7 @@
     "description": ""
   },
   "multipleSearchEngines": {
-    "message": "Użyj tej wyszukiwarki do wyszukiwania z wieloma wyszukiwarkami",
+    "message": "Użyj tej wyszukiwarki do multi-search",
     "description": ""
   },
   "searchEngineURL": {

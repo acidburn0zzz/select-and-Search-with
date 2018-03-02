@@ -132,7 +132,7 @@
     "description": ""
   },
  "multipleSearchEngines": {
-    "message": "Utiliser ce moteur de recherche pour une recherche multiple",
+    "message": "Inclure ce moteur de recherche pour un multi-search",
     "description": ""  
  },
  "searchEngineURL": {

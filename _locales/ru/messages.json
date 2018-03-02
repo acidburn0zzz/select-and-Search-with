@@ -1,6 +1,6 @@
 {
   "extensionName": {
-    "message": "Контекстный Поиск",
+    "message": "Context Search",
     "description": "Name of the extension"
   },
   "extensionDescription": {
@@ -132,7 +132,7 @@
     "description": ""
   },
   "multipleSearchEngines": {
-    "message": "Использовать эту поисковую систему для мульти-поиска",
+    "message": "Использовать эту поисковую систему для multi-search",
     "description": ""
   },
   "searchEngineURL": {

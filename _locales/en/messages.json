@@ -132,7 +132,7 @@
     "description": ""
   },
   "multipleSearchEngines": {
-    "message": "Use this search engine for a search with multiple search engines",
+    "message": "Include in multi-search",
     "description": ""
   },
   "searchEngineURL": {
@@ -172,7 +172,7 @@
     "description": ""
   },
   "multipleSearchEnginesSearch": {
-    "message": "Include this search engine for a multiple search engines search",
+    "message": "Include this search engine in a multi-search",
     "description": ""
   },
   "notifySavedPreferences": {
