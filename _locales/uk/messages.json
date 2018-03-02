@@ -12,7 +12,7 @@
     "description": "multi-search - it's a search with multiple search engines simultaneously."
   },
   "pageTitle": {
-    "message": "Параметри контекстного пошуку",
+    "message": "Налаштування Context Search",
     "description": ""
   },
   "header1": {
@@ -20,15 +20,15 @@
     "description": ""
   },
   "newTab": {
-    "message": "У новій вкладці",
+    "message": "В новій вкладці",
     "description": ""
   },
   "sameTab": {
-    "message": "В тій же вкладці",
+    "message": "В поточній вкладці",
     "description": ""
   },
   "newWindow": {
-    "message": "У новому вікні",
+    "message": "В новому вікні",
     "description": ""
   },
   "active": {
@@ -92,7 +92,7 @@
     "description": ""
   },
   "warning": {
-    "message": "Увага! Активація цієї функції блокуватиме відображення контекстних меню інших розширень.",
+    "message": "Увага! Коли цю опцію ввімкнуто інші контекстні меню не відображаються.",
     "description": ""
   },
   "savePreferences": {
@@ -172,11 +172,11 @@
     "description": ""
   },
   "multipleSearchEnginesSearch": {
-    "message": "Додати цю пошукову систему до мульти-пошуку",
+    "message": "Додати цю пошукову систему до multi-search",
     "description": ""
   },
   "notifySavedPreferences": {
-    "message": "Збережені налаштування.",
+    "message": "Налаштування збережено.",
     "description": ""
   },
   "notifySearchEngineAdded": {
@@ -184,7 +184,7 @@
     "description": ""
   },
   "notifyEnableStorageSync": {
-    "message": "Переконайтеся, що в 'about:config' рядок 'webextensions.storage.sync.enabled' має значення 'true', інакше контекстний пошук не буде працювати.",
+    "message": "Переконайтеся, що в 'about:config' рядок 'webextensions.storage.sync.enabled' має значення 'true', інакше Context Search не працюватиме.",
     "description": ""
   },
   "notifySearchEnginesLoaded": {
@@ -208,7 +208,7 @@
     "description": ""
   },
   "omniboxDescription": {
-    "message": "Пошук з використанням контекстного пошуку за ключовими словами. Приклад: cs [ключовик] [мета пошуку] (наприклад 'cs w Linux' шукає у Вікіпедії по слову 'Linux')",
+    "message": "Контекстний пошук з використанням ключового слова. Приклад: cs [ключовик] [мета пошуку] (наприклад 'cs w Linux' шукає у Вікіпедії по слову 'Linux')",
     "description": ""
   },
   "notifyUsage": {
