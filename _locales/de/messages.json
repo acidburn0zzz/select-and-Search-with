@@ -1,226 +1,226 @@
 {
   "extensionName": {
     "message": "Context Search",
-    "description": "Name of the extension"
+    "description": "Name der Erweiterung"
   },
   "extensionDescription": {
-    "message": "Searches the selected text using a search engine from a pre-specified list.",
-    "description": "Description of the extension"
+    "message": "Sucht nach dem ausgewählten Text mit einer Suchmaschine aus einer vordefinierten Liste.",
+    "description": "Beschreibung der Erweiterung"
   },
   "multisearch": {
-    "message": " is a search with multiple search engines simultaneously.",
-    "description": "multi-search - it's a search with multiple search engines simultaneously."
+    "message": " ist eine Suche mit mehreren Suchmaschinen gleichzeitig.",
+    "description": "multi-search - eine Suche mit mehreren Suchmaschinen gleichzeitig."
   },
   "pageTitle": {
-    "message": "Context Search Preferences",
+    "message": "Context Search: Einstellungen",
     "description": ""
   },
   "header1": {
-    "message": "Where should search results appear?",
+    "message": "Wo sollen die Suchergebnisse erscheinen?",
     "description": ""
   },
   "newTab": {
-    "message": "In a new tab",
+    "message": "In einem neuen Tab",
     "description": ""
   },
   "sameTab": {
-    "message": "In the same tab",
+    "message": "Im selben Tab",
     "description": ""
   },
   "newWindow": {
-    "message": "In a new window",
+    "message": "In einem neuen Fenster",
     "description": ""
   },
   "active": {
-    "message": "Make the new tab or window active",
+    "message": "Aktiviere den neuen Tab oder das neue Fenster",
     "description": ""
   },
   "header3": {
-    "message": "Position of options in the context menu",
+    "message": "Position der Optionen im Kontextmenü",
     "description": ""
   },
   "subheader31": {
-    "message": "Where would you like the options menu to appear in the context menu?",
+    "message": "Wo sollen die Optionen im Kontextmenü erscheinen?",
     "description": ""
   },
   "bottom": {
-    "message": "At the bottom",
+    "message": "Unten",
     "description": ""
   },
   "top": {
-    "message": "At the top",
+    "message": "Oben",
     "description": ""
   },
   "hide": {
-    "message": "Neither (hide the options menu)",
+    "message": "Weder noch (verstecke das Optionsmenü)",
     "description": ""
   },
   "header5": {
-    "message": "Import/export search engines",
+    "message": "Importiere/exportiere Suchmaschinen",
     "description": ""
   },
   "import": {
-    "message": "Import JSON from local disk",
+    "message": "Importiere JSON von lokalem Datenträger",
     "description": ""
   },
   "export": {
-    "message": "Export search engines to JSON",
+    "message": "Exportiere Suchmaschinen nach JSON",
     "description": ""
   },
   "download": {
-    "message": "Export to local disk",
+    "message": "Exportiere auf lokalen Datenträger",
     "description": ""
   },
   "header2": {
-    "message": "Display favicons in context menu list",
+    "message": "Zeige Favicons in der Kontextmenüliste an",
     "description": ""
   },
   "getFavicons": {
-    "message": "Fetch favicons using the 'besticon' API",
+    "message": "Sammle Favicons mit der 'besticon'-API",
     "description": ""
   },
   "note": {
-    "message": "This feature requires firefox 56 or above.",
+    "message": "Dieses Feature erfordert Firefox 56 oder höher.",
     "description": ""
   },
   "header4": {
-    "message": "Search engines icon grid mode",
+    "message": "Gittermodus für Suchmaschinen-Symbole",
     "description": ""
   },
   "gridMode": {
-    "message": "Display a grid of icons instead of a list of search engines",
+    "message": "Zeige Symbolgitter anstelle einer Liste von Suchmaschinen an",
     "description": ""
   },
   "warning": {
-    "message": "Warning: Please note that enabling this feature will prevent context menus from other extensions to be displayed.",
+    "message": "Warnung: Beachte, dass die Aktivierung dieses Features verhindert, dass Kontextmenüs anderer Erweiterungen angezeigt werden.",
     "description": ""
   },
   "savePreferences": {
-    "message": "Save preferences",
+    "message": "Einstellungen speichern",
     "description": ""
   },
   "header6": {
-    "message": "Which search engines would you like to appear in the context menu or grid?",
+    "message": "Welche Suchmaschinen sollen im Kontextmenü oder im Gitter erscheinen?",
     "description": ""
   },
   "clearAll": {
-    "message": "Clear All",
+    "message": "Alles leeren",
     "description": ""
   },
   "selectAll": {
-    "message": "Select All",
+    "message": "Alles auswählen",
     "description": ""
   },
   "reset": {
-    "message": "Reset",
+    "message": "Zurücksetzen",
     "description": ""
   },
   "subheader61": {
-    "message": "Add a new search engine",
+    "message": "Eine neue Suchmaschine hinzufügen",
     "description": ""
   },
   "showSearchEngine": {
-    "message": "Show search engine in grid or context menu",
+    "message": "Zeige Suchmaschine im Gitter oder Kontextmenü an",
     "description": ""
   },
   "searchEngineName": {
-    "message": "Search engine name",
+    "message": "Name der Suchmaschine",
     "description": ""
   },
   "keyword": {
-    "message": "Keyword",
+    "message": "Schlüsselwort",
     "description": ""
   },
   "multipleSearchEngines": {
-    "message": "Include this search engine in a multi-search",
+    "message": "Diese Suchmaschine zu einer multi-search hinzufügen",
     "description": ""
   },
   "searchEngineURL": {
-    "message": "Search engine URL",
+    "message": "URL der Suchmaschine",
     "description": ""
   },
   "startWith": {
-    "message": "Should start with 'https://'",
+    "message": "Sollte mit 'https://' beginnen",
     "description": ""
   },
   "testSearchEngine": {
-    "message": "Test search engine",
+    "message": "Testsuchmaschine",
     "description": ""
   },
   "addSearchEngine": {
-    "message": "Add search engine",
+    "message": "Suchmaschine hinzufügen",
     "description": ""
   },
   "clear": {
-    "message": "Clear",
+    "message": "Leeren",
     "description": ""
   },
   "move": {
-    "message": "Move",
+    "message": "Bewegen",
     "description": ""
   },
   "up": {
-    "message": "up",
+    "message": "hoch",
     "description": ""
   },
   "down": {
-    "message": "down",
+    "message": "runter",
     "description": ""
   },
   "remove": {
-    "message": "Remove",
+    "message": "Entfernen",
     "description": ""
   },
   "multipleSearchEnginesSearch": {
-    "message": "Include this search engine for a multiple search engines search",
+    "message": "Füge diese Suchmaschine einer Suche mit mehreren Suchmaschinen hinzu",
     "description": ""
   },
   "notifySavedPreferences": {
-    "message": "Saved preferences.",
+    "message": "Einstellungen gespeichert.",
     "description": ""
   },
   "notifySearchEngineAdded": {
-    "message": "Search engine added.",
+    "message": "Suchmaschine hinzugefügt.",
     "description": ""
   },
   "notifyEnableStorageSync": {
-    "message": "Please ensure that the flag 'webextensions.storage.sync.enabled' is set to 'true' in 'about:config', otherwise Context Search won't work.",
+    "message": "Stelle sicher, dass 'webextensions.storage.sync.enabled' in 'about:config' auf 'true' gesetzt ist. Andernfalls wird Context Search nicht funktionieren.",
     "description": ""
   },
   "notifySearchEnginesLoaded": {
-    "message": "Default list of search engines has been loaded.",
+    "message": "Defaultliste der Suchmaschinen wurde geladen.",
     "description": ""
   },
   "titleMultipleSearchEngines": {
-    "message": "Multiple search engines search",
+    "message": "Suche mit mehreren Suchmaschinen",
     "description": ""
   },
   "titleGoogleSearch": {
-    "message": "Search this site with Google",
+    "message": "Durchsuche diese Seite mit Google",
     "description": ""
   },
   "titleOptions": {
-    "message": "Options",
+    "message": "Optionen",
     "description": ""
   },
   "windowTitle": {
-    "message": "Search results for",
+    "message": "Durchsuche Ergebnisse nach",
     "description": ""
   },
   "omniboxDescription": {
-    "message": "Search using Context Search with keywords. Usage: cs [keyword] [search terms] (e.g. 'cs w Linux' searches Wikipedia for the term 'Linux')",
+    "message": "Mit Context Search mit Schlüsselwörtern suchen. Benutzung: cs [Schlüsselwort] [Suchbegriffe] (z.B. 'cs w Linux' durchsucht die Wikipedia nach dem Begriff 'Linux')",
     "description": ""
   },
   "notifyUsage": {
-    "message": "Usage: cs [keyword] [search terms] (for example: cs w Linux)",
+    "message": "Benutzung: cs [Schlüsselwort] [Suchbegriffe] (z.B. 'cs w Linux')",
     "description": ""
   },
   "notifySearchEngineWithKeyword": {
-    "message": "Search engine with keyword",
+    "message": "Suchmaschine mit Schlüsselwort",
     "description": ""
   },
   "notifyUnknown": {
-    "message": "is unknown.",
+    "message": "ist unbekannt.",
     "description": ""
   }
 }
