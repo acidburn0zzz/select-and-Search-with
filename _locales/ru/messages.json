@@ -12,7 +12,7 @@
     "description": "multi-search - it's a search with multiple search engines simultaneously."
   },
   "pageTitle": {
-    "message": "Параметры контекстного поиска",
+    "message": "Настройки Context Search",
     "description": ""
   },
   "header1": {
@@ -24,7 +24,7 @@
     "description": ""
   },
   "sameTab": {
-    "message": "В той же вкладке",
+    "message": "В текущей вкладке",
     "description": ""
   },
   "newWindow": {
@@ -44,11 +44,11 @@
     "description": ""
   },
   "bottom": {
-    "message": "Снизу",
+    "message": "Внизу",
     "description": ""
   },
   "top": {
-    "message": "Сверху",
+    "message": "Вверху",
     "description": ""
   },
   "hide": {
@@ -84,15 +84,15 @@
     "description": ""
   },
   "header4": {
-    "message": "Отображение поисковых систем сеткой иконок",
+    "message": "Отображение поисковых систем плиткой",
     "description": ""
   },
   "gridMode": {
-    "message": "Отображение поисковых систем сеткой иконок вместо списка",
+    "message": "Отображение поисковых систем плиткой вместо списка",
     "description": ""
   },
   "warning": {
-    "message": "Обратите внимание, что включение этой функции блокирует отображение контекстных меню других расширений.",
+    "message": "Внимание: когда эта опция включена другие контекстные меню не отображаются.",
     "description": ""
   },
   "savePreferences": {
@@ -100,7 +100,7 @@
     "description": ""
   },
   "header6": {
-    "message": "Какие поисковые системы вы хотели бы видеть в контекстном меню или сетке иконок?",
+    "message": "Какие поисковые системы вы хотели бы видеть в контекстном меню / плитках?",
     "description": ""
   },
   "clearAll": {
@@ -120,7 +120,7 @@
     "description": ""
   },
   "showSearchEngine": {
-    "message": "Показывать поисковую систему в сетке иконок или контекстном меню",
+    "message": "Показывать поисковую систему плиткой или в контекстном меню",
     "description": ""
   },
   "searchEngineName": {
@@ -128,7 +128,7 @@
     "description": ""
   },
   "keyword": {
-    "message": "Ключевое слово",
+    "message": "Ключевик",
     "description": ""
   },
   "multipleSearchEngines": {
@@ -172,11 +172,11 @@
     "description": ""
   },
   "multipleSearchEnginesSearch": {
-    "message": "Добавить эту поисковую систему в мульти-поиск",
+    "message": "Добавить эту поисковую систему в multi-search",
     "description": ""
   },
   "notifySavedPreferences": {
-    "message": "Сохраненные настройки.",
+    "message": "Настройки сохранены.",
     "description": ""
   },
   "notifySearchEngineAdded": {
@@ -184,7 +184,7 @@
     "description": ""
   },
   "notifyEnableStorageSync": {
-    "message": "Убедитесь, что в 'about:config' строка 'webextensions.storage.sync.enabled' имеет значение 'true', в противном случае контекстный поиск не будет работать.",
+    "message": "Убедитесь, что в 'about:config' строка 'webextensions.storage.sync.enabled' имеет значение 'true', в противном случае Context Search не будет работать.",
     "description": ""
   },
   "notifySearchEnginesLoaded": {
@@ -192,7 +192,7 @@
     "description": ""
   },
   "titleMultipleSearchEngines": {
-    "message": "Мульти-поиск",
+    "message": "Multi-search",
     "description": ""
   },
   "titleGoogleSearch": {
@@ -200,7 +200,7 @@
     "description": ""
   },
   "titleOptions": {
-    "message": "Параметры",
+    "message": "Настройки",
     "description": ""
   },
   "windowTitle": {
@@ -208,11 +208,11 @@
     "description": ""
   },
   "omniboxDescription": {
-    "message": "Поиск с использованием контекстного поиска с ключевыми словами. Пример: cs [ключевик] [цель поиска] (например 'cs w Linux' ищет в Википедии по слову 'Linux')",
+    "message": "Контекстный поиск с использованием ключевых слов. Пример: cs [ключевик] [искомое] (например 'cs w Linux' ищет в Википедии по слову 'Linux')",
     "description": ""
   },
   "notifyUsage": {
-    "message": "Пример: cs [ключевик] [цель поиска] (например: cs w Linux)",
+    "message": "Пример: cs [ключевик] [искомое] (например: cs w Linux)",
     "description": ""
   },
   "notifySearchEngineWithKeyword": {
