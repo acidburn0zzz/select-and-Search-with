@@ -76,11 +76,11 @@
     "description": ""
   },
   "getFavicons": {
-    "message": "Sammle Favicons mit der 'besticon' Programmierschnittstelle",
+    "message": "Sammle Favicons mit der 'besticon'-Programmierschnittstelle",
     "description": ""
   },
   "note": {
-    "message": "Dieses Funktion erfordert Firefox 56 oder höher.",
+    "message": "Diese Funktion erfordert Firefox 56 oder höher.",
     "description": ""
   },
   "header4": {
@@ -92,7 +92,7 @@
     "description": ""
   },
   "warning": {
-    "message": "Warnung: Beachte, dass die Aktivierung dieses Funktion verhindert, dass Kontextmenüs anderer Erweiterungen angezeigt werden.",
+    "message": "Warnung: Beachte, dass die Aktivierung dieser Funktion verhindert, dass Kontextmenüs anderer Erweiterungen angezeigt werden.",
     "description": ""
   },
   "savePreferences": {
