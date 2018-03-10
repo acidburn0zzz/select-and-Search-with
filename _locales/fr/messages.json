@@ -1,120 +1,120 @@
 {
-"extensionName": {
+  "extensionName": {
     "message": "Context Search",
     "description": "Name of the extension"
-},
- "extensionDescription": {
-   "message": "Effectue une recherche du texte sélectionné en utilisant le moteur de recherche choisi dans une liste pré-définie.",
-   "description": "Description of the extension"
- },
- "multisearch": {
-  "message": " est une recherche avec plusieurs moteurs de recherche simultanément.",
-  "description": "multi-search - it's a search with multiple search engines simultaneously."
-},
- "pageTitle": {
-   "message": "Préférences de Context Search",
-   "description": ""
- },
- "header1": {
-   "message": "Où les résultats de recherche doivent-ils apparaître?",
-   "description": ""
- },
- "newTab": {
-   "message": "Dans un nouvel onglet",
-   "description": ""
- },
- "sameTab": {
-   "message": "Dans le même onglet",
-   "description": ""
- },
- "newWindow": {
+  },
+  "extensionDescription": {
+    "message": "Effectue une recherche du texte sélectionné en utilisant le moteur de recherche choisi dans une liste pré-définie.",
+    "description": "Description of the extension"
+  },
+  "multisearch": {
+    "message": " est une recherche avec plusieurs moteurs de recherche simultanément.",
+    "description": "multi-search - it's a search with multiple search engines simultaneously."
+  },
+  "pageTitle": {
+    "message": "Préférences de Context Search",
+    "description": ""
+  },
+  "header1": {
+    "message": "Où les résultats de recherche doivent-ils apparaître?",
+    "description": ""
+  },
+  "newTab": {
+    "message": "Dans un nouvel onglet",
+    "description": ""
+  },
+  "sameTab": {
+    "message": "Dans le même onglet",
+    "description": ""
+  },
+  "newWindow": {
     "message": "Dans une nouvelle fenêtre",
-   "description": ""
- },
- "active": {
+    "description": ""
+  },
+  "active": {
     "message": "Activer le nouvel onglet ou la nouvelle fenêtre",
-   "description": ""
- },
- "header3": {
+    "description": ""
+  },
+  "header3": {
     "message": "Position des options dans le menu contextuel",
-   "description": ""
- },
- "subheader31": {
+    "description": ""
+  },
+  "subheader31": {
     "message": "Où aimeriez-vous que le menu des options apparaisse dans le menu contextuel?",
-   "description": ""
- },
- "bottom": {
+    "description": ""
+  },
+  "bottom": {
     "message": "Au bas du menu contextuel",
-   "description": ""
- },
- "top": {
+    "description": ""
+  },
+  "top": {
     "message": "En haut du menu contextuel",
-   "description": ""
- },
- "hide": {
+    "description": ""
+  },
+  "hide": {
     "message": "Ni en bas, ni en haut (cacher le menu des options)",
-   "description": ""
- },
- "header5": {
+    "description": ""
+  },
+  "header5": {
     "message": "Importer/Exporter les moteurs de recherche",
-   "description": ""
- },
- "import": {
+    "description": ""
+  },
+  "import": {
     "message": "Importer le fichier JSON du disque local",
-   "description": ""
- },
- "export": {
+    "description": ""
+  },
+  "export": {
     "message": "Exporter les moteurs de recherche dans un fichier JSON",
-   "description": ""
- },
- "download": {
+    "description": ""
+  },
+  "download": {
     "message": "Sauvegarder sur le disque local",
-   "description": ""
- },
- "header2": {
+    "description": ""
+  },
+  "header2": {
     "message": "Afficher les icones dans le menu contextuel",
-   "description": ""
- },
- "getFavicons": {
+    "description": ""
+  },
+  "getFavicons": {
     "message": "Chercher les icones via l'API 'besticon'",
-   "description": ""
- },
- "note": {
+    "description": ""
+  },
+  "note": {
     "message": "Cette fonctionnalité requiert Firefox 56 ou une version plus récente.",
-   "description": ""
- },
- "header4": {
-   "message": "Menu contextuel sous forme de grille d'icones",
-   "description": ""
- },
- "gridMode": {
-   "message": "Afficher le menu contextuel sous la form de grille d'icones et non sous la forme de liste",
-   "description": ""
- },
- "warning": {
+    "description": ""
+  },
+  "header4": {
+    "message": "Menu contextuel sous forme de grille d'icones",
+    "description": ""
+  },
+  "gridMode": {
+    "message": "Afficher le menu contextuel sous la form de grille d'icones et non sous la forme de liste",
+    "description": ""
+  },
+  "warning": {
     "message": "Attention: l'activation de cette fonctionnalité désactive les menus contextuels des autres extensions.",
     "description": ""
- },
- "savePreferences": {
-   "message": "Sauvegarder les préférences",
+  },
+  "savePreferences": {
+    "message": "Sauvegarder les préférences",
     "description": ""
- },
- "header6": {
-   "message": "Quels moteurs de recherche aimeriez-vous voir apparaître dans le menu contextuel ou dans la grille d'icones?",
-   "description": ""
- },
- "clearAll": {
-   "message": "Tout effacer",
-   "description": ""
- },
- "selectAll": {
-   "message": "Tout sélectionner",
-   "description": ""
- },
- "reset": {
-   "message": "Ré-initialisation",
-   "description": ""
- },
+  },
+  "header6": {
+    "message": "Quels moteurs de recherche aimeriez-vous voir apparaître dans le menu contextuel ou dans la grille d'icones?",
+    "description": ""
+  },
+  "clearAll": {
+    "message": "Tout effacer",
+    "description": ""
+  },
+  "selectAll": {
+    "message": "Tout sélectionner",
+    "description": ""
+  },
+  "reset": {
+    "message": "Ré-initialisation",
+    "description": ""
+  },
   "subheader61": {
     "message": "Ajouter un nouveau moteur de recherche",
     "description": ""
@@ -124,103 +124,103 @@
     "description": ""
   },
   "searchEngineName": {
-     "message": "Nom du moteur de recherche",
-     "description": ""  
+    "message": "Nom du moteur de recherche",
+    "description": ""
   },
   "keyword": {
     "message": "Mot clé",
     "description": ""
   },
- "multipleSearchEngines": {
+  "multipleSearchEngines": {
     "message": "Inclure ce moteur de recherche pour un multi-search",
-    "description": ""  
- },
- "searchEngineURL": {
-   "message": "URL du moteur de recherche",
-   "description": ""
- },
- "startWith": {
-    "message": "Doit commencer par 'https://'",
     "description": ""
   },
- "testSearchEngine": {
+  "searchEngineURL": {
+    "message": "URL du moteur de recherche",
+    "description": ""
+  },
+  "testSearchEngine": {
     "message": "Tester le moteur de recherche",
-    "description": ""  
- },
- "addSearchEngine": {
-   "message": "Ajouter le moteur de recherche",
-   "description": ""
- },
- "clear": {
+    "description": ""
+  },
+  "addSearchEngine": {
+    "message": "Ajouter le moteur de recherche",
+    "description": ""
+  },
+  "clear": {
     "message": "Effacer",
-   "description": ""
- },
- "move": {
-  "message": "Déplacer",
-  "description": ""
-},
-"up": {
-  "message": "vers le haut",
-  "description": ""
-},
-"down": {
-  "message": "vers le bas",
-  "description": ""
-},
-"remove": {
-  "message": "Supprimer",
-  "description": ""
-},
-"multipleSearchEnginesSearch": {
-  "message": "Inclure ce moteur de recherche pour la recherche multiple",
-  "description": ""
-},
-"notifySavedPreferences": {
-  "message": "Préférences sauvegardées.",
-  "description": ""
-},
-"notifySearchEngineAdded": {
-  "message": "Moteur de recherche ajouté.",
-  "description": ""
-},
-"notifyEnableStorageSync": {
-  "message": "Assurez-vous que le paramètre 'webextension.storage.sync.enabled' a la valeur 'true' dans 'about:config', sinon Context Search ne fonctionnera pas.",
-  "description": ""
-},
-"notifySearchEnginesLoaded": {
-  "message": "Les moteurs de recherche par défaut ont été chargés.",
-  "description": ""
-},
-"titleMultipleSearchEngines": {
-  "message": "Recherche multiple",
-  "description": ""
-},
-"titleGoogleSearch": {
-  "message": "Rechercher dans ce site avec Google",
-  "description": ""
-},
-"titleOptions": {
-  "message": "Options",
-  "description": ""
-},
-"windowTitle": {
-  "message": "Résultats de recherche pour",
-  "description": ""
-},
-"omniboxDescription": {
-  "message": "Effectuer une recherche avec Context Search à l'aide de mots clé. Utilisation: cs [mot clé] [mots à rechercher] (par ex.: 'cs w Linux' recherche le mot 'Linux' dans Wikipedia)",
-  "description": ""
-},
-"notifyUsage": {
-  "message": "Utilisation: cs [mot clé] [mots à rechercher] (par ex.: 'cs w Linux')",
-  "description": ""
-},
-"notifySearchEngineWithKeyword": {
-  "message": "Le moteur de recherche avec le mot clé",
-  "description": ""
-},
-"notifyUnknown": {
-  "message": "est inconnu.",
-  "description": ""
-}
+    "description": ""
+  },
+  "move": {
+    "message": "Déplacer",
+    "description": ""
+  },
+  "up": {
+    "message": "vers le haut",
+    "description": ""
+  },
+  "down": {
+    "message": "vers le bas",
+    "description": ""
+  },
+  "remove": {
+    "message": "Supprimer",
+    "description": ""
+  },
+  "multipleSearchEnginesSearch": {
+    "message": "Inclure ce moteur de recherche pour la recherche multiple",
+    "description": ""
+  },
+  "notifySavedPreferences": {
+    "message": "Préférences sauvegardées.",
+    "description": ""
+  },
+  "notifySearchEngineAdded": {
+    "message": "Moteur de recherche ajouté.",
+    "description": ""
+  },
+  "notifyEnableStorageSync": {
+    "message": "Assurez-vous que le paramètre 'webextension.storage.sync.enabled' a la valeur 'true' dans 'about:config', sinon Context Search ne fonctionnera pas.",
+    "description": ""
+  },
+  "notifySearchEnginesLoaded": {
+    "message": "Les moteurs de recherche par défaut ont été chargés.",
+    "description": ""
+  },
+  "titleMultipleSearchEngines": {
+    "message": "Recherche multiple",
+    "description": ""
+  },
+  "titleGoogleSearch": {
+    "message": "Rechercher dans ce site avec Google",
+    "description": ""
+  },
+  "titleOptions": {
+    "message": "Options",
+    "description": ""
+  },
+  "windowTitle": {
+    "message": "Résultats de recherche pour",
+    "description": ""
+  },
+  "omniboxDescription": {
+    "message": "Effectuer une recherche avec Context Search à l'aide de mots clé. Utilisation: cs [mot clé] [mots à rechercher] (par ex.: 'cs w Linux' recherche le mot 'Linux' dans Wikipedia)",
+    "description": ""
+  },
+  "notifyUsage": {
+    "message": "Utilisation: cs [mot clé] [mots à rechercher] (par ex.: 'cs w Linux')",
+    "description": ""
+  },
+  "notifySearchEngineWithKeyword": {
+    "message": "Le moteur de recherche avec le mot clé",
+    "description": ""
+  },
+  "notifyUnknown": {
+    "message": "est inconnu.",
+    "description": ""
+  },
+  "notifyUrlNotValid": {
+    "message": "L'url introduite n'est pas valable.",
+    "description": ""
+  }
 }

@@ -139,10 +139,6 @@
     "message": "Adres URL wyszukiwarki",
     "description": ""
   },
-  "startWith": {
-    "message": "Zacznij od 'https://'",
-    "description": ""
-  },
   "testSearchEngine": {
     "message": "Przetestuj wyszukiwarkę",
     "description": ""
@@ -221,6 +217,10 @@
   },
   "notifyUnknown": {
     "message": "jest nieznana.",
+    "description": ""
+  },
+  "notifyUrlNotValid": {
+    "message": "Url entered is not valid.",
     "description": ""
   }
 }

@@ -139,10 +139,6 @@
     "message": "URL der Suchmaschine",
     "description": ""
   },
-  "startWith": {
-    "message": "Sollte mit 'https://' beginnen",
-    "description": ""
-  },
   "testSearchEngine": {
     "message": "Testsuchmaschine",
     "description": ""
@@ -221,6 +217,10 @@
   },
   "notifyUnknown": {
     "message": "ist unbekannt.",
+    "description": ""
+  },
+  "notifyUrlNotValid": {
+    "message": "Url entered is not valid.",
     "description": ""
   }
 }

@@ -139,10 +139,6 @@
     "message": "搜索引擎网址",
     "description": ""
   },
-  "startWith": {
-    "message": "应以 'https://' 开头",
-    "description": ""
-  },
   "testSearchEngine": {
     "message": "测试搜索引擎",
     "description": ""
@@ -221,6 +217,10 @@
   },
   "notifyUnknown": {
     "message": "是未知的。",
+    "description": ""
+  },
+  "notifyUrlNotValid": {
+    "message": "Url entered is not valid.",
     "description": ""
   }
 }

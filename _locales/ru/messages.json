@@ -139,10 +139,6 @@
     "message": "URL поисковой системы",
     "description": ""
   },
-  "startWith": {
-    "message": "Должно начинаться с 'https://'",
-    "description": ""
-  },
   "testSearchEngine": {
     "message": "Тестировать поисковую систему",
     "description": ""
@@ -221,6 +217,10 @@
   },
   "notifyUnknown": {
     "message": "неизвестно.",
+    "description": ""
+  },
+  "notifyUrlNotValid": {
+    "message": "Url entered is not valid.",
     "description": ""
   }
 }

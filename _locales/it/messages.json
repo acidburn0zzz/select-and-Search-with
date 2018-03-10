@@ -139,10 +139,6 @@
     "message": "URL del motore di ricerca",
     "description": ""
   },
-  "startWith": {
-    "message": "Deve iniziare con 'https://'",
-    "description": ""
-  },
   "testSearchEngine": {
     "message": "Provare il motore di ricerca",
     "description": ""
@@ -221,6 +217,10 @@
   },
   "notifyUnknown": {
     "message": "sconosciuto.",
+    "description": ""
+  },
+  "notifyUrlNotValid": {
+    "message": "Url entered is not valid.",
     "description": ""
   }
 }

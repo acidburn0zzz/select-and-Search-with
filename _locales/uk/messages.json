@@ -139,10 +139,6 @@
     "message": "URL пошукової системи",
     "description": ""
   },
-  "startWith": {
-    "message": "Повинно починатися з 'https://'",
-    "description": ""
-  },
   "testSearchEngine": {
     "message": "Тестувати пошукову систему",
     "description": ""
@@ -221,6 +217,10 @@
   },
   "notifyUnknown": {
     "message": "невідомо.",
+    "description": ""
+  },
+  "notifyUrlNotValid": {
+    "message": "Url entered is not valid.",
     "description": ""
   }
 }
