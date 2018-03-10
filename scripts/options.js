@@ -27,6 +27,7 @@ const remove = browser.i18n.getMessage("remove");
 const multipleSearchEnginesSearch = browser.i18n.getMessage("multipleSearchEnginesSearch");
 const notifySavedPreferences = browser.i18n.getMessage("notifySavedPreferences");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
+const notifyUrlNotValid = browser.i18n.getMessage("notifyUrlNotValid");
 
 // Send a message to the background script
 function sendMessage(action, data) {
@@ -302,24 +303,38 @@ function testSearchEngine() {
 }
 
 function addSearchEngine() {
+    let id = name.value.replace(" ", "-").toLowerCase();
     let divSearchEngines = document.getElementById("searchEngines");
-
-    // Validate url for query string
-    strUrl = url.value;
+    let strUrl = url.value;
     let testUrl = "";
+    let newSearchEngine = {};
+
+    // Make certain that query string url starts with "https" to enforce SSL
+    if (!strUrl.startsWith("https://")) {
+        if (strUrl.startsWith("http://")) {
+            strUrl.replace("http://", "https://");
+        } else {
+            strUrl += "https://" + strUrl;
+        }
+    }
+
+    // Create test url
     if (strUrl.includes("{searchTerms}")) {
         testUrl = strUrl.replace("{searchTerms}", "test");
+    } else if (strUrl.includes("%s")) {
+        testUrl = strUrl.replace("%s", "test");
     } else {
         testUrl = strUrl + "test";
     }
+
+    // Validate query string url
     if (url.validity.typeMismatch || !isValidUrl(testUrl)) {
-        notify("Url entered is not valid.");
+        notify(notifyUrlNotValid);
         return;
     }
-
-    const id = name.value.replace(" ", "-").toLowerCase();
-    let newSearchEngine = {};
+    
     newSearchEngine[id] = {"index": storageSyncCount, "name": name.value, "keyword": keyword.value, "multitab": multitab.checked , "url": url.value, "show": show.checked};
+    
     let lineItem = createLineItem(id, newSearchEngine[id]);
     divSearchEngines.appendChild(lineItem);
     browser.storage.sync.set(newSearchEngine).then(function() {
