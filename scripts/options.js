@@ -29,8 +29,6 @@ const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
 const placeHolderKeyword = browser.i18n.getMessage("keyword");
 const notifySavedPreferences = browser.i18n.getMessage("notifySavedPreferences");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
-const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
-const placeHolderKeyword = browser.i18n.getMessage("keyword");
 
 // Send a message to the background script
 function sendMessage(action, data) {
