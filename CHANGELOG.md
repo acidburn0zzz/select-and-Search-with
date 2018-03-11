@@ -1,0 +1,63 @@
+3.66 (not yet released)
+=========
+* Fix bug #97 again. Just need to set display to inline-block and add some padding to the fieldset container.
+* Improve CSS (set border-box on all elements so we can use 100% reliably)
+* Fix multisearch checkbox checked by default
+* Identify new strings for translation and them to the manifest.json files
+* Add test for empty URL and notification to the user instead of opening an invalid page
+* Add title element onto the first checkbox as well
+* Fix indentation for the Dutch and French locale
+* Drop some global variables and make them local
+* Rename some global variables to make their function as a preference clear
+* Show checkbox checked by default, also when clearing
+* Refactor code around rebuildContextMenu to be more clear
+* Save select all / clear all immediately
+* Preferences page: use the localised title as tab title as well
+* Set browser_style to true to remove warning
+* Improve Dutch locale
+
+* Changed translation for favicons
+* Add German, Ukrainian and Russian locale
+
+3.65
+====
+* Completed translations in Polish & Italian
+* Fix bug #95
+
+3.64
+====
+* Fix bug #96
+
+3.63
+====
+* Fix bug #94
+* Typo error
+
+3.62
+====
+* Fixes a bug that prevented the icon grid from loading
+
+3.61
+====
+* Add Chinese simplified translation
+* Fixed minor bug: names with dots not allowed in messages.json
+* Added support for translated placeholders and titles
+* Completed translations for Dutch
+* Completed translations for Spanish
+* Completed translations for English & French
+* Prepared file structure for translations
+* Code cleanup
+* Added use of IonIcons for up, down and remove buttons
+* Fixes a small bug! Call i18n()
+
+3.60
+====
+* Added translations in fr, nl and pl
+
+3.59
+====
+* Added Clear button for 'Add new search engine'
+
+3.58
+====
+* Improve privacy by preventing url leaks
