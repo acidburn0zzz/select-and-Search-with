@@ -187,6 +187,7 @@ function clearAll() {
             input.checked = false;
         }
     }
+    save(false);
 }
 
 function selectAll() {
@@ -198,6 +199,7 @@ function selectAll() {
             input.checked = true;
         }
     }
+    save(false);
 }
 
 function reset() {
