@@ -127,7 +127,7 @@
     "message": "Nazwa wyszukiwarki",
     "description": ""
   },
-  "keyword": {
+  "placeHolderKeyword": {
     "message": "Słowo kluczowe",
     "description": ""
   },
@@ -221,6 +221,14 @@
   },
   "notifyUrlNotValid": {
     "message": "Url entered is not valid.",
+    "description": ""
+  },
+  "notifySearchEngineUrlRequired": {
+    "message": "Please fill in a search engine URL.",
+      "description": ""
+  },
+  "titleShowEngine": {
+    "message": "Show this search engine in the context menu or grid",
     "description": ""
   }
 }

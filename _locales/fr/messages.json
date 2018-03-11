@@ -127,7 +127,7 @@
     "message": "Nom du moteur de recherche",
     "description": ""
   },
-  "keyword": {
+  "placeHolderKeyword": {
     "message": "Mot clé",
     "description": ""
   },
@@ -221,6 +221,14 @@
   },
   "notifyUrlNotValid": {
     "message": "L'url introduite n'est pas valable.",
+    "description": ""
+  },
+  "notifySearchEngineUrlRequired": {
+    "message": "Veuillez introduire l'adresse URL du moteur de recherche.",
+    "description": ""
+  },
+  "titleShowEngine": {
+    "message": "Afficher ce moteur de recherche dans le menu contextuel ou dans la grille d'icônes",
     "description": ""
   }
 }
