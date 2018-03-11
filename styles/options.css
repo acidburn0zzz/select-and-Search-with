@@ -1,3 +1,7 @@
+* {
+	box-sizing: border-box;
+}
+
 body {
     font-family: Calibri, Helvetica, Arial, sans-serif;
     font-size: 10pt;
@@ -10,7 +14,7 @@ body {
 }
 
 .right fieldset {
-    width: 1020px;
+    display: inline-block;
 }
 
 .icon {
@@ -20,6 +24,10 @@ body {
 input[type="checkbox"] {
     display: inline-block;
     width: 15px;
+}
+
+#container {
+	margin-right: 25px;
 }
 
 #container label, #container #name {
@@ -91,11 +99,10 @@ h2 {
     flex-wrap: wrap;
     flex-direction: row;
     align-content: flex-start;
-    padding: 10px;
     margin-right: 10px;
 }
 
-#flexbox-container > div.right {
+#flexbox-container > div.right, #flexbox-container > div.left {
     padding: 10px;
 }
 

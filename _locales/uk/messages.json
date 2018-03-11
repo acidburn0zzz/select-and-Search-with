@@ -219,10 +219,6 @@
     "message": "невідомо.",
     "description": ""
   },
-  "notifyUrlNotValid": {
-    "message": "Url entered is not valid.",
-    "description": ""
-  },
   "notifySearchEngineUrlRequired": {
     "message": "Please fill in a search engine URL.",
       "description": ""

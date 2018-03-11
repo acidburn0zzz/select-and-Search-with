@@ -1,15 +1,11 @@
 /// Global variables
-var searchEngines = {};
-var searchEnginesArray = [];
-var selection = "";
-var targetUrl = "";
-var gridMode = false;
-var lastAddressBarKeyword = "";
-var remainingItems;
-var getFavicons = true;
+let searchEngines = {};
+let searchEnginesArray = [];
+let selection = "";
+let targetUrl = "";
+let lastAddressBarKeyword = "";
 
 /// Constants
-const DEFAULT_JSON = "defaultSearchEngines.json";
 const base64ContextSearchIcon = "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";
 // Constants for translations
 const notifyEnableStorageSync = browser.i18n.getMessage("notifyEnableStorageSync");
@@ -22,16 +18,15 @@ const omniboxDescription = browser.i18n.getMessage("omniboxDescription");
 const notifyUsage = browser.i18n.getMessage("notifyUsage");
 const notifySearchEngineWithKeyword = browser.i18n.getMessage("notifySearchEngineWithKeyword");
 const notifyUnknown = browser.i18n.getMessage("notifyUnknown");
-
-/// Browser specifics
-let reset = false;
-let browserVersion = 45;
+const notifySearchEngineUrlRequired = browser.i18n.getMessage("notifySearchEngineUrlRequired");
 
 /// Preferences
 let contextsearch_optionsMenuLocation = "bottom";
 let contextsearch_openSearchResultsInNewTab = true;
 let contextsearch_makeNewTabOrWindowActive = false;
 let contextsearch_openSearchResultsInNewWindow = false;
+let contextsearch_getFavicons = true;
+let contextsearch_gridMode = false;
 
 /// Handle Incoming Messages
 // Listen for messages from the content or options script
@@ -47,8 +42,8 @@ browser.runtime.onMessage.addListener(function(message) {
             if (message.data) selection = message.data;
             break;
         case "reset":
-            reset = true;
-            loadSearchEngines(DEFAULT_JSON);
+            resetSearchEngines();
+			rebuildContextMenu();
             break;
         case "sendCurrentTabUrl":
             if (message.data) targetUrl = message.data;
@@ -68,27 +63,25 @@ browser.runtime.onMessage.addListener(function(message) {
 
 /// Initialisation
 function init() {
-	detectStorageSupportAndLoadSearchEngines();
-    browser.runtime.getBrowserInfo().then(gotBrowserInfo);
-    browser.storage.onChanged.addListener(onStorageChanges);
+	// Load the search engines
+	detectStorageSupportAndReadSearchEngines();
 
     browser.storage.local.get(["tabMode", "tabActive"]).then(fetchTabMode, onError);
-    browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
+    browser.storage.local.get("gridMode").then(setGridMode, onError);
     browser.storage.local.get("optionsMenuLocation").then(setOptionsMenu, onError);
     browser.storage.local.get("favicons").then(setGetFavicons, onError);
-
-    // getBrowserInfo
-    function gotBrowserInfo(info){
-        let v = info.version;
-        browserVersion = parseInt(v.slice(0, v.search(".") - 1));
-    }
+    
+    // Rebuild context menu with or without icons, taking into account all settings related to the context menu
+    rebuildContextMenu();
+    
+    browser.storage.onChanged.addListener(onStorageChanges);
 }
 
 function setGetFavicons(data) {
 	if(data.favicons != null) {
-		getFavicons = data.favicons;
+		contextsearch_getFavicons = data.favicons;
 	} else {
-		getFavicons = true; // default is true
+		contextsearch_getFavicons = true; // default is true
 	}
 }
 
@@ -126,35 +119,33 @@ function setTabMode(data) {
     }
 }
 
-function setGridModeAndBuildContextMenu(data) {
+function setGridMode(data) {
     if (data.gridMode === true || data.gridMode === false) {
-        gridMode = data.gridMode;
-        rebuildContextMenu();
+        contextsearch_gridMode = data.gridMode;
     } else {
         // Set default value for gridMode to false if it is not set to true or false
-        gridMode = false;
+        contextsearch_gridMode = false;
         browser.storage.local.set({"gridMode": false}).then(null, onError);
     }
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
-function detectStorageSupportAndLoadSearchEngines() {
+function detectStorageSupportAndReadSearchEngines() {
     browser.storage.sync.get(null).then(onGot, onNone);
 
     // Load search engines if they're not already loaded in storage sync
 	function onGot(data){
-        if (!Object.keys(data).length > 0 || reset) {
+        if (Object.keys(data).length == 0) {
             // Storage sync is empty -> load default list of search engines
-            loadSearchEngines(DEFAULT_JSON);
+            resetSearchEngines();
         } else {
             searchEngines = sortByIndex(data);
             initializeFavicons();
-            rebuildContextMenu();
         }
 	}
 
 	function onNone(error){
-        loadSearchEngines(DEFAULT_JSON);
+        resetSearchEngines();
 		if (error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1) {
 			notify(notifyEnableStorageSync);
 		} else {
@@ -163,30 +154,31 @@ function detectStorageSupportAndLoadSearchEngines() {
 	}
 }
 
+function resetSearchEngines(){
+	const DEFAULT_JSON = "defaultSearchEngines.json";
+	loadDefaultSearchEngines(DEFAULT_JSON);
+}
+
 /// Load default list of search engines
-function loadSearchEngines(jsonFile) {
+function loadDefaultSearchEngines(jsonFile) {
     let xhr = new XMLHttpRequest();
     xhr.open("GET", jsonFile, true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.overrideMimeType("application/json");
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            notify(notifySearchEnginesLoaded);
             searchEngines = JSON.parse(this.responseText);
-            if (reset) {
-                // First set base64 favicons to an empty string to force a reset
-                for (let id in searchEngines) {
-                    searchEngines[id]["base64"] = null;
-                }
-            }
-            // Fetch missing favicon urls and generate corresponding base 64 images
+            
+			// First set base64 favicons to an empty string to force a reset
+			for (let id in searchEngines) {
+				searchEngines[id]["base64"] = null;
+			}
+            
+            // Fetch missing favicon urls and generate corresponding base64 images
             initializeFavicons();
-            rebuildContextMenu();
+
             browser.storage.sync.set(searchEngines).then(function() {
-                if (reset) {
-                    browser.runtime.sendMessage({"action": "searchEnginesLoaded", "data": searchEngines}).then(null, onError);
-                    reset = false;
-                }
+                 notify(notifySearchEnginesLoaded);
             }, onError);
         }
     };
@@ -195,7 +187,7 @@ function loadSearchEngines(jsonFile) {
 
 /// Get and store favicon urls and base64 images
 function initializeFavicons() {
-    remainingItems = Object.keys(searchEngines).length;
+	let remainingItems = Object.keys(searchEngines).length;
     for (let id in searchEngines) {
         if (searchEngines[id].base64 === null || searchEngines[id].base64 === undefined || !searchEngines[id].base64.length > 0) {
             let url = searchEngines[id].url;
@@ -232,9 +224,9 @@ function addNewFavicon(se, id) {
     }, onError);
 }
 
-/// Generate base 64 image string for the favicon with the given url
+/// Generate base64 image string for the favicon with the given url
 function getBase64Image(id, url) {
-    var promise = new Promise(
+    let promise = new Promise(
         function resolver(resolve, reject) {
             const proxyUrl = "https://cors-anywhere.herokuapp.com/";
             requestUrl = proxyUrl + url;
@@ -263,38 +255,31 @@ function getBase64Image(id, url) {
 }
 
 /// Build a single context menu item
-function buildContextMenuItem(searchEngine, index, title, base64String){
-    const contexts = ["selection"];
-    let faviconUrl = "data:image/png;base64," + base64String;
+function buildContextMenuItem(searchEngine, index, title, base64String, browserVersion){
+	const contexts = ["selection"];
+	let faviconUrl = "data:image/png;base64," + base64String;
 
-    if (!searchEngine.show) return;
+	if (!searchEngine.show) return;
 
-    if (browserVersion > 55 && getFavicons === true){
-        browser.contextMenus.create({
-            id: index,
-            title: title,
-            contexts: contexts,
-            icons: { "20": faviconUrl }
-        });
-    } else {
-        browser.contextMenus.create({
-            id: index,
-            title: title,
-            contexts: contexts
-        });
-    }
+	if (browserVersion > 55 && contextsearch_getFavicons === true){
+		browser.contextMenus.create({
+			id: index,
+			title: title,
+			contexts: contexts,
+			icons: { "20": faviconUrl }
+		});
+	} else {
+		browser.contextMenus.create({
+			id: index,
+			title: title,
+			contexts: contexts
+		});
+	}
 }
 
 /// Handle Storage Changes
 function onStorageChanges(changes, area) {
-    if (area === "sync") {
-        rebuildContextMenu();
-    } else if (area === "local") {
-        browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onError);
-        browser.storage.local.get("gridMode").then(setGridModeAndBuildContextMenu, onError);
-        browser.storage.local.get("optionsMenuLocation").then(setOptionsMenu, onError);
-        browser.storage.local.get("favicons").then(setGetFavicons, onError);
-    }
+    init();
 }
 
 function setOptionsMenu(data) {
@@ -305,43 +290,48 @@ function setOptionsMenu(data) {
         contextsearch_optionsMenuLocation = "bottom";
         browser.storage.local.set({"optionsMenuLocation": "bottom"}).then(null, onError);
     }
-    rebuildContextMenu();
 }
 
 /// Rebuild the context menu using the search engines from storage sync
 function rebuildContextMenu() {
-    browser.contextMenus.removeAll();
-    browser.contextMenus.onClicked.removeListener(processSearch);
+	// Rebuild context menu with or without icons
+    browser.runtime.getBrowserInfo().then((info) => {
+		let v = info.version;
+        let browserVersion = parseInt(v.slice(0, v.search(".") - 1));
+        
+        browser.contextMenus.removeAll();
+		browser.contextMenus.onClicked.removeListener(processSearch);
 
-	browser.storage.sync.get(null).then(
-		(data) => {
-			if (contextsearch_optionsMenuLocation === "top") {
-                rebuildContextOptionsMenu();
+		browser.storage.sync.get(null).then(
+			(data) => {
+				if (contextsearch_optionsMenuLocation === "top") {
+					rebuildContextOptionsMenu();
+				}
+
+				searchEngines = sortByIndex(data);
+				searchEnginesArray = [];
+				var index = 0;
+				for (let id in searchEngines) {
+					let base64String = searchEngines[id].base64;
+					let strIndex = "cs-" + index.toString();
+					let strTitle = searchEngines[id].name;
+					//let url = searchEngines[id].url;
+					//let urlParts = url.replace('http://','').replace('https://','').split(/\//);
+					//let domain = urlParts[0];
+					//let faviconUrl = "https://get-favicons.herokuapp.com/icon?url=" + domain + "&size=24..32..64";
+					searchEnginesArray.push(id);
+					buildContextMenuItem(searchEngines[id], strIndex, strTitle, base64String, browserVersion);
+					index += 1;
+				}
+
+				if (contextsearch_optionsMenuLocation === "bottom") {
+					rebuildContextOptionsMenu();
+				}
 			}
+		);
 
-			searchEngines = sortByIndex(data);
-			searchEnginesArray = [];
-			var index = 0;
-			for (let id in searchEngines) {
-                let base64String = searchEngines[id].base64;
-				let strIndex = "cs-" + index.toString();
-                let strTitle = searchEngines[id].name;
-                //let url = searchEngines[id].url;
-                //let urlParts = url.replace('http://','').replace('https://','').split(/\//);
-                //let domain = urlParts[0];
-				//let faviconUrl = "https://get-favicons.herokuapp.com/icon?url=" + domain + "&size=24..32..64";
-				searchEnginesArray.push(id);
-				buildContextMenuItem(searchEngines[id], strIndex, strTitle, base64String);
-				index += 1;
-			}
-
-			if (contextsearch_optionsMenuLocation === "bottom") {
-				rebuildContextOptionsMenu();
-			}
-		}
-	);
-
-	browser.contextMenus.onClicked.addListener(processSearch);
+		browser.contextMenus.onClicked.addListener(processSearch);
+	});
 }
 
 function rebuildContextOptionsMenu(){
@@ -576,9 +566,12 @@ function buildSuggestion(text) {
 }
 
 function testSearchEngine(engineData){
-	// engineData contains a url property
-	let tempTargetUrl = getSearchEngineUrl(engineData.url, "test");
-	browser.tabs.create({url: tempTargetUrl});
+	if(engineData.url != ""){
+		let tempTargetUrl = getSearchEngineUrl(engineData.url, "test");
+		browser.tabs.create({url: tempTargetUrl});
+	}else{
+		notify(notifySearchEngineUrlRequired);
+	}
 }
 
 /// Generic Error Handler
@@ -606,7 +599,7 @@ function notify(message){
     {
         type: "basic",
         iconUrl: browser.extension.getURL("icons/icon_64.png"),
-        title: "Context Search",
+        title: browser.i18n.getMessage("extensionName"),
         message: message
     });
 }

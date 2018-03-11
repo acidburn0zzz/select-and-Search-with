@@ -133,7 +133,7 @@
   },
   "multipleSearchEngines": {
     "message": "Inclure ce moteur de recherche pour un multi-search",
-    "description": ""
+    "description": ""  
   },
   "searchEngineURL": {
     "message": "URL du moteur de recherche",
@@ -141,7 +141,7 @@
   },
   "testSearchEngine": {
     "message": "Tester le moteur de recherche",
-    "description": ""
+    "description": ""  
   },
   "addSearchEngine": {
     "message": "Ajouter le moteur de recherche",
@@ -217,10 +217,6 @@
   },
   "notifyUnknown": {
     "message": "est inconnu.",
-    "description": ""
-  },
-  "notifyUrlNotValid": {
-    "message": "L'url introduite n'est pas valable.",
     "description": ""
   },
   "notifySearchEngineUrlRequired": {

@@ -72,7 +72,7 @@
     "description": ""
   },
   "header2": {
-    "message": "Toon icoontjes in de context menu lijst",
+    "message": "Toon icoontjes in de contextmenulijst",
     "description": ""
   },
   "getFavicons": {
@@ -84,15 +84,15 @@
     "description": ""
   },
   "header4": {
-    "message": "Gridmodus met zoekmachineicoontjes",
+    "message": "Roostermodus met zoekmachineicoontjes",
     "description": ""
   },
   "gridMode": {
-    "message": "Toon een grid van icoontjes in plaats van een lijst van zoekmachines",
+    "message": "Toon een rooster van icoontjes in plaats van een lijst van zoekmachines",
     "description": ""
   },
   "warning": {
-    "message": "Waarschuwing: het inschakelen van deze functie zorgt ervoor dat context menus van andere extensies niet getoond worden.",
+    "message": "Waarschuwing: het inschakelen van deze functie zorgt ervoor dat contextmenus van andere extensies niet getoond worden.",
     "description": ""
   },
   "savePreferences": {
@@ -100,7 +100,7 @@
     "description": ""
   },
   "header6": {
-    "message": "Welke zoekmachines moeten zichtbaar zijn in het context menu of de grid?",
+    "message": "Welke zoekmachines moeten zichtbaar zijn in het contextmenu of het rooster?",
     "description": ""
   },
   "clearAll": {
@@ -133,6 +133,14 @@
   },
   "multipleSearchEngines": {
     "message": "",
+    "description": ""  
+  },
+  "searchEngineURL": {
+    "message": "Zoekmachine URL",
+    "description": ""
+  },
+  "testSearchEngine": {
+    "message": "Zoekmachine testen",
     "description": ""
   },
   "searchEngineURL": {
@@ -217,10 +225,6 @@
   },
   "notifyUnknown": {
     "message": "is onbekend.",
-    "description": ""
-  },
-  "notifyUrlNotValid": {
-    "message": "Url entered is not valid.",
     "description": ""
   },
   "notifySearchEngineUrlRequired": {

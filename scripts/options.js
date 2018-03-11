@@ -29,7 +29,8 @@ const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
 const placeHolderKeyword = browser.i18n.getMessage("keyword");
 const notifySavedPreferences = browser.i18n.getMessage("notifySavedPreferences");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
-const notifyUrlNotValid = browser.i18n.getMessage("notifyUrlNotValid");
+const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
+const placeHolderKeyword = browser.i18n.getMessage("keyword");
 
 // Send a message to the background script
 function sendMessage(action, data) {
@@ -153,7 +154,7 @@ function createLineItem(id, searchEngine) {
     inputKeyword.setAttribute("type", "text");
     inputKeyword.setAttribute("id", id + "-kw");
     inputKeyword.setAttribute("class", "keyword");
-    inputKeyword.setAttribute("placeHolderKeyword", placeHolderKeyword);
+    inputKeyword.setAttribute("placeholder", placeHolderKeyword);
     inputKeyword.setAttribute("value", searchEngine.keyword);
 
     inputMultiTab.setAttribute("type", "checkbox");
@@ -353,7 +354,7 @@ function addSearchEngine() {
 
 function clear() {
     // Clear check boxes and text box entries
-    show.checked = false;
+    show.checked = true;
     name.value = null;
     keyword.value = null;
     multitab.checked = false;
