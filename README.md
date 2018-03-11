@@ -13,6 +13,8 @@ Firefox add-on to search selected text in a web page using your favorite search 
 ## Managing search engines
 To manage your favorite search engines, you can go to the preferences page of Context Search. You can reach this page by opening the extensions page (Addon Manager) where all your add-ons are listed and then clicking on the "Preferences" button.
 
+![How to define a search engine](contextSearch/images/searchEngineDescription.jpg)
+
 <ol>
 <li>The checkbox at the start of a line determines whether the search engine should appear in the context menu.</li>
 <li>The next item on the line contains the name of the search engine and is followed by a keyword.</li>
