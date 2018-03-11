@@ -147,14 +147,6 @@
     "message": "Zoekmachine URL",
     "description": ""
   },
-  "testSearchEngine": {
-    "message": "Zoekmachine testen",
-    "description": ""
-  },
-  "addSearchEngine": {
-    "message": "Zoekmachine toevoegen",
-    "description": ""
-  },
   "clear": {
     "message": "Leegmaken",
     "description": ""
