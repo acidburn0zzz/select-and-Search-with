@@ -143,10 +143,6 @@
     "message": "Zoekmachine testen",
     "description": ""
   },
-  "searchEngineURL": {
-    "message": "Zoekmachine URL",
-    "description": ""
-  },
   "clear": {
     "message": "Leegmaken",
     "description": ""
