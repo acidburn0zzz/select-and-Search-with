@@ -26,7 +26,7 @@ const down = browser.i18n.getMessage("down");
 const remove = browser.i18n.getMessage("remove");
 const multipleSearchEnginesSearch = browser.i18n.getMessage("multipleSearchEnginesSearch");
 const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
-const placeHolderKeyword = browser.i18n.getMessage("keyword");
+const placeHolderKeyword = browser.i18n.getMessage("placeHolderKeyword");
 const notifySavedPreferences = browser.i18n.getMessage("notifySavedPreferences");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
 
@@ -220,9 +220,10 @@ function swapIndexes(previousItem, nextItem) {
         secondObj["index"] = tmp;
         newObj[previousItem] = firstObj;
         newObj[nextItem] = secondObj;
-        }, onError).then(function(){
-            browser.storage.sync.set(newObj).then(null, onError);
-        }, onError);
+    }, onError).then(function(){
+        browser.storage.sync.set(newObj).then(null, onError);
+        sendMessage("saveEngines");
+    }, onError);
 }
 
 function moveSearchEngineUp(e) {
@@ -296,9 +297,14 @@ function save(){
 function saveOptions(notification) {
     let newSearchEngines = readData();
     if (notification == true) {
-        browser.storage.sync.set(newSearchEngines).then(notify(notifySavedPreferences), onError);
+        browser.storage.sync.set(newSearchEngines).then(function(){
+			notify(notifySavedPreferences)
+			sendMessage("saveEngines");
+		}, onError);
     } else {
-        browser.storage.sync.set(newSearchEngines).then(null, onError);
+        browser.storage.sync.set(newSearchEngines).then(function(){
+			sendMessage("saveEngines");
+		}, onError);
     }
 }
 
@@ -461,26 +467,35 @@ function updateTabMode() {
     } else {
         active.style.visibility = "visible";
     }
-    let data = {};
-    data["tabMode"] = document.querySelector('input[name="results"]:checked').value;
-    data["tabActive"] = tabActive.checked;
-    
-    browser.storage.local.set(data);
+
+	let tabModeData = {};
+	tabModeData["tabMode"] = document.querySelector('input[name="results"]:checked').value;
+	tabModeData["tabActive"] = tabActive.checked;
+
+    browser.storage.local.set(tabModeData).then(function(){
+		sendMessage("updateTabMode", tabModeData);
+	}, onError);
 }
 
 function updateGetFavicons() {
     let fav = getFavicons.checked;
-    browser.storage.local.set({"favicons": fav}).then(null, onError);
+    browser.storage.local.set({"favicons": fav}).then(function(){
+		sendMessage("updateGetFavicons", fav);
+	}, onError);
 }
 
 function updateGridMode() {
     let gm = gridMode.checked;
-    browser.storage.local.set({"gridMode": gm}).then(null, onError);
+    browser.storage.local.set({"gridMode": gm}).then(function(){
+		sendMessage("updateGridMode", gm);
+	}, onError);
 }
 
 function updateOptionsMenuLocation() {
     let omat = optionsMenuLocation.value;
-    browser.storage.local.set({"optionsMenuLocation": omat}).then(null, onError);
+    browser.storage.local.set({"optionsMenuLocation": omat}).then(function(){
+		sendMessage("updateOptionsMenuLocation", omat);
+	}, onError);
 }
 
 function isValidUrl(url) {
