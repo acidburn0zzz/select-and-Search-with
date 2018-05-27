@@ -6,7 +6,8 @@ let targetUrl = "";
 let lastAddressBarKeyword = "";
 
 /// Constants
-const herokuAppUrl = "https://get-favicons-besticon.herokuapp.com/icon?url="; // "https://get-favicons.herokuapp.com/icon?url="
+const getFaviconUrlNow = "https://getfaviconurl-node.now.sh/icon?url=";
+const herokuAppUrl = "https://get-favicons.herokuapp.com/icon?url="; // "https://get-favicons-besticon.herokuapp.com/icon?url="; // 
 const herokuAppUrlSuffix = "&size=16..32..128";
 const appUrlCorsAnywhere = "https://cors-anywhere.herokuapp.com/";
 const base64ContextSearchIcon = "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";
@@ -191,56 +192,27 @@ function loadDefaultSearchEngines(jsonFile) {
 
 /// Get and store favicon urls and base64 images
 function initializeFavicons() {
-	let remainingItems = Object.keys(searchEngines).length;
     for (let id in searchEngines) {
         if (searchEngines[id].base64 === null || searchEngines[id].base64 === undefined || !searchEngines[id].base64.length > 0) {
-            let url = searchEngines[id].url;
-            let domain = getDomain(url);
-
-            let faviconUrl = "https://getfaviconurl-node.now.sh/icon?url=" + domain;
-            getBase64Image(id, faviconUrl).then(function (base64String) {
-                searchEngines[id]["base64"] = base64String;
-                remainingItems = updateSearchEnginesIfNeeded(remainingItems);
-            }, function(faviconNotFoundError) {
-				let faviconUrl = herokuAppUrl + domain + herokuAppUrlSuffix;
-				getBase64Image(id, faviconUrl).then(function (base64String) {
-					searchEngines[id]["base64"] = base64String;
-					remainingItems = updateSearchEnginesIfNeeded(remainingItems);
-				}, function(bestIconNotFoundError){
-					remainingItems = updateSearchEnginesIfNeeded(remainingItems);
-				});
-            });
-        } else {
-            remainingItems = updateSearchEnginesIfNeeded(remainingItems);
+            addNewFavicon(searchEngines, id);
         }
     }
-    
-    // Refresh again if it didn't happen for some reason
-    setTimeout(function(){
-		remainingItems = 1;
-		remainingItems = updateSearchEnginesIfNeeded(remainingItems);
-	}, 200 * Object.keys(searchEngines).length);
+    browser.storage.sync.set(searchEngines).then(null, onError);
 }
 
 /// Add favicon to newly added search engine
-function addNewFavicon(se, id) {
-    searchEngines = se;
-    //console.log(id);
-    //console.log(searchEngines);
+function addNewFavicon(searchEngines, id) {
     let url = searchEngines[id].url;
     let domain = getDomain(url);
-    
-    let faviconUrl = "https://getfaviconurl-node.now.sh/icon?url=" + domain;
+    let faviconUrl = getFaviconUrlNow + domain;
 	getBase64Image(id, faviconUrl).then(function (base64String) {
 		searchEngines[id]["base64"] = base64String;
-		updateSearchEnginesIfNeeded();
 	}, function(faviconNotFoundError) {
 		let faviconUrl = herokuAppUrl + domain + herokuAppUrlSuffix;
 		getBase64Image(id, faviconUrl).then(function (base64String) {
 			searchEngines[id]["base64"] = base64String;
-			updateSearchEnginesIfNeeded();
 		}, function(bestIconNotFoundError){
-			updateSearchEnginesIfNeeded();
+            searchEngines[id]["base64"] = base64ContextSearchIcon;
 		});
 	});
 }
@@ -249,16 +221,6 @@ function getDomain(url){
 	let urlParts = url.replace('http://','').replace('https://','').split(/\//);
     let domain = urlParts[0];
 	return domain;
-}
-
-function updateSearchEnginesIfNeeded(remainingItems){
-	remainingItems = remainingItems - 1;
-	
-	if (remainingItems === 0) {
-		browser.storage.sync.set(searchEngines).then(null, onError);
-	}
-	
-	return remainingItems;
 }
 
 /// Generate base64 image string for the favicon with the given url
@@ -272,17 +234,15 @@ function getBase64Image(id, url) {
             xhr.responseType = "arraybuffer";
             
             xhr.onload = function() {
-				if (xhr.status === 404 && url.indexOf("now.sh") > -1) {
+                // Set default base64 string to Context Search extension icon
+                var str = base64ContextSearchIcon;
+                
+				if (xhr.status === 404) {
 					reject(xhr.status);
 				}
-				
-				// Set default base64 string to Context Search extension icon
-				str = base64ContextSearchIcon;
-				
                 if (xhr.status === 200) {
                     let blob = xhr.response;
                     str = btoa(String.fromCharCode.apply(null, new Uint8Array(blob)));
-                    
                 }
 				resolve(str);
             }
