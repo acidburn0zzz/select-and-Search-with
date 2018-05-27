@@ -4,6 +4,7 @@ let searchEnginesArray = [];
 let selection = "";
 let targetUrl = "";
 let lastAddressBarKeyword = "";
+let fetchingFavicons = false;
 
 /// Constants
 const getFaviconUrlNow = "https://getfavicon-node.herokuapp.com/icon?url=";
@@ -192,12 +193,24 @@ function loadDefaultSearchEngines(jsonFile) {
 
 /// Get and store favicon urls and base64 images
 function initializeFavicons() {
+	if(fetchingFavicons){
+		return; // No infinite loop please
+	}
+	
+	fetchingFavicons = true;
+
     for (let id in searchEngines) {
         if (searchEngines[id].base64 === null || searchEngines[id].base64 === undefined || !searchEngines[id].base64.length > 0) {
             addNewFavicon(searchEngines, id);
         }
     }
-    browser.storage.sync.set(searchEngines).then(null, onError);
+    
+    // Wait some time to get all favicons (method above is async)
+	setTimeout(function(){
+		browser.storage.sync.set(searchEngines).then(function(){
+			fetchingFavicons = false;
+		}, onError);
+	}, 4000);
 }
 
 /// Add favicon to newly added search engine
