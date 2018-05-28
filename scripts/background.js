@@ -1,3 +1,6 @@
+/// Debug
+let logToConsole = false;
+
 /// Global variables
 let searchEngines = {};
 let searchEnginesArray = [];
@@ -56,14 +59,32 @@ browser.runtime.onMessage.addListener(function(message) {
         case "testSearchEngine":
             testSearchEngine(message.data);
             break;
+        case "saveEngines":
+			rebuildContextMenu();
+			break;
         case "addNewFavicon":
             browser.storage.sync.get().then((se) => {
                 addNewFavicon(se, message.data);
             }, onError);
             break;
-        default:
-            break;
-    }
+        case "updateGetFavicons":
+			contextsearch_getFavicons = message.data;
+			break;
+		case "updateGridMode":
+			contextsearch_gridMode = message.data;
+			break;
+		case "updateGridMode":
+			contextsearch_gridMode = message.data;
+			break;
+		case "updateTabMode":
+			setTabMode(message.data);
+			break;
+		case "updateOptionsMenuLocation":
+			contextsearch_optionsMenuLocation = message.data;
+			break;
+		default:
+			break;
+	}
 });
 
 /// Initialisation
@@ -78,8 +99,6 @@ function init() {
     
     // Rebuild context menu with or without icons, taking into account all settings related to the context menu
     rebuildContextMenu();
-    
-    browser.storage.onChanged.addListener(onStorageChanges);
 }
 
 function setGetFavicons(data) {
@@ -98,8 +117,8 @@ function fetchTabMode(data) {
         let data = {};
         data["tabMode"] = "openNewTab";
         data["tabActive"] = false;
-        browser.storage.local.set(data);
         setTabMode(data);
+        browser.storage.local.set(data); // In-memory objects should be updated already.
     }
 }
 
@@ -130,7 +149,7 @@ function setGridMode(data) {
     } else {
         // Set default value for gridMode to false if it is not set to true or false
         contextsearch_gridMode = false;
-        browser.storage.local.set({"gridMode": false}).then(null, onError);
+        browser.storage.local.set({"gridMode": false}); // In-memory objects should be updated already.
     }
 }
 
@@ -141,15 +160,19 @@ function detectStorageSupportAndReadSearchEngines() {
     // Load search engines if they're not already loaded in storage sync
 	function onGot(data){
         if (Object.keys(data).length == 0) {
-            // Storage sync is empty -> load default list of search engines
+            if(logToConsole) console.log("Storage sync is empty -> load default list of search engines.");
             resetSearchEngines();
         } else {
+			if(logToConsole) console.log("Sorting engines by index");
             searchEngines = sortByIndex(data);
+            if(logToConsole) console.log("Initialize icons from within detectStorageSupportAndReadSearchEngines");
             initializeFavicons();
         }
 	}
 
 	function onNone(error){
+		if(logToConsole) console.log("Error, Firefox ESR?");
+		
         resetSearchEngines();
 		if (error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1) {
 			notify(notifyEnableStorageSync);
@@ -183,7 +206,8 @@ function loadDefaultSearchEngines(jsonFile) {
             initializeFavicons();
 
             browser.storage.sync.set(searchEngines).then(function() {
-                 notify(notifySearchEnginesLoaded);
+				rebuildContextMenu();
+                notify(notifySearchEnginesLoaded);
             }, onError);
         }
     };
@@ -192,29 +216,59 @@ function loadDefaultSearchEngines(jsonFile) {
 
 /// Get and store favicon urls and base64 images
 function initializeFavicons() {
+	if(logToConsole) console.log("fetching favicons..");
+
+	let arrayOfPromises = new Array();
+	
     for (let id in searchEngines) {
-        if (searchEngines[id].base64 === null || searchEngines[id].base64 === undefined || !searchEngines[id].base64.length > 0) {
-            addNewFavicon(searchEngines, id);
-        }
+		if (searchEngines[id].base64 === null || searchEngines[id].base64 === undefined || searchEngines[id].base64.length == 0) {
+			if(logToConsole) console.log("getting favicon for " + searchEngines[id].url);
+			arrayOfPromises.push(addNewFavicon(searchEngines[id].url, id));
+		}
     }
-    browser.storage.sync.set(searchEngines).then(null, onError);
+    
+    Promise.all(arrayOfPromises).then(function(values) {
+		for (let se of values) {
+			if(logToConsole) console.log("JSON.stringify se is " + JSON.stringify(se));
+			if(logToConsole) console.log("se.id is " + se.id);
+			if(logToConsole) console.log("se.base64 is " + se.base64);
+			searchEngines[se.id]["base64"] = se.base64;
+		}
+		
+		setTimeout(function(){
+			if(logToConsole) console.log("result is " + JSON.stringify(searchEngines));
+			browser.storage.sync.set(searchEngines).then(() => {
+				rebuildContextMenu();
+				if(logToConsole) console.log("we're no longer fetching favicons..");
+			});
+		}, 100);
+		
+	});
 }
 
 /// Add favicon to newly added search engine
-function addNewFavicon(searchEngines, id) {
-    let url = searchEngines[id].url;
-    let domain = getDomain(url);
-    let faviconUrl = getFaviconUrlNow + domain;
-	getBase64Image(id, faviconUrl).then(function (base64String) {
-		searchEngines[id]["base64"] = base64String;
-	}, function(faviconNotFoundError) {
-		let faviconUrl = herokuAppUrl + domain + herokuAppUrlSuffix;
-		getBase64Image(id, faviconUrl).then(function (base64String) {
-			searchEngines[id]["base64"] = base64String;
-		}, function(bestIconNotFoundError){
-            searchEngines[id]["base64"] = base64ContextSearchIcon;
-		});
-	});
+function addNewFavicon(searchEngineUrl, id) {
+	// This promise resolves always, to the icon of the website, or to the default Context Search icon.
+	let promise = new Promise(
+        function resolver(resolve, reject) {
+			let domain = getDomain(searchEngineUrl);
+			let faviconUrl = getFaviconUrlNow + domain;
+			getBase64Image(id, faviconUrl).then(function (base64) {
+				//if(logToConsole) console.log("base64 via now.sh is " + base64);
+				resolve({id: id, base64: base64});
+			}, function(faviconNotFoundError) {
+				let faviconUrl = herokuAppUrl + domain + herokuAppUrlSuffix;
+				getBase64Image(id, faviconUrl).then(function (base64) {
+					//if(logToConsole) console.log("base64 via besticon is " + base64);
+					resolve({id: id, base64: base64});
+				}, function(bestIconNotFoundError){
+					//if(logToConsole) console.log("base64 via error is " + base64);
+					resolve({id: id, base64: base64ContextSearchIcon});
+				});
+			});
+		}
+    );
+    return promise;
 }
 
 function getDomain(url){
@@ -280,18 +334,13 @@ function buildContextMenuItem(searchEngine, index, title, base64String, browserV
 	}
 }
 
-/// Handle Storage Changes
-function onStorageChanges(changes, area) {
-    init();
-}
-
 function setOptionsMenu(data) {
     if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
 		contextsearch_optionsMenuLocation = data.optionsMenuLocation;
     } else {
         // Set default to "bottom" if no values are set for optionsMenuLocation
         contextsearch_optionsMenuLocation = "bottom";
-        browser.storage.local.set({"optionsMenuLocation": "bottom"}).then(null, onError);
+        browser.storage.local.set({"optionsMenuLocation": "bottom"});
     }
 }
 
@@ -406,7 +455,7 @@ function processMultiTabSearch() {
                 multiTabSearchEngineUrls.push(getSearchEngineUrl(searchEngines[id].url, selection));
             }
         }
-        console.log(multiTabSearchEngineUrls);
+       if(logToConsole) console.log(multiTabSearchEngineUrls);
         browser.windows.create({
             titlePreface: windowTitle + '"' + selection + '"',
             url: multiTabSearchEngineUrls
@@ -473,7 +522,7 @@ function displaySearchResults(targetUrl, tabPosition) {
             });
         } else {
             // Open search results in the same tab
-            console.log("Opening search results in same tab, url is " + targetUrl);
+            if(logToConsole) console.log("Opening search results in same tab, url is " + targetUrl);
             browser.tabs.update({url: targetUrl});
         }
     }, onError);
@@ -529,7 +578,7 @@ function buildSuggestion(text) {
     let result = [];
     let keyword = text.split(" ")[0];
     let searchTerms = text.replace(keyword, "").trim();
-    console.log(searchTerms);
+    if(logToConsole) console.log(searchTerms);
 
 	// Only make suggestions available and check for existence of a search engine when there is a space.
 	if (text.indexOf(" ") === -1) {
