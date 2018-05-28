@@ -215,14 +215,13 @@ function swapIndexes(previousItem, nextItem) {
     browser.storage.sync.get([previousItem, nextItem]).then(function(data){
         firstObj = data[previousItem];
         secondObj = data[nextItem];
-        tmp = JSON.parse(JSON.stringify(firstObj["index"])); // creating a new temporary object to avoid passing firstObj by reference
+        tmp = firstObj["index"];
         firstObj["index"] = secondObj["index"];
         secondObj["index"] = tmp;
         newObj[previousItem] = firstObj;
         newObj[nextItem] = secondObj;
     }, onError).then(function(){
-        browser.storage.sync.set(newObj).then(null, onError);
-        sendMessage("saveEngines");
+        sendMessage("saveEngines", newObj);
     }, onError);
 }
 
@@ -297,14 +296,10 @@ function save(){
 function saveOptions(notification) {
     let newSearchEngines = readData();
     if (notification == true) {
-        browser.storage.sync.set(newSearchEngines).then(function(){
-			notify(notifySavedPreferences)
-			sendMessage("saveEngines");
-		}, onError);
+        notify(notifySavedPreferences);
+        sendMessage("saveEngines", newSearchEngines);
     } else {
-        browser.storage.sync.set(newSearchEngines).then(function(){
-			sendMessage("saveEngines");
-		}, onError);
+		sendMessage("saveEngines", newSearchEngines);
     }
 }
 

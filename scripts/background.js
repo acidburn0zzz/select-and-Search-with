@@ -9,7 +9,7 @@ let targetUrl = "";
 let lastAddressBarKeyword = "";
 
 /// Constants
-const getFaviconUrlNow = "https://getfavicon-node.herokuapp.com/icon?url=";
+const getFaviconUrl = "https://getfavicon-node.herokuapp.com/icon?url=";
 const herokuAppUrl = "https://get-favicons-besticon.herokuapp.com/icon?url="; // "https://get-favicons.herokuapp.com/icon?url="
 const herokuAppUrlSuffix = "&size=16..32..128";
 const appUrlCorsAnywhere = "https://cors-anywhere.herokuapp.com/";
@@ -60,7 +60,7 @@ browser.runtime.onMessage.addListener(function(message) {
             testSearchEngine(message.data);
             break;
         case "saveEngines":
-			rebuildContextMenu();
+			saveSearchEngines(message.data, false);
 			break;
         case "addNewFavicon":
             browser.storage.sync.get().then((se) => {
@@ -204,14 +204,18 @@ function loadDefaultSearchEngines(jsonFile) {
             
             // Fetch missing favicon urls and generate corresponding base64 images
             initializeFavicons();
+            saveSearchEngines(searchEngines, true);
 
-            browser.storage.sync.set(searchEngines).then(function() {
-				rebuildContextMenu();
-                notify(notifySearchEnginesLoaded);
-            }, onError);
         }
     };
     xhr.send();
+}
+
+function saveSearchEngines(searchEnginesToSave, blnNotify){
+    browser.storage.sync.set(searchEnginesToSave).then(function() {
+        rebuildContextMenu();
+        if (blnNotify) notify(notifySearchEnginesLoaded);
+    }, onError);
 }
 
 /// Get and store favicon urls and base64 images
@@ -221,46 +225,44 @@ function initializeFavicons() {
 	let arrayOfPromises = new Array();
 	
     for (let id in searchEngines) {
+        let domain = getDomain(searchEngines[id].url);
 		if (searchEngines[id].base64 === null || searchEngines[id].base64 === undefined || searchEngines[id].base64.length == 0) {
-			if(logToConsole) console.log("getting favicon for " + searchEngines[id].url);
-			arrayOfPromises.push(addNewFavicon(searchEngines[id].url, id));
+			if(logToConsole) console.log("Getting favicon for " + domain);
+			arrayOfPromises.push(addNewFavicon(domain, id));
 		}
     }
     
-    Promise.all(arrayOfPromises).then(function(values) {
-		for (let se of values) {
-			if(logToConsole) console.log("JSON.stringify se is " + JSON.stringify(se));
-			if(logToConsole) console.log("se.id is " + se.id);
-			if(logToConsole) console.log("se.base64 is " + se.base64);
-			searchEngines[se.id]["base64"] = se.base64;
+    Promise.all(arrayOfPromises).then(function(values) { // values is an array of {id:, base64:}
+        if(logToConsole) console.log("We're no longer fetching favicons..");
+        for (let value of values) {
+			if(logToConsole) console.log("================================================");
+            if(logToConsole) console.log("id is " + value.id);
+            if(logToConsole) console.log("------------------------------------------------");
+            if(logToConsole) console.log("base64 string is " + value.base64);
+            if(logToConsole) console.log("================================================");
+			searchEngines[value.id]["base64"] = value.base64;
 		}
-		
-		setTimeout(function(){
-			if(logToConsole) console.log("result is " + JSON.stringify(searchEngines));
-			browser.storage.sync.set(searchEngines).then(() => {
-				rebuildContextMenu();
-				if(logToConsole) console.log("we're no longer fetching favicons..");
-			});
-		}, 100);
+        
+        if(logToConsole) console.log("Search engines list now is: " + JSON.stringify(searchEngines));
+        saveSearchEngines(searchEngines, false);
 		
 	});
 }
 
 /// Add favicon to newly added search engine
-function addNewFavicon(searchEngineUrl, id) {
+function addNewFavicon(domain, id) {
 	// This promise resolves always, to the icon of the website, or to the default Context Search icon.
 	let promise = new Promise(
         function resolver(resolve, reject) {
-			let domain = getDomain(searchEngineUrl);
-			let faviconUrl = getFaviconUrlNow + domain;
-			getBase64Image(id, faviconUrl).then(function (base64) {
+			let faviconUrl = getFaviconUrl + domain;
+			getBase64Image(id, faviconUrl).then(function (base64str) {
 				//if(logToConsole) console.log("base64 via now.sh is " + base64);
-				resolve({id: id, base64: base64});
+				resolve({id: id, base64: base64str});
 			}, function(faviconNotFoundError) {
 				let faviconUrl = herokuAppUrl + domain + herokuAppUrlSuffix;
-				getBase64Image(id, faviconUrl).then(function (base64) {
+				getBase64Image(id, faviconUrl).then(function (base64str) {
 					//if(logToConsole) console.log("base64 via besticon is " + base64);
-					resolve({id: id, base64: base64});
+					resolve({id: id, base64: base64str});
 				}, function(bestIconNotFoundError){
 					//if(logToConsole) console.log("base64 via error is " + base64);
 					resolve({id: id, base64: base64ContextSearchIcon});
