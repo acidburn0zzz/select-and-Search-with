@@ -343,7 +343,7 @@ function addSearchEngine() {
     let lineItem = createLineItem(id, newSearchEngine[id]);
     divSearchEngines.appendChild(lineItem);
     browser.storage.sync.set(newSearchEngine).then(function() {
-        sendMessage("addNewFavicon", id);
+        sendMessage("addNewSearchEngine", {"id": id, "searchEngine": newSearchEngine[id]});
         notify(notifySearchEngineAdded);
     }, onError);
     
@@ -405,7 +405,7 @@ function onGot(data) {
     }
 
     if (data.favicons === false) {
-        getFavicons.checked = true;
+        getFavicons.checked = false;
     } else {
         // Default setting is to fetch favicons for context menu list
         getFavicons.checked = true;
@@ -463,20 +463,15 @@ function updateTabMode() {
         active.style.visibility = "visible";
     }
 
-	let tabModeData = {};
-	tabModeData["tabMode"] = document.querySelector('input[name="results"]:checked').value;
-	tabModeData["tabActive"] = tabActive.checked;
-
-    browser.storage.local.set(tabModeData).then(function(){
-		sendMessage("updateTabMode", tabModeData);
-	}, onError);
+    let data = {};
+	data["tabMode"] = document.querySelector('input[name="results"]:checked').value;
+	data["tabActive"] = tabActive.checked;
+	sendMessage("updateTabMode", data);
 }
 
 function updateGetFavicons() {
     let fav = getFavicons.checked;
-    browser.storage.local.set({"favicons": fav}).then(function(){
-		sendMessage("updateGetFavicons", fav);
-	}, onError);
+	sendMessage("updateGetFavicons", {"favicons": fav});
 }
 
 function updateGridMode() {
