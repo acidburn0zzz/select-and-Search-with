@@ -112,20 +112,14 @@ function init() {
         setGridMode(values[2]);
         if (logToConsole) console.log("Setting favicon preferences..");
         setFavicons(values[4]);
-        if ((values[2].gridMode === true) || (values[4].favicons === true)) {
+        if (isEmpty(values[4]) || (values[2].gridMode === true) || (values[4].favicons === true)) {
             flagInitializeFavicons = true;
         } else {
             flagInitializeFavicons = false;
         }
-        if (logToConsole) console.log("Loading the search engines from storage sync..");
+        if (logToConsole && flagInitializeFavicons) console.log("Favicons to be loaded.")
         checkForStorageSyncSupportAndLoadSearchEngines(flagInitializeFavicons);
     });
-
-    // LEGACY CODE (version 3.67)
-    //browser.storage.local.get(["tabMode", "tabActive"]).then(setTabMode, onError);
-    //browser.storage.local.get("gridMode").then(setGridMode, onError);
-    //browser.storage.local.get("optionsMenuLocation").then(setOptionsMenu, onError);
-    //browser.storage.local.get("favicons").then(setFavicons, onError);
 
 }
 
@@ -136,16 +130,6 @@ function resolvePromise(option) {
         }
     );
     return promise;
-}
-
-function setFavicons(data) {
-	if (data.favicons === true || data.favicons === false) {
-		contextsearch_getFavicons = data.favicons;
-	} else {
-        contextsearch_getFavicons = true; // Favicons should be dsiplayed in the context menu by default.
-        data = {"favicons": true};
-    }
-    browser.storage.local.set(data).then(initializeFavicons, onError);
 }
 
 // Store the default values for tab mode in storage local
@@ -173,6 +157,16 @@ function setTabMode(data) {
     browser.storage.local.set(data); // In-memory objects should be updated already.
 }
 
+function setOptionsMenu(data) {
+    if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
+		contextsearch_optionsMenuLocation = data.optionsMenuLocation;
+    } else {
+        // Set default to "bottom" if no values are set for optionsMenuLocation
+        contextsearch_optionsMenuLocation = "bottom";
+        browser.storage.local.set({"optionsMenuLocation": "bottom"});
+    }
+}
+
 function setGridMode(data) {
     if (data.gridMode === true || data.gridMode === false) {
         contextsearch_gridMode = data.gridMode;
@@ -183,13 +177,24 @@ function setGridMode(data) {
     }
 }
 
+function setFavicons(data) {
+	if (data.favicons === true || data.favicons === false) {
+		contextsearch_getFavicons = data.favicons;
+	} else {
+        contextsearch_getFavicons = true; // Favicons should be dsiplayed in the context menu by default.
+        data = {"favicons": true};
+    }
+    browser.storage.local.set(data);
+}
+
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
 function checkForStorageSyncSupportAndLoadSearchEngines(flagInitializeFavicons) {
-    browser.storage.sync.get(null).then(onGot, onNone);
+    if (logToConsole) console.log("Loading the search engines from storage sync..");
+    browser.storage.sync.get().then(onGot, onNone);
 
     // Load search engines if they're not already loaded in storage sync
 	function onGot(data) {
-        if (Object.keys(data).length === 0) {
+        if (!Object.keys(data).length > 0) {
             if (logToConsole) console.log("Storage sync is empty -> loading default list of search engines.");
             resetSearchEngines(flagInitializeFavicons);
         } else {
@@ -231,9 +236,12 @@ function loadDefaultSearchEngines(jsonFile, flagInitializeFavicons) {
 			}
             
             // Fetch missing favicon urls and generate corresponding base64 images
-            if (flagInitializeFavicons) initializeFavicons();
-            saveSearchEngines(searchEngines, true);
-
+            if (logToConsole) console.log("flagInitializeFavicons is set to " + flagInitializeFavicons);
+            if (flagInitializeFavicons) {
+                initializeFavicons();
+            } else {
+                saveSearchEngines(searchEngines, true);
+            }
         }
     };
     xhr.send();
@@ -262,7 +270,6 @@ function initializeFavicons() {
     }
     
     Promise.all(arrayOfPromises).then(function(values) { // values is an array of {id:, base64:}
-        console.log(values);
         if (logToConsole) console.log("We're no longer fetching favicons..");
         for (let value of values) {
 			if(logToConsole) console.log("================================================");
@@ -365,16 +372,6 @@ function buildContextMenuItem(searchEngine, index, title, base64String, browserV
 			contexts: contexts
 		});
 	}
-}
-
-function setOptionsMenu(data) {
-    if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
-		contextsearch_optionsMenuLocation = data.optionsMenuLocation;
-    } else {
-        // Set default to "bottom" if no values are set for optionsMenuLocation
-        contextsearch_optionsMenuLocation = "bottom";
-        browser.storage.local.set({"optionsMenuLocation": "bottom"});
-    }
 }
 
 /// Rebuild the context menu using the search engines from storage sync
@@ -533,6 +530,15 @@ function searchUsing(id) {
 }
 
 /// Helper functions
+// Test if an object is empty
+function isEmpty(obj) {
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+
 // Display the search results
 function displaySearchResults(targetUrl, tabPosition) {
     browser.windows.getCurrent({populate: false}).then(function(windowInfo) {
@@ -555,7 +561,7 @@ function displaySearchResults(targetUrl, tabPosition) {
             });
         } else {
             // Open search results in the same tab
-            if(logToConsole) console.log("Opening search results in same tab, url is " + targetUrl);
+            if (logToConsole) console.log("Opening search results in same tab, url is " + targetUrl);
             browser.tabs.update({url: targetUrl});
         }
     }, onError);
@@ -600,7 +606,7 @@ browser.omnibox.onInputEntered.addListener((input) => {
 					notify(notifyUsage);
 				}
 			} catch(ex) {
-				console.error("Failed to process " + input);
+				if (logToConsole) console.log("Failed to process " + input);
 			}
 		}
 
