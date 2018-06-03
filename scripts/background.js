@@ -87,7 +87,7 @@ browser.runtime.onMessage.addListener(function(message) {
 /// Initialisation
 function init() {
     
-    let arrayOfOptions = ["tabMode", "tabActive", "gridMode", "optionsMenuLocation", "favicons"];
+    let arrayOfOptions = ["tabMode", "tabActive", "optionsMenuLocation", "favicons"];
     let arrayOfPromises = [];
     let flagInitializeFavicons = true;
     let flagInit = true;
@@ -105,12 +105,10 @@ function init() {
         if (logToConsole) console.log("Setting tab mode..");
         setTabMode({"tabMode": values[0].tabMode, "tabActive": values[1].tabActive}, flagInit);
         if (logToConsole) console.log("Setting the position of options in the context menu..");
-        setOptionsMenu(values[3], flagInit);
-        if (logToConsole) console.log("Setting grid mode..");
-        setGridMode(values[2], flagInit);
+        setOptionsMenu(values[2], flagInit);
         if (logToConsole) console.log("Setting favicon preferences..");
-        setFavicons(values[4], flagInit);
-        if (isEmpty(values[4]) || (values[2].gridMode === true) || (values[4].favicons === true)) {
+        setFavicons(values[3], flagInit);
+        if (values[3].favicons === true) {
             flagInitializeFavicons = true;
         } else {
             flagInitializeFavicons = false;
