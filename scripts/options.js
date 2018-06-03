@@ -12,7 +12,6 @@ const sameTab = document.getElementById("sameTab");
 const tabMode = document.getElementById("tabMode");
 const tabActive = document.getElementById("tabActive");
 const active = document.getElementById("active");
-const gridMode = document.getElementById("gridMode");
 const optionsMenuLocation = document.getElementById("optionsMenuLocation");
 const getFavicons = document.getElementById("getFavicons");
 let divSearchEngines = document.getElementById("searchEngines");
@@ -27,7 +26,6 @@ const remove = browser.i18n.getMessage("remove");
 const multipleSearchEnginesSearch = browser.i18n.getMessage("multipleSearchEnginesSearch");
 const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
 const placeHolderKeyword = browser.i18n.getMessage("placeHolderKeyword");
-const notifySavedPreferences = browser.i18n.getMessage("notifySavedPreferences");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
 
 // Send a message to the background script
@@ -186,7 +184,7 @@ function clearAll() {
             input.checked = false;
         }
     }
-    save(false);
+    saveOptions();
 }
 
 function selectAll() {
@@ -198,7 +196,7 @@ function selectAll() {
             input.checked = true;
         }
     }
-    save(false);
+    saveOptions();
 }
 
 function reset() {
@@ -289,18 +287,9 @@ function readData() {
 }
 
 // Save the list of search engines to be displayed in the context menu
-function save(){
-    saveOptions(true);
-}
-
-function saveOptions(notification) {
+function saveOptions() {
     let newSearchEngines = readData();
-    if (notification == true) {
-        notify(notifySavedPreferences);
-        sendMessage("saveEngines", newSearchEngines);
-    } else {
-		sendMessage("saveEngines", newSearchEngines);
-    }
+    sendMessage("saveEngines", newSearchEngines);
 }
 
 function testSearchEngine() {
@@ -474,18 +463,9 @@ function updateGetFavicons() {
 	sendMessage("updateGetFavicons", {"favicons": fav});
 }
 
-function updateGridMode() {
-    let gm = gridMode.checked;
-    browser.storage.local.set({"gridMode": gm}).then(function(){
-		sendMessage("updateGridMode", gm);
-	}, onError);
-}
-
 function updateOptionsMenuLocation() {
     let omat = optionsMenuLocation.value;
-    browser.storage.local.set({"optionsMenuLocation": omat}).then(function(){
-		sendMessage("updateOptionsMenuLocation", omat);
-	}, onError);
+	sendMessage("updateOptionsMenuLocation", {"optionsMenuLocation": omat});
 }
 
 function isValidUrl(url) {
@@ -547,7 +527,6 @@ browser.runtime.onMessage.addListener(handleMessage);
 getFavicons.addEventListener("click", updateGetFavicons);
 tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
-gridMode.addEventListener("click", updateGridMode);
 optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.getElementById("clearAll").addEventListener("click", clearAll);
@@ -556,6 +535,5 @@ document.getElementById("reset").addEventListener("click", reset);
 document.getElementById("test").addEventListener("click", testSearchEngine);
 document.getElementById("add").addEventListener("click", addSearchEngine);
 document.getElementById("clear").addEventListener("click", clear);
-document.getElementById("save").addEventListener("click", save);
 document.getElementById("download").addEventListener("click", saveToLocalDisk);
 document.getElementById("upload").addEventListener("change", handleFileUpload);

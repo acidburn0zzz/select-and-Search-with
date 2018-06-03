@@ -71,16 +71,13 @@ browser.runtime.onMessage.addListener(function(message) {
             }, onError);
             break;
         case "updateGetFavicons":
-			setFavicons(message.data)
-			break;
-		case "updateGridMode":
-			contextsearch_gridMode = message.data;
+			setFavicons(message.data, false)
 			break;
 		case "updateTabMode":
-			setTabMode(message.data);
+			setTabMode(message.data, false);
 			break;
-		case "updateOptionsMenuLocation":
-			contextsearch_optionsMenuLocation = message.data;
+        case "updateOptionsMenuLocation":
+            setOptionsMenu(message.data, false);
 			break;
 		default:
 			break;
@@ -93,6 +90,7 @@ function init() {
     let arrayOfOptions = ["tabMode", "tabActive", "gridMode", "optionsMenuLocation", "favicons"];
     let arrayOfPromises = [];
     let flagInitializeFavicons = true;
+    let flagInit = true;
 
     for (let option of arrayOfOptions) {
 		if (logToConsole) console.log("Getting option " + option + " from local storage..");
@@ -105,13 +103,13 @@ function init() {
             console.log("----------> " + JSON.stringify(value));
         }
         if (logToConsole) console.log("Setting tab mode..");
-        setTabMode({"tabMode": values[0].tabMode, "tabActive": values[1].tabActive});
+        setTabMode({"tabMode": values[0].tabMode, "tabActive": values[1].tabActive}, flagInit);
         if (logToConsole) console.log("Setting the position of options in the context menu..");
-        setOptionsMenu(values[3]);
+        setOptionsMenu(values[3], flagInit);
         if (logToConsole) console.log("Setting grid mode..");
-        setGridMode(values[2]);
+        setGridMode(values[2], flagInit);
         if (logToConsole) console.log("Setting favicon preferences..");
-        setFavicons(values[4]);
+        setFavicons(values[4], flagInit);
         if (isEmpty(values[4]) || (values[2].gridMode === true) || (values[4].favicons === true)) {
             flagInitializeFavicons = true;
         } else {
@@ -133,7 +131,7 @@ function resolvePromise(option) {
 }
 
 // Store the default values for tab mode in storage local
-function setTabMode(data) {
+function setTabMode(data, flagInit) {
     if (!(Object.keys(data).length > 0) || data.tabMode == null || data.tabActive == null) {
         data = {"tabMode":"openNewTab", "tabActive": false};
     }
@@ -154,37 +152,28 @@ function setTabMode(data) {
         default:
             break;
     }
-    browser.storage.local.set(data); // In-memory objects should be updated already.
+    if (!flagInit) browser.storage.local.set(data); // In-memory objects should be updated already.
 }
 
-function setOptionsMenu(data) {
+function setOptionsMenu(data, flagInit) {
     if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
 		contextsearch_optionsMenuLocation = data.optionsMenuLocation;
     } else {
         // Set default to "bottom" if no values are set for optionsMenuLocation
         contextsearch_optionsMenuLocation = "bottom";
-        browser.storage.local.set({"optionsMenuLocation": "bottom"});
+        data = {"optionsMenuLocation": "bottom"};
     }
+    if (!flagInit) browser.storage.local.set(data).then(rebuildContextMenu, onError);
 }
 
-function setGridMode(data) {
-    if (data.gridMode === true || data.gridMode === false) {
-        contextsearch_gridMode = data.gridMode;
-    } else {
-        // Set default value for gridMode to false if it is not set to true or false.
-        contextsearch_gridMode = false;
-        browser.storage.local.set({"gridMode": false}); // In-memory objects should be updated already.
-    }
-}
-
-function setFavicons(data) {
+function setFavicons(data, flagInit) {
 	if (data.favicons === true || data.favicons === false) {
 		contextsearch_getFavicons = data.favicons;
 	} else {
         contextsearch_getFavicons = true; // Favicons should be dsiplayed in the context menu by default.
         data = {"favicons": true};
     }
-    browser.storage.local.set(data);
+    if (!flagInit) browser.storage.local.set(data).then(initializeFavicons, onError);
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.

@@ -4,53 +4,27 @@ const base64ContextSearchIcon = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAA
 var searchEngines = {};
 var selectedText = "";
 var gridMode = false; // By default grid mode is turned off
+var altKey = false;
 
 /// Generic Error Handler
 function onError(error) {
     console.log(`${error}`);
 }
 
-init();
+document.addEventListener("keydown", onKeyDown);
+document.addEventListener("keyup", onKeyUp);
+document.addEventListener("click", handleOptionClickWithGrid);
+document.addEventListener("contextmenu", handleRightClickWithoutGrid);
 
-/// Initialise grid mode
-function init() {
-    browser.storage.local.get("gridMode").then(function(data){
-        if (data.gridMode === true || data.gridMode === false) {
-            gridMode = data.gridMode;
-            if (gridMode === true) { // If gridMode is now set
-                document.addEventListener("contextmenu", handleRightClickWithGrid);
-            } else { // If gridMode is turned off
-                document.addEventListener("contextmenu", handleRightClickWithoutGrid);
-            }
-        }
-    }, onError);
-}
-
-/// Handle gridMode local storage changes
-function onStorageChanges(changes, area) {
-    if (area === "local" && Object.keys(changes).includes("gridMode")) {
-        gridMode = changes["gridMode"].newValue;
-        if (changes["gridMode"].oldValue) { // If gridMode had been set
-            document.removeEventListener("contextmenu", handleRightClickWithGrid);
-        } else { // If gridMode had not been set
-            document.removeEventListener("contextmenu", handleRightClickWithoutGrid);
-        }
-        if (gridMode) { // If gridMode is now set
-            document.addEventListener("contextmenu", handleRightClickWithGrid);
-        } else { // If gridMode is turned off
-            document.addEventListener("contextmenu", handleRightClickWithoutGrid);
-        }
-    }
-}
-
-function handleRightClickWithGrid(e) {
-    e.preventDefault();
-    e.stopPropagation();
+function handleOptionClickWithGrid(e) {
+    console.log(altKey);
+    // Exit function if alt key isn't pressed whilst clicking
+    if (!altKey) return;
 
     let x = e.clientX;
     let y = e.clientY;
 
-    getSelectionTextValue(x, y);
+    getSelectionTextValue();
     if (selectedText !== "") {
         if (e.target.tagName == "A") {
             // Do additional safety checks.
@@ -73,11 +47,34 @@ function handleRightClickWithGrid(e) {
 }
 
 function handleRightClickWithoutGrid(e) {
-    let x = e.clientX;
-    let y = e.clientY;
-
-    getSelectionTextValue(x, y);
+    getSelectionTextValue();
     sendSelectionTextAndCurrentTabUrl();
+}
+
+function getSelectionTextValue() {
+    var selectedTextValue = ""; // get the current value, not a cached value
+
+    if (window.getSelection){ // all modern browsers and IE9+
+        selectedTextValue = window.getSelection().toString();
+    }
+    if (document.activeElement != null && (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT")){
+        let selectedTextInput = document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
+        if (selectedTextInput != "") selectedTextValue = selectedTextInput;
+    }
+
+    selectedText = selectedTextValue.trim();
+}
+
+function sendSelectionTextAndCurrentTabUrl(){
+    // Send the selected text to background.js
+    if (selectedText != "") sendMessage("getSelectionText", selectedText);
+
+    // Send url of Google search within current site to background.js
+    const url = window.location.href;
+    const urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
+    const domain = urlParts[0];
+    targetUrl = "https://www.google.com/search?q=site" + encodeUrl(":" + domain + " " + selectedText);
+    sendMessage("sendCurrentTabUrl", targetUrl);
 }
 
 function buildIconGrid(x, y) {
@@ -164,7 +161,6 @@ function buildIconGrid(x, y) {
     nav.addEventListener("click", onGridClick);
     nav.addEventListener("mouseleave", onLeave);
 
-    document.addEventListener("keydown", checkForEscKey);
     let body = document.getElementsByTagName("body")[0];
     body.appendChild(nav);
 
@@ -204,13 +200,23 @@ function onLeave(e) {
     nav = null;
 }
 
-function checkForEscKey(e) {
+function onKeyDown(e) {
     console.log(e);
+    // If Escape key is pressed
     if (e.keyCode === 27) {
         let nav = document.getElementById("cs-grid");
         nav.style.display = "none";
-        document.removeEventListener("keypress", checkForEscKey);
     }
+    // If Alt key is pressed
+    if (e.keyCode === 18) {
+        altKey = true;
+        return;
+    }
+    altKey = false;
+}
+
+function onKeyUp(e) {
+    altKey = false;
 }
 
 function addBorder(e) {
@@ -228,34 +234,6 @@ function removeBorder(e) {
         e.target.style.border = "3px solid #fff";
     }
 }
-
-function getSelectionTextValue(x, y) {
-    var selectedTextValue = ""; // get the current value, not a cached value
-
-    if (window.getSelection){ // all modern browsers and IE9+
-        selectedTextValue = window.getSelection().toString();
-    }
-    if (document.activeElement != null && (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT")){
-        let selectedTextInput = document.activeElement.value.substring(document.activeElement.selectionStart, document.activeElement.selectionEnd);
-        if (selectedTextInput != "") selectedTextValue = selectedTextInput;
-    }
-
-    selectedText = selectedTextValue.trim();
-}
-
-function sendSelectionTextAndCurrentTabUrl(){
-    // Send the selected text to background.js
-    if (selectedText != "") sendMessage("getSelectionText", selectedText);
-
-    // Send url of Google search within current site to background.js
-    const url = window.location.href;
-    const urlParts = url.replace('http://','').replace('https://','').split(/[/?#]/);
-    const domain = urlParts[0];
-    targetUrl = "https://www.google.com/search?q=site" + encodeUrl(":" + domain + " " + selectedText);
-    sendMessage("sendCurrentTabUrl", targetUrl);
-}
-
-browser.storage.onChanged.addListener(onStorageChanges);
 
 /// Encode a url
 function encodeUrl(url) {
