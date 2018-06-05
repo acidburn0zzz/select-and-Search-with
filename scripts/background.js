@@ -107,13 +107,14 @@ function init() {
         if (logToConsole) console.log("Setting the position of options in the context menu..");
         setOptionsMenu(values[2], flagInit);
         if (logToConsole) console.log("Setting favicon preferences..");
-        setFavicons(values[3], flagInit);
-        if (values[3].favicons === true) {
+        if (values[3].favicons === null) {
+            values[3].favicons = true;
             flagInitializeFavicons = true;
-        } else {
+        } else if (values[3].favicons === false) {
             flagInitializeFavicons = false;
         }
         if (logToConsole && flagInitializeFavicons) console.log("Favicons to be loaded.")
+        setFavicons(values[3], flagInit);
         checkForStorageSyncSupportAndLoadSearchEngines(flagInitializeFavicons);
     });
 

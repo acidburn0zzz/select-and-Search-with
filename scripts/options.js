@@ -375,22 +375,11 @@ function onGot(data) {
         tabActive.checked = false;
     }
 
-    if (data.gridMode === true) {
-        gridMode.checked = true;
-    } else { // Default value for gridMode is false
-        gridMode.checked = false;
-    }
-
     if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
 		optionsMenuLocation.value = data.optionsMenuLocation;
     } else {
-		// Keep this for users that are upgrading from an older Context Search version and to set a default value when it has not yet been set
-        if (data.optionsMenuAtTop === true) {
-			optionsMenuLocation.value = "top";
-		} else {
-			// Default value for optionsMenuLocation is bottom
-			optionsMenuLocation.value = "bottom";
-		}
+        // Default value for optionsMenuLocation is bottom
+		optionsMenuLocation.value = "bottom";
     }
 
     if (data.favicons === false) {
@@ -405,7 +394,7 @@ function onGot(data) {
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     browser.storage.sync.get(null).then(listSearchEngines);
-    browser.storage.local.get(["tabMode", "tabActive", "gridMode", "optionsMenuAtTop", "optionsMenuLocation", "favicons"]).then(onGot, onError);
+    browser.storage.local.get(["tabMode", "tabActive", "optionsMenuLocation", "favicons"]).then(onGot, onError);
 }
 
 function removeHyperlink(event) {
@@ -519,6 +508,7 @@ function translateContent(attribute, type) {
 }
 
 i18n();
+restoreOptions();
 
 /// WebExtension event handlers
 browser.runtime.onMessage.addListener(handleMessage);

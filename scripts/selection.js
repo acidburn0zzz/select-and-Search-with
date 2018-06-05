@@ -3,7 +3,7 @@ const base64ContextSearchIcon = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAA
 /// Global variables
 var searchEngines = {};
 var selectedText = "";
-var gridMode = false; // By default grid mode is turned off
+var shiftKey = false;
 
 /// Generic Error Handler
 function onError(error) {
@@ -11,12 +11,15 @@ function onError(error) {
 }
 
 document.addEventListener("keydown", onKeyDown);
+document.addEventListener("keyup", onKeyUp);
 document.addEventListener("click", handleShiftClickWithGrid);
 document.addEventListener("contextmenu", handleRightClickWithoutGrid);
 
 function handleShiftClickWithGrid(e) {
-    // Exit function if alt key isn't pressed whilst clicking
-    console.log("dodo");
+    // Exit function if shift key isn't pressed whilst clicking
+    if (!shiftKey) return;
+
+    e.preventDefault();
     let x = e.clientX;
     let y = e.clientY;
 
@@ -203,6 +206,11 @@ function onKeyDown(e) {
         let nav = document.getElementById("cs-grid");
         nav.style.display = "none";
     }
+    if (e.shiftKey) shiftKey = true;
+}
+
+function onKeyUp(e) {
+    shiftKey = false;
 }
 
 function addBorder(e) {
