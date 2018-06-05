@@ -51,7 +51,7 @@ browser.runtime.onMessage.addListener(function(message) {
             if (message.data) selection = message.data;
             break;
         case "reset":
-            resetSearchEngines();
+            resetSearchEngines(true);
             break;
         case "sendCurrentTabUrl":
             if (message.data) targetUrl = message.data;

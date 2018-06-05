@@ -5,8 +5,8 @@ Firefox add-on to search selected text in a web page using your favorite search 
 ## How does it work?
 <ul>
 <li>Select some text on a webpage</li>
-<li>Right click the selection</li>
-<li>A context menu appears, displaying a list of search engines chosen in the extension's preferences</li>
+<li>Right click (or Shift-click) at the end of the selection</li>
+<li>A context menu (or a grid of icons) appears, displaying the list of search engines chosen in the extension's preferences</li>
 <li>Click on the search engine with which you’d like to search for the selected text</li>
 </ul>
 
@@ -25,17 +25,29 @@ To manage your favorite search engines, you can go to the preferences page of Co
 <li>Click on the trash icon to remove a search engine from the list.</li>
 </ol>
 
+The 'Reset' button will re-load the default list of search engines and their associated favicons.
+
 You can also import a JSON file containing your own list of search engines. It is strongly recommended to export your customized list of search engines as a backup in case anything goes wrong.
 
-The main <b><em>structure of a JSON file</em></b> is as follows:
+## How to perform a search in the omnibox
 
+In the omnibox (or url address bar), type 'cs ' (without the quotes, and where cs stands for Context Search) followed by the keyword you have chosen for your seaarch engine in the extension's preferences, e.g. 'w ' (again without quotes) for Wikipedia, followed by your search term(s).
+
+Here is an example:
+cs w atom
+
+The above will search for the word 'atom' in Wikipedia.
+
+## The main structure of a JSON file containing the search engines
 ```javascript
 {
   "id": {
     "index": 0,
     "name": "search engine's name",
+    "keyword": "keyword to be used in an omnibox search",
     "url": "search engine query string (without the search terms)",
-    "show": takes the value true if the search engine is to be shown in the context menu or false if not
+    "show": "takes the value true if the search engine is to be shown in the context menu or false if not",
+    "base64": "a base 64 string representation of the search engine's favicon" 
   }
 }
 ```
@@ -46,23 +58,31 @@ Here is an example of a JSON file containing 3 search engines:
   "bing": {
     "index": 0,
     "name": "Bing",
+    "keyword": "b",
     "url": "https://www.bing.com/search?q=",
-    "show": true
+    "show": true,
+    "base64": ""
   },
   "google": {
     "index": 1,
     "name": "Google",
+    "keyword": "g",
     "url": "https://www.google.com/search?q=",
-    "show": true
+    "show": true,
+    "base64": ""
   },
   "yahoo": {
     "index": 2,
     "name": "Yahoo!",
+    "keyword": "y",
     "url": "https://search.yahoo.com/search?p=",
-    "show": true
+    "show": true,
+    "base64": ""
   }  
 }
 ```
+
+It is not required to provide the base 64 string representation of any search engine's favicon. This string will automatically be loaded for you.
 
 The Firefox add-on may be found here:
 https://addons.mozilla.org/firefox/addon/contextual-search/
