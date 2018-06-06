@@ -4,6 +4,7 @@ const base64ContextSearchIcon = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAA
 var searchEngines = {};
 var selectedText = "";
 var shiftKey = false;
+var range = null;
 
 /// Generic Error Handler
 function onError(error) {
@@ -19,11 +20,15 @@ function handleShiftClickWithGrid(e) {
     // Exit function if shift key isn't pressed whilst clicking
     if (!shiftKey) return;
 
-    e.preventDefault();
+    let sel = window.getSelection();
+    sel.empty();
+    sel.addRange(range);
+    let selectedTextValue = sel.toString();
+    selectedText = selectedTextValue.trim();
+
     let x = e.clientX;
     let y = e.clientY;
 
-    getSelectionTextValue();
     if (selectedText !== "") {
         if (e.target.tagName == "A") {
             // Do additional safety checks.
@@ -51,9 +56,9 @@ function handleRightClickWithoutGrid(e) {
 }
 
 function getSelectionTextValue() {
-    var selectedTextValue = ""; // get the current value, not a cached value
+    var selectedTextValue = ""; // Get the current value, not a cached value
 
-    if (window.getSelection){ // all modern browsers and IE9+
+    if (window.getSelection){ // All modern browsers and IE9+
         selectedTextValue = window.getSelection().toString();
     }
     if (document.activeElement != null && (document.activeElement.tagName === "TEXTAREA" || document.activeElement.tagName === "INPUT")){
@@ -201,16 +206,22 @@ function onLeave(e) {
 
 function onKeyDown(e) {
     console.log(e);
-    // If Escape key is pressed
-    if (e.keyCode === 27) {
+    // If Escape key is pressed e.keyCode === 27
+    if (e.escKey) {
         let nav = document.getElementById("cs-grid");
         nav.style.display = "none";
     }
-    if (e.shiftKey) shiftKey = true;
+    // If the Shift key is pressed
+    if (e.shiftKey) {
+        shiftKey = true;
+        let sel = window.getSelection();
+        range = sel.getRangeAt(0);
+    }
 }
 
 function onKeyUp(e) {
     shiftKey = false;
+    range = null;
 }
 
 function addBorder(e) {

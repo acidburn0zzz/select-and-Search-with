@@ -288,8 +288,8 @@ function readData() {
 
 // Save the list of search engines to be displayed in the context menu
 function saveOptions() {
-    let newSearchEngines = readData();
-    sendMessage("saveEngines", newSearchEngines);
+    searchEngines = readData();
+    sendMessage("saveEngines", searchEngines);
 }
 
 function testSearchEngine() {
@@ -402,22 +402,11 @@ function removeHyperlink(event) {
 }
 
 function saveToLocalDisk() {
-    browser.storage.sync.get().then(downloadSearchEngines, onError);
-}
-
-function downloadSearchEngines(searchEngines) {
     saveOptions();
-    let fileToDownload = new File([JSON.stringify(searchEngines, null, 2)], {
-        type: "text/json",
-        name: "searchEngines.json"
+    let blob = new Blob([JSON.stringify(searchEngines, null, 2)], {
+        type: "text/json"
     });
-    let a = document.createElement("a");
-    a.style.display = "none";
-    a.download = "searchEngines.json";
-    a.href = window.URL.createObjectURL(fileToDownload);
-    a.onclick = removeHyperlink;
-    document.body.appendChild(a);
-    a.click();
+    FileSaver.saveAs(blob, "searchEngines.json");
 }
 
 function handleFileUpload() {
