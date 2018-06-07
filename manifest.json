@@ -17,8 +17,7 @@
   "background": {
       "scripts": [
         "scripts/background.js",
-        "scripts/sort.js",
-        "scripts/FileSaver.js"
+        "scripts/sort.js"
       ]
   },
 

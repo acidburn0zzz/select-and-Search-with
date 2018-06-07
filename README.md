@@ -45,6 +45,7 @@ The above will search for the word 'atom' in Wikipedia.
     "index": 0,
     "name": "search engine's name",
     "keyword": "keyword to be used in an omnibox search",
+    "multitab": "takes the value true or false depending on whether this search engine should be included in a multi-search or not",
     "url": "search engine query string (without the search terms)",
     "show": "takes the value true if the search engine is to be shown in the context menu or false if not",
     "base64": "a base 64 string representation of the search engine's favicon" 
@@ -59,6 +60,7 @@ Here is an example of a JSON file containing 3 search engines:
     "index": 0,
     "name": "Bing",
     "keyword": "b",
+    "multitab": false,
     "url": "https://www.bing.com/search?q=",
     "show": true,
     "base64": ""
@@ -67,6 +69,7 @@ Here is an example of a JSON file containing 3 search engines:
     "index": 1,
     "name": "Google",
     "keyword": "g",
+    "multitab": false,
     "url": "https://www.google.com/search?q=",
     "show": true,
     "base64": ""
@@ -75,6 +78,7 @@ Here is an example of a JSON file containing 3 search engines:
     "index": 2,
     "name": "Yahoo!",
     "keyword": "y",
+    "multitab": false,
     "url": "https://search.yahoo.com/search?p=",
     "show": true,
     "base64": ""

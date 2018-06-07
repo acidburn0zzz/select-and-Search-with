@@ -403,10 +403,17 @@ function removeHyperlink(event) {
 
 function saveToLocalDisk() {
     saveOptions();
-    let blob = new Blob([JSON.stringify(searchEngines, null, 2)], {
-        type: "text/json"
+    let fileToDownload = new File([JSON.stringify(searchEngines, null, 2)], {
+        type: "text/json",
+        name: "searchEngines.json"
     });
-    FileSaver.saveAs(blob, "searchEngines.json");
+    let a = document.createElement("a");
+    a.style.display = "none";
+    a.download = "searchEngines.json";
+    a.href = window.URL.createObjectURL(fileToDownload);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 function handleFileUpload() {
