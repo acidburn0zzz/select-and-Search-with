@@ -79,6 +79,9 @@ browser.runtime.onMessage.addListener(function(message) {
         case "updateOptionsMenuLocation":
             setOptionsMenu(message.data, false);
 			break;
+		case "save":
+			browser.downloads.download({url: message.data, saveAs: true, filename: "searchengines.json"});
+			break;
 		default:
 			break;
 	}

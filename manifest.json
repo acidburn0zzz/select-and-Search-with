@@ -25,7 +25,8 @@
       "contextMenus",
       "storage",
       "tabs",
-      "notifications"
+      "notifications",
+      "downloads"
   ],
 
   "omnibox": { 
