@@ -1,5 +1,5 @@
 /// Debug
-let logToConsole = true;
+let logToConsole = false;
 
 /// Global variables
 let searchEngines = {};
@@ -103,7 +103,7 @@ function init() {
     Promise.all(arrayOfPromises).then(function(values) {
         if (logToConsole) console.log("The following options were retrieved from storage sync: ");
         for (let value of values) {
-            console.log("----------> " + JSON.stringify(value));
+            if (logToConsole) console.log("----------> " + JSON.stringify(value));
         }
         if (logToConsole) console.log("Setting tab mode..");
         setTabMode({"tabMode": values[0].tabMode, "tabActive": values[1].tabActive}, flagInit);
@@ -285,15 +285,15 @@ function addNewFavicon(domain, id) {
         function resolver(resolve, reject) {
 			let faviconUrl = getFaviconUrl + domain;
 			getBase64Image(id, faviconUrl).then(function (base64str) {
-				//if(logToConsole) console.log("base64 via now.sh is " + base64);
+				if (logToConsole) console.log("base64 via node is " + base64);
 				resolve({id: id, base64: base64str});
 			}, function(faviconNotFoundError) {
 				let faviconUrl = herokuAppUrl + domain + herokuAppUrlSuffix;
 				getBase64Image(id, faviconUrl).then(function (base64str) {
-					//if(logToConsole) console.log("base64 via besticon is " + base64);
+					if (logToConsole) console.log("base64 via besticon is " + base64);
 					resolve({id: id, base64: base64str});
 				}, function(bestIconNotFoundError){
-					//if(logToConsole) console.log("base64 via error is " + base64);
+					if (logToConsole) console.log("base64 via error is " + base64);
 					resolve({id: id, base64: base64ContextSearchIcon});
 				});
 			});
@@ -476,7 +476,7 @@ function processMultiTabSearch() {
                 multiTabSearchEngineUrls.push(getSearchEngineUrl(searchEngines[id].url, selection));
             }
         }
-       if(logToConsole) console.log(multiTabSearchEngineUrls);
+       if (logToConsole) console.log(multiTabSearchEngineUrls);
         browser.windows.create({
             titlePreface: windowTitle + '"' + selection + '"',
             url: multiTabSearchEngineUrls
