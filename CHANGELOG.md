@@ -1,4 +1,16 @@
-3.66 (not yet released)
+3.68
+=========
+* Fixes bugs #113, #114 and #115 encountered in version 3.66
+* Removes the Save Preferences button, which is no longer required, in the add-on's options page
+* Removes the grid mode in the add-on's options page, as the grid of icons can now be launched using Shift-click
+* Fixes "Export to local disk" in the add-ons options page: now produces a save dialog box
+* Updated README file on GitHub
+
+3.67
+====
+* Reverts back to version 3.65 due to major bugs with version 3.66.
+
+3.66 (major bugs - should be avoided)
 =========
 * Fix bug #97 again. Just need to set display to inline-block and add some padding to the fieldset container.
 * Improve CSS (set border-box on all elements so we can use 100% reliably)
@@ -15,7 +27,6 @@
 * Preferences page: use the localised title as tab title as well
 * Set browser_style to true to remove warning
 * Improve Dutch locale
-
 * Changed translation for favicons
 * Add German, Ukrainian and Russian locale
 

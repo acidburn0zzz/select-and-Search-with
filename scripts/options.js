@@ -397,10 +397,6 @@ function restoreOptions() {
     browser.storage.local.get(["tabMode", "tabActive", "optionsMenuLocation", "favicons"]).then(onGot, onError);
 }
 
-function removeHyperlink(event) {
-    document.body.removeChild(event.target);
-}
-
 function saveToLocalDisk() {
     saveOptions();
     let fileToDownload = new Blob([JSON.stringify(searchEngines, null, 2)], {

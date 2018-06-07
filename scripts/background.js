@@ -80,7 +80,7 @@ browser.runtime.onMessage.addListener(function(message) {
             setOptionsMenu(message.data, false);
 			break;
 		case "save":
-			browser.downloads.download({url: message.data, saveAs: true, filename: "searchengines.json"});
+			browser.downloads.download({url: message.data, saveAs: true, filename: "searchEngines.json"});
 			break;
 		default:
 			break;
