@@ -1,5 +1,5 @@
 /// Debug
-let logToConsole = false;
+let logToConsole = true;
 
 /// Global variables
 let searchEngines = {};
@@ -72,7 +72,10 @@ browser.runtime.onMessage.addListener(function(message) {
             break;
         case "updateGetFavicons":
 			setFavicons(message.data, false)
-			break;
+            break;
+        case "toggleGridMode":
+            setGrid(message.data);
+            break;
 		case "updateTabMode":
 			setTabMode(message.data, false);
 			break;
@@ -87,10 +90,22 @@ browser.runtime.onMessage.addListener(function(message) {
 	}
 });
 
+// Send a message to the content script (selection.js)
+function sendMessageToTabs(tabs, message) {
+    if (logToConsole) console.log("Tabs array is: ");
+    if (logToConsole) console.log(tabs);
+    for (let tab of tabs) {
+        browser.tabs.sendMessage(
+          tab.id,
+          message
+        );
+    }
+}
+
 /// Initialisation
 function init() {
     
-    let arrayOfOptions = ["tabMode", "tabActive", "optionsMenuLocation", "favicons"];
+    let arrayOfOptions = ["tabMode", "tabActive", "optionsMenuLocation", "favicons", "gridOff"];
     let arrayOfPromises = [];
     let flagInitializeFavicons = true;
     let flagInit = true;
@@ -108,6 +123,11 @@ function init() {
         if (logToConsole) console.log("Setting tab mode..");
         setTabMode({"tabMode": values[0].tabMode, "tabActive": values[1].tabActive}, flagInit);
         if (logToConsole) console.log("Setting the position of options in the context menu..");
+        if (values[4].gridOff === true || values[4].gridOff === false) {
+            setGrid(values[4]);
+        } else {
+            setGrid({"gridOff": false});
+        }
         setOptionsMenu(values[2], flagInit);
         if (logToConsole) console.log("Setting favicon preferences..");
         if (values[3].favicons === null) {
@@ -130,6 +150,21 @@ function resolvePromise(option) {
         }
     );
     return promise;
+}
+
+// Enable or disable the grid of icons
+function setGrid(data) {
+    if (logToConsole) {
+        if (data.gridOff) {
+            console.log("Disabling the grid of icons..");
+        } else {
+            console.log("Enabling the grid of icons..");
+        }
+    }
+    browser.tabs.query({
+        currentWindow: true,
+        active: true
+    }).then((tabs) => sendMessageToTabs(tabs, {"action": "setGridMode", "data": data}), onError);
 }
 
 // Store the default values for tab mode in storage local

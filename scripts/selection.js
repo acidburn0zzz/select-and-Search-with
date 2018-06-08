@@ -11,10 +11,32 @@ function onError(error) {
     console.log(`${error}`);
 }
 
-document.addEventListener("keydown", onKeyDown);
-document.addEventListener("keyup", onKeyUp);
-document.addEventListener("click", handleShiftClickWithGrid);
+// Right-click event listener
 document.addEventListener("contextmenu", handleRightClickWithoutGrid);
+
+/// Handle Incoming Messages
+// Listen for messages from the content or options script
+browser.runtime.onMessage.addListener(function(message) {
+    switch (message.action) {
+        case "setGridMode":
+            setGrid(message.data);
+            break;
+		default:
+			break;
+	}
+});
+
+function setGrid(data) {
+    if (data.gridOff) {
+        document.removeEventListener("keydown", onKeyDown);
+        document.removeEventListener("keyup", onKeyUp);
+        document.removeEventListener("click", handleShiftClickWithGrid);
+    } else {
+        document.addEventListener("keydown", onKeyDown);
+        document.addEventListener("keyup", onKeyUp);
+        document.addEventListener("click", handleShiftClickWithGrid);
+    }
+}
 
 function handleShiftClickWithGrid(e) {
     // Exit function if shift key isn't pressed whilst clicking
@@ -257,3 +279,5 @@ function isEncoded(uri) {
 function sendMessage(action, data){
     browser.runtime.sendMessage({"action": action, "data": data});
 }
+
+init();

@@ -14,9 +14,19 @@ const tabActive = document.getElementById("tabActive");
 const active = document.getElementById("active");
 const optionsMenuLocation = document.getElementById("optionsMenuLocation");
 const getFavicons = document.getElementById("getFavicons");
-let divSearchEngines = document.getElementById("searchEngines");
-let storageSyncCount = 0;
+const disableGrid = document.getElementById("disableGrid");
+const clearAll = document.getElementById("clearAll");
+const selectAll = document.getElementById("selectAll");
+const reset = document.getElementById("reset");
+const test = document.getElementById("test");
+const add = document.getElementById("add");
+const clear = document.getElementById("clear");
+const download = document.getElementById("download");
+const upload = document.getElementById("upload");
+var divSearchEngines = document.getElementById("searchEngines");
+var storageSyncCount = 0;
 var searchEngines = {};
+var gridOff = disableGrid.checked;
 
 // Translation variables
 const move = browser.i18n.getMessage("move");
@@ -27,6 +37,25 @@ const multipleSearchEnginesSearch = browser.i18n.getMessage("multipleSearchEngin
 const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
 const placeHolderKeyword = browser.i18n.getMessage("placeHolderKeyword");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
+
+/// WebExtension event handlers
+browser.runtime.onMessage.addListener(handleMessage);
+
+/// Event handlers
+document.addEventListener('DOMContentLoaded', restoreOptions);
+getFavicons.addEventListener("click", updateGetFavicons);
+disableGrid.addEventListener("clcik", toggleGridMode);
+tabMode.addEventListener("click", updateTabMode);
+tabActive.addEventListener("click", updateTabMode);
+optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
+clearAll.addEventListener("click", clearAll);
+selectAll.addEventListener("click", selectAll);
+reset.addEventListener("click", reset);
+test.addEventListener("click", testSearchEngine);
+add.addEventListener("click", addSearchEngine);
+clear.addEventListener("click", clear);
+download.addEventListener("click", saveToLocalDisk);
+upload.addEventListener("change", handleFileUpload);
 
 // Send a message to the background script
 function sendMessage(action, data) {
@@ -439,6 +468,11 @@ function updateGetFavicons() {
 	sendMessage("updateGetFavicons", {"favicons": fav});
 }
 
+function toggleGridMode() {
+    gridOff = disableGrid.checked;
+    sendMessage("toggleGridMode", {"gridOff": gridOff});
+}
+
 function updateOptionsMenuLocation() {
     let omat = optionsMenuLocation.value;
 	sendMessage("updateOptionsMenuLocation", {"optionsMenuLocation": omat});
@@ -496,21 +530,3 @@ function translateContent(attribute, type) {
 
 i18n();
 restoreOptions();
-
-/// WebExtension event handlers
-browser.runtime.onMessage.addListener(handleMessage);
-
-/// Event handlers
-getFavicons.addEventListener("click", updateGetFavicons);
-tabMode.addEventListener("click", updateTabMode);
-tabActive.addEventListener("click", updateTabMode);
-optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
-document.addEventListener('DOMContentLoaded', restoreOptions);
-document.getElementById("clearAll").addEventListener("click", clearAll);
-document.getElementById("selectAll").addEventListener("click", selectAll);
-document.getElementById("reset").addEventListener("click", reset);
-document.getElementById("test").addEventListener("click", testSearchEngine);
-document.getElementById("add").addEventListener("click", addSearchEngine);
-document.getElementById("clear").addEventListener("click", clear);
-document.getElementById("download").addEventListener("click", saveToLocalDisk);
-document.getElementById("upload").addEventListener("change", handleFileUpload);
