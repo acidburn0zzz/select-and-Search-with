@@ -15,7 +15,7 @@ function onError(error) {
 document.addEventListener("contextmenu", handleRightClickWithoutGrid);
 
 /// Handle Incoming Messages
-// Listen for messages from the content or options script
+// Listen for messages from the background script
 browser.runtime.onMessage.addListener(function(message) {
     switch (message.action) {
         case "setGridMode":
@@ -279,5 +279,3 @@ function isEncoded(uri) {
 function sendMessage(action, data){
     browser.runtime.sendMessage({"action": action, "data": data});
 }
-
-init();

@@ -92,6 +92,7 @@ browser.runtime.onMessage.addListener(function(message) {
 
 // Send a message to the content script (selection.js)
 function sendMessageToTabs(tabs, message) {
+    if (isEmpty(tabs)) return;
     if (logToConsole) console.log("Tabs array is: ");
     if (logToConsole) console.log(tabs);
     for (let tab of tabs) {
@@ -123,12 +124,14 @@ function init() {
         if (logToConsole) console.log("Setting tab mode..");
         setTabMode({"tabMode": values[0].tabMode, "tabActive": values[1].tabActive}, flagInit);
         if (logToConsole) console.log("Setting the position of options in the context menu..");
+        setOptionsMenu(values[2], flagInit);
+        if (logToConsole) console.log("Setting icon grid preferences..");
         if (values[4].gridOff === true || values[4].gridOff === false) {
+            if (logToConsole) console.log("GridOff = " + values[4].gridOff);
             setGrid(values[4]);
         } else {
             setGrid({"gridOff": false});
         }
-        setOptionsMenu(values[2], flagInit);
         if (logToConsole) console.log("Setting favicon preferences..");
         if (values[3].favicons === null) {
             values[3].favicons = true;
@@ -163,7 +166,7 @@ function setGrid(data) {
     }
     browser.tabs.query({
         currentWindow: true,
-        active: true
+        url: "*://*/*"
     }).then((tabs) => sendMessageToTabs(tabs, {"action": "setGridMode", "data": data}), onError);
 }
 

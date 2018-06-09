@@ -222,5 +222,13 @@
   "titleShowEngine": {
     "message": "Show this search engine in the context menu or grid",
     "description": ""
+  },
+  "header7": {
+    "message": "Disable grid of icons",
+    "description": ""
+  },
+  "disableGrid": {
+    "message": "Disable grid of icons",
+    "description": ""
   }
 }

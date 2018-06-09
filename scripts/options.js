@@ -15,14 +15,14 @@ const active = document.getElementById("active");
 const optionsMenuLocation = document.getElementById("optionsMenuLocation");
 const getFavicons = document.getElementById("getFavicons");
 const disableGrid = document.getElementById("disableGrid");
-const clearAll = document.getElementById("clearAll");
-const selectAll = document.getElementById("selectAll");
-const reset = document.getElementById("reset");
-const test = document.getElementById("test");
-const add = document.getElementById("add");
-const clear = document.getElementById("clear");
-const download = document.getElementById("download");
-const upload = document.getElementById("upload");
+const btnClearAll = document.getElementById("clearAll");
+const btnSelectAll = document.getElementById("selectAll");
+const btnReset = document.getElementById("reset");
+const btnTest = document.getElementById("test");
+const btnAdd = document.getElementById("add");
+const btnClear = document.getElementById("clear");
+const btnDownload = document.getElementById("download");
+const btnUpload = document.getElementById("upload");
 var divSearchEngines = document.getElementById("searchEngines");
 var storageSyncCount = 0;
 var searchEngines = {};
@@ -48,14 +48,14 @@ disableGrid.addEventListener("clcik", toggleGridMode);
 tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
 optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
-clearAll.addEventListener("click", clearAll);
-selectAll.addEventListener("click", selectAll);
-reset.addEventListener("click", reset);
-test.addEventListener("click", testSearchEngine);
-add.addEventListener("click", addSearchEngine);
-clear.addEventListener("click", clear);
-download.addEventListener("click", saveToLocalDisk);
-upload.addEventListener("change", handleFileUpload);
+btnClearAll.addEventListener("click", clearAll);
+btnSelectAll.addEventListener("click", selectAll);
+btnReset.addEventListener("click", reset);
+btnTest.addEventListener("click", testSearchEngine);
+btnAdd.addEventListener("click", addSearchEngine);
+btnClear.addEventListener("click", clear);
+btnDownload.addEventListener("click", saveToLocalDisk);
+btnUpload.addEventListener("change", handleFileUpload);
 
 // Send a message to the background script
 function sendMessage(action, data) {
@@ -404,6 +404,13 @@ function onGot(data) {
         tabActive.checked = false;
     }
 
+    if (data.gridOff === true) {
+        disableGrid.checked = true;
+    } else {
+        // By default, the grid of icons is enabled
+        disable.checked = false;
+    }
+
     if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
 		optionsMenuLocation.value = data.optionsMenuLocation;
     } else {
@@ -423,7 +430,7 @@ function onGot(data) {
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
     browser.storage.sync.get(null).then(listSearchEngines);
-    browser.storage.local.get(["tabMode", "tabActive", "optionsMenuLocation", "favicons"]).then(onGot, onError);
+    browser.storage.local.get(["tabMode", "tabActive", "optionsMenuLocation", "favicons", "gridOff"]).then(onGot, onError);
 }
 
 function saveToLocalDisk() {

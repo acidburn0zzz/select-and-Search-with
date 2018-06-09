@@ -226,5 +226,13 @@
   "titleShowEngine": {
     "message": "Afficher ce moteur de recherche dans le menu contextuel ou dans la grille d'icônes",
     "description": ""
+  },
+  "header7": {
+    "message": "Désactiver la grille d'icônes",
+    "description": ""
+  },
+  "disableGrid": {
+    "message": "Désactiver la grille d'icônes",
+    "description": ""
   }
 }
