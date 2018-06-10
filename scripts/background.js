@@ -111,27 +111,22 @@ function init() {
             "tabMode": "openNewTab",
             "tabActive": false,
             "optionsMenuLocation": "bottom",
-            "favicons": true,
-            "gridOff": false
+            "gridOff": false,
+            "favicons": true
         }
-    };
+    }
 
-    checkForStorageSyncSupportAndLoadSearchEngines();
-
-    browser.storage.sync.get("options").then(function(data){
+    browser.storage.sync.get(null).then(function(data){
         let options = data.options;
-        if (!Object.keys(options).length > 0) {
-            options = defaultOptions;
-        } else {
-            if (logToConsole) {
-                console.log("The following options were retrieved from storage sync..");
-                console.log(data);
-                console.log(options);
-                for (let option in options){
-                    console.log(option + " = " + options[option]);
-                }
-            }
+        if (options === undefined) options = defaultOptions;
+        delete data.options;
+        if (logToConsole) {
+            console.log("The following data was retrieved from storage sync..");
+            console.log(data);
+            console.log(options);
         }
+
+        loadSearchEngines(data);
 
         if (logToConsole) console.log("Setting tab mode..");
         if (!(options.tabMode === "openNewTab" || options.tabMode === "sameTab" || options.tabMode === "openNewWindow")) {
@@ -170,7 +165,7 @@ function init() {
 }
 
 function saveOptions(data) {
-    browser.storage.sync.set({"options": data});
+    browser.storage.sync.set(data);
 }
 
 // Enable or disable the grid of icons
@@ -213,42 +208,24 @@ function setTabMode(data) {
 
 function setOptionsMenu(data) {
     contextsearch_optionsMenuLocation = data.optionsMenuLocation;
-    browser.storage.sync.set({"options": data}).then(rebuildContextMenu, onError);
+    browser.storage.sync.set(data).then(rebuildContextMenu, onError);
 }
 
 function setFavicons(data) {
 	contextsearch_getFavicons = data.favicons;
-    browser.storage.sync.set({"options": data}).then(initializeFavicons, onError);
+    browser.storage.sync.set(data).then(initializeFavicons, onError);
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
-function checkForStorageSyncSupportAndLoadSearchEngines() {
+function loadSearchEngines(data) {
     if (logToConsole) console.log("Loading the search engines from storage sync..");
-    browser.storage.sync.get().then(onGot, onNone);
-
-    // Load search engines if they're not already loaded in storage sync
-	function onGot(data) {
-        if (data.options) delete data.options;
-        if (!Object.keys(data).length > 0) {
-            if (logToConsole) console.log("Storage sync is empty -> loading default list of search engines.");
-            resetSearchEngines();
-        } else {
-			if (logToConsole) console.log("Sorting search engines by index.");
-            searchEngines = sortByIndex(data);
-            initializeFavicons();
-        }
-	}
-
-	function onNone(error) {
-		if (logToConsole) console.log("Error, Firefox ESR?");
-		
+    if (isEmpty(data)) {
+        if (logToConsole) console.log("Storage sync is empty -> loading default list of search engines.");
         resetSearchEngines();
-		if (error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1) {
-			notify(notifyEnableStorageSync);
-		} else {
-            onError(error);
-        }
-	}
+    } else {
+        if (logToConsole) console.log("Sorting search engines by index.");
+        searchEngines = sortByIndex(data);
+    }
 }
 
 function resetSearchEngines(){
@@ -264,9 +241,6 @@ function loadDefaultSearchEngines(jsonFile) {
     xhr.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             searchEngines = JSON.parse(this.responseText);
-            
-            // Fetch missing favicon urls and generate corresponding base64 images
-            initializeFavicons();
         }
     };
     xhr.send();
@@ -296,7 +270,7 @@ function initializeFavicons() {
     
     Promise.all(arrayOfPromises).then(function(values) { // values is an array of {id:, base64:}
         if (logToConsole) console.log("We're no longer fetching favicons..");
-        if (logToConsole) console.log(values);
+        if (values === undefined) return;
         for (let value of values) {
 			if(logToConsole) console.log("================================================");
             if(logToConsole) console.log("id is " + value.id);
@@ -320,16 +294,16 @@ function addNewFavicon(domain, id) {
         function resolver(resolve, reject) {
 			let faviconUrl = getFaviconUrl + domain;
 			getBase64Image(id, faviconUrl).then(function (base64str) {
-				if (logToConsole) console.log("base64 via node is " + base64);
-				resolve({id: id, base64: base64str});
+				//if (logToConsole) console.log("base64 via node is " + base64str);
+				resolve({"id": id, "base64": base64str});
 			}, function(faviconNotFoundError) {
 				let faviconUrl = herokuAppUrl + domain + herokuAppUrlSuffix;
 				getBase64Image(id, faviconUrl).then(function (base64str) {
-					if (logToConsole) console.log("base64 via besticon is " + base64);
-					resolve({id: id, base64: base64str});
+					//if (logToConsole) console.log("base64 via besticon is " + base64str);
+					resolve({"id": id, "base64": base64str});
 				}, function(bestIconNotFoundError){
-					if (logToConsole) console.log("base64 via error is " + base64);
-					resolve({id: id, base64: base64ContextSearchIcon});
+					//if (logToConsole) console.log("base64 via error is " + base64str);
+					resolve({"id": id, "base64": base64ContextSearchIcon});
 				});
 			});
 		}
@@ -692,7 +666,11 @@ function testSearchEngine(engineData){
 
 /// Generic Error Handler
 function onError(error) {
-    console.error(`${error}`);
+    if (error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1) {
+        notify(notifyEnableStorageSync);
+    } else {
+        console.error(`${error}`);
+    }
 }
 
 /// Encode a url
