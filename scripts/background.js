@@ -105,54 +105,72 @@ function sendMessageToTabs(tabs, message) {
 
 /// Initialisation
 function init() {
-    
-    let arrayOfOptions = ["tabMode", "tabActive", "optionsMenuLocation", "favicons", "gridOff"];
-    let arrayOfPromises = [];
-    let flagInitializeFavicons = true;
-    let flagInit = true;
 
-    for (let option of arrayOfOptions) {
-		if (logToConsole) console.log("Getting option " + option + " from local storage..");
-		arrayOfPromises.push(resolvePromise(option));
-    }
-
-    Promise.all(arrayOfPromises).then(function(values) {
-        if (logToConsole) console.log("The following options were retrieved from storage sync: ");
-        for (let value of values) {
-            if (logToConsole) console.log("----------> " + JSON.stringify(value));
+    let defaultOptions = {
+        "options": {
+            "tabMode": "openNewTab",
+            "tabActive": false,
+            "optionsMenuLocation": "bottom",
+            "favicons": true,
+            "gridOff": false
         }
+    };
+    let finalOptions = defaultOptions;
+
+    browser.storage.sync.get("options").then(function(data){
+        let options = data.options;
+        if (!Object.keys(options).length > 0) {
+            options = defaultOptions;
+        } else {
+            if (logToConsole) {
+                console.log("The following options were retrieved from storage sync..");
+                console.log(data);
+                console.log(options);
+                for (let option in options){
+                    console.log(option + " = " + options[option]);
+                }
+            }
+        }
+
         if (logToConsole) console.log("Setting tab mode..");
-        setTabMode({"tabMode": values[0].tabMode, "tabActive": values[1].tabActive}, flagInit);
-        if (logToConsole) console.log("Setting the position of options in the context menu..");
-        setOptionsMenu(values[2], flagInit);
-        if (logToConsole) console.log("Setting icon grid preferences..");
-        if (values[4].gridOff === true || values[4].gridOff === false) {
-            if (logToConsole) console.log("GridOff = " + values[4].gridOff);
-            setGrid(values[4]);
-        } else {
-            setGrid({"gridOff": false});
+        if (!(options.tabMode === "openNewTab" || options.tabMode === "sameTab" || options.tabMode === "openNewWindow")) {
+            // By default, search results will be presented in a new tab
+            options.tabMode = "openNewTab";
         }
-        if (logToConsole) console.log("Setting favicon preferences..");
-        if (values[3].favicons === null) {
-            values[3].favicons = true;
-            flagInitializeFavicons = true;
-        } else if (values[3].favicons === false) {
-            flagInitializeFavicons = false;
+        if (!(options.tabActive === true || options.tabActive === false)){
+            // By default the search is performed in the background, i.e. the new tab isn't made active
+            options.tabActive = false;
         }
-        if (logToConsole && flagInitializeFavicons) console.log("Favicons to be loaded.")
-        setFavicons(values[3], flagInit);
-        checkForStorageSyncSupportAndLoadSearchEngines(flagInitializeFavicons);
-    });
+        setTabMode(options);
 
+        if (logToConsole) console.log("Setting the position of options in the context menu..");
+        if (!(options.optionsMenuLocation === "top" || options.optionsMenuLocation === "bottom" || options.optionsMenuLocation === "none")) {
+            // By default, the options menu is located at the bottom of the context menu
+            options.optionsMenuLocation = "bottom";
+        }
+        setOptionsMenu(options);
+
+        if (logToConsole) console.log("Setting grid of icons preference..");
+        if (!(options.gridOff === false || options.gridOff === true)) {
+            // By default, the grid of icons is enabled
+            options.gridOff = false;
+        }
+        setGrid(options);
+
+        if (logToConsole) console.log("Setting favicons preference..");
+        if (!(options.favicons === false || options.favicons === true)) {
+            // By default, favicons should be displayed
+            options.favicons = true;
+        }
+        if (logToConsole) console.log("Favicons should be displayed.")
+        setFavicons(options);
+        checkForStorageSyncSupportAndLoadSearchEngines(true);
+
+    }, onError);
 }
 
-function resolvePromise(option) {
-	let promise = new Promise(
-        function resolver(resolve, reject) {
-            browser.storage.local.get(option).then(resolve, reject);
-        }
-    );
-    return promise;
+function saveOptions(data) {
+    browser.storage.sync.set({"options": data});
 }
 
 // Enable or disable the grid of icons
@@ -164,6 +182,7 @@ function setGrid(data) {
             console.log("Enabling the grid of icons..");
         }
     }
+    saveOptions(data);
     browser.tabs.query({
         currentWindow: true,
         url: "*://*/*"
@@ -171,10 +190,7 @@ function setGrid(data) {
 }
 
 // Store the default values for tab mode in storage local
-function setTabMode(data, flagInit) {
-    if (!(Object.keys(data).length > 0) || data.tabMode == null || data.tabActive == null) {
-        data = {"tabMode":"openNewTab", "tabActive": false};
-    }
+function setTabMode(data) {
     contextsearch_makeNewTabOrWindowActive = data.tabActive;
     switch (data.tabMode) {
         case "openNewTab":
@@ -192,28 +208,17 @@ function setTabMode(data, flagInit) {
         default:
             break;
     }
-    if (!flagInit) browser.storage.local.set(data); // In-memory objects should be updated already.
+    saveOptions(data);
 }
 
-function setOptionsMenu(data, flagInit) {
-    if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
-		contextsearch_optionsMenuLocation = data.optionsMenuLocation;
-    } else {
-        // Set default to "bottom" if no values are set for optionsMenuLocation
-        contextsearch_optionsMenuLocation = "bottom";
-        data = {"optionsMenuLocation": "bottom"};
-    }
-    if (!flagInit) browser.storage.local.set(data).then(rebuildContextMenu, onError);
+function setOptionsMenu(data) {
+    contextsearch_optionsMenuLocation = data.optionsMenuLocation;
+    browser.storage.sync.set({"options": data}).then(rebuildContextMenu, onError);
 }
 
-function setFavicons(data, flagInit) {
-	if (data.favicons === true || data.favicons === false) {
-		contextsearch_getFavicons = data.favicons;
-	} else {
-        contextsearch_getFavicons = true; // Favicons should be dsiplayed in the context menu by default.
-        data = {"favicons": true};
-    }
-    if (!flagInit) browser.storage.local.set(data).then(initializeFavicons, onError);
+function setFavicons(data) {
+	contextsearch_getFavicons = data.favicons;
+    sbrowser.storage.sync.set({"options": data}).then(initializeFavicons, onError);
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.

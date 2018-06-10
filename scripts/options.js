@@ -379,7 +379,9 @@ function clear() {
 }
 
 function onGot(data) {
-    switch (data.tabMode) {
+    listSearchEngines();
+    let options = data.options;
+    switch (options.tabMode) {
         case "openNewTab":
             openNewTab.checked = true;
             active.style.visibility = "visible";
@@ -398,27 +400,27 @@ function onGot(data) {
             break;
     }
 
-    if (data.tabActive === true) {
+    if (options.tabActive === true) {
         tabActive.checked = true;
     } else { // Default value for tabActive is false
         tabActive.checked = false;
     }
 
-    if (data.gridOff === true) {
+    if (options.gridOff === true) {
         disableGrid.checked = true;
     } else {
         // By default, the grid of icons is enabled
-        disable.checked = false;
+        disableGrid.checked = false;
     }
 
-    if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
-		optionsMenuLocation.value = data.optionsMenuLocation;
+    if (options.optionsMenuLocation === "top" || options.optionsMenuLocation === "bottom" || options.optionsMenuLocation === "none") {
+		optionsMenuLocation.value = options.optionsMenuLocation;
     } else {
         // Default value for optionsMenuLocation is bottom
 		optionsMenuLocation.value = "bottom";
     }
 
-    if (data.favicons === false) {
+    if (options.favicons === false) {
         getFavicons.checked = false;
     } else {
         // Default setting is to fetch favicons for context menu list
@@ -429,8 +431,7 @@ function onGot(data) {
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
-    browser.storage.sync.get(null).then(listSearchEngines);
-    browser.storage.local.get(["tabMode", "tabActive", "optionsMenuLocation", "favicons", "gridOff"]).then(onGot, onError);
+    browser.storage.sync.get(null).then(onGot, onError);
 }
 
 function saveToLocalDisk() {
