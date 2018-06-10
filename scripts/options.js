@@ -379,8 +379,9 @@ function clear() {
 }
 
 function onGot(data) {
-    listSearchEngines();
     let options = data.options;
+    delete data.options;
+    listSearchEngines(data);
     switch (options.tabMode) {
         case "openNewTab":
             openNewTab.checked = true;

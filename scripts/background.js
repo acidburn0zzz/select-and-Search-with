@@ -115,7 +115,8 @@ function init() {
             "gridOff": false
         }
     };
-    let finalOptions = defaultOptions;
+
+    checkForStorageSyncSupportAndLoadSearchEngines();
 
     browser.storage.sync.get("options").then(function(data){
         let options = data.options;
@@ -164,7 +165,6 @@ function init() {
         }
         if (logToConsole) console.log("Favicons should be displayed.")
         setFavicons(options);
-        checkForStorageSyncSupportAndLoadSearchEngines(true);
 
     }, onError);
 }
@@ -218,30 +218,31 @@ function setOptionsMenu(data) {
 
 function setFavicons(data) {
 	contextsearch_getFavicons = data.favicons;
-    sbrowser.storage.sync.set({"options": data}).then(initializeFavicons, onError);
+    browser.storage.sync.set({"options": data}).then(initializeFavicons, onError);
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
-function checkForStorageSyncSupportAndLoadSearchEngines(flagInitializeFavicons) {
+function checkForStorageSyncSupportAndLoadSearchEngines() {
     if (logToConsole) console.log("Loading the search engines from storage sync..");
     browser.storage.sync.get().then(onGot, onNone);
 
     // Load search engines if they're not already loaded in storage sync
 	function onGot(data) {
+        if (data.options) delete data.options;
         if (!Object.keys(data).length > 0) {
             if (logToConsole) console.log("Storage sync is empty -> loading default list of search engines.");
-            resetSearchEngines(flagInitializeFavicons);
+            resetSearchEngines();
         } else {
 			if (logToConsole) console.log("Sorting search engines by index.");
             searchEngines = sortByIndex(data);
-            if (flagInitializeFavicons) initializeFavicons();
+            initializeFavicons();
         }
 	}
 
 	function onNone(error) {
 		if (logToConsole) console.log("Error, Firefox ESR?");
 		
-        resetSearchEngines(flagInitializeFavicons);
+        resetSearchEngines();
 		if (error.toString().indexOf("Please set webextensions.storage.sync.enabled to true in about:config") > -1) {
 			notify(notifyEnableStorageSync);
 		} else {
@@ -250,12 +251,12 @@ function checkForStorageSyncSupportAndLoadSearchEngines(flagInitializeFavicons) 
 	}
 }
 
-function resetSearchEngines(flagInitializeFavicons){
-	loadDefaultSearchEngines(DEFAULT_JSON, flagInitializeFavicons);
+function resetSearchEngines(){
+	loadDefaultSearchEngines(DEFAULT_JSON);
 }
 
 /// Load default list of search engines
-function loadDefaultSearchEngines(jsonFile, flagInitializeFavicons) {
+function loadDefaultSearchEngines(jsonFile) {
     let xhr = new XMLHttpRequest();
     xhr.open("GET", jsonFile, true);
     xhr.setRequestHeader("Content-type", "application/json");
@@ -264,18 +265,8 @@ function loadDefaultSearchEngines(jsonFile, flagInitializeFavicons) {
         if (this.readyState == 4 && this.status == 200) {
             searchEngines = JSON.parse(this.responseText);
             
-			// First set base64 favicons to an empty string to force a reset
-			for (let id in searchEngines) {
-				searchEngines[id]["base64"] = null;
-			}
-            
             // Fetch missing favicon urls and generate corresponding base64 images
-            if (logToConsole) console.log("flagInitializeFavicons is set to " + flagInitializeFavicons);
-            if (flagInitializeFavicons) {
-                initializeFavicons();
-            } else {
-                saveSearchEngines(searchEngines, true);
-            }
+            initializeFavicons();
         }
     };
     xhr.send();
@@ -305,6 +296,7 @@ function initializeFavicons() {
     
     Promise.all(arrayOfPromises).then(function(values) { // values is an array of {id:, base64:}
         if (logToConsole) console.log("We're no longer fetching favicons..");
+        if (logToConsole) console.log(values);
         for (let value of values) {
 			if(logToConsole) console.log("================================================");
             if(logToConsole) console.log("id is " + value.id);
