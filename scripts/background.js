@@ -51,7 +51,7 @@ browser.runtime.onMessage.addListener(function(message) {
             if (message.data) selection = message.data;
             break;
         case "reset":
-            resetSearchEngines(true);
+            loadDefaultSearchEngines(DEFAULT_JSON);
             break;
         case "sendCurrentTabUrl":
             if (message.data) targetUrl = message.data;
@@ -71,7 +71,8 @@ browser.runtime.onMessage.addListener(function(message) {
             }, onError);
             break;
         case "updateGetFavicons":
-			setFavicons(message.data, false)
+            setFavicons(message.data, false)
+            initializeFavicons();
             break;
         case "toggleGridMode":
             setGrid(message.data);
@@ -81,6 +82,7 @@ browser.runtime.onMessage.addListener(function(message) {
 			break;
         case "updateOptionsMenuLocation":
             setOptionsMenu(message.data, false);
+            rebuildContextMenu();
 			break;
 		case "save":
 			browser.downloads.download({url: message.data, saveAs: true, filename: "searchEngines.json"});
@@ -116,134 +118,181 @@ function init() {
         }
     }
 
+    if (logToConsole) console.log("Loading the options and search engines from storage sync..");
     browser.storage.sync.get(null).then(function(data){
-        let options = data.options;
-        if (options === undefined) options = defaultOptions;
+        
+        var options = data.options;
+        if (options === undefined) options = defaultOptions.options;
         delete data.options;
         if (logToConsole) {
             console.log("The following data was retrieved from storage sync..");
-            console.log(data);
-            console.log(options);
+            console.log("Options: \n" + JSON.stringify(options));
+            console.log("Search engines: \n" + JSON.stringify(data));
         }
-
-        loadSearchEngines(data);
-
-        if (logToConsole) console.log("Setting tab mode..");
-        if (!(options.tabMode === "openNewTab" || options.tabMode === "sameTab" || options.tabMode === "openNewWindow")) {
-            // By default, search results will be presented in a new tab
-            options.tabMode = "openNewTab";
+        if (isEmpty(data)) {
+            if (logToConsole) console.log("Storage sync is empty -> loading default list of search engines.");
+            loadDefaultSearchEngines(DEFAULT_JSON).then(setOptions(options), onError);
+        } else {
+            if (logToConsole) console.log("Sorting search engines by index...");
+            searchEngines = sortByIndex(data);
+            if (logToConsole) console.log("Search engines: \n" + JSON.stringify(searchEngines));
+            setOptions(options);
         }
-        if (!(options.tabActive === true || options.tabActive === false)){
-            // By default the search is performed in the background, i.e. the new tab isn't made active
-            options.tabActive = false;
-        }
-        setTabMode(options);
-
-        if (logToConsole) console.log("Setting the position of options in the context menu..");
-        if (!(options.optionsMenuLocation === "top" || options.optionsMenuLocation === "bottom" || options.optionsMenuLocation === "none")) {
-            // By default, the options menu is located at the bottom of the context menu
-            options.optionsMenuLocation = "bottom";
-        }
-        setOptionsMenu(options);
-
-        if (logToConsole) console.log("Setting grid of icons preference..");
-        if (!(options.gridOff === false || options.gridOff === true)) {
-            // By default, the grid of icons is enabled
-            options.gridOff = false;
-        }
-        setGrid(options);
-
-        if (logToConsole) console.log("Setting favicons preference..");
-        if (!(options.favicons === false || options.favicons === true)) {
-            // By default, favicons should be displayed
-            options.favicons = true;
-        }
-        if (logToConsole) console.log("Favicons should be displayed.")
-        setFavicons(options);
 
     }, onError);
 }
 
+function setOptions(options) {
+
+    let arrayOfPromises = [];
+    arrayOfPromises = [setTabMode(options), setOptionsMenu(options), setGrid(options), setFavicons(options)];
+
+    if (logToConsole) console.log("Setting tab mode..");
+    if (!(options.tabMode === "openNewTab" || options.tabMode === "sameTab" || options.tabMode === "openNewWindow")) {
+        // By default, search results will be presented in a new tab
+        options.tabMode = "openNewTab";
+    }
+    if (!(options.tabActive === true || options.tabActive === false)){
+        // By default the search is performed in the background, i.e. the new tab isn't made active
+        options.tabActive = false;
+    }
+
+    if (logToConsole) console.log("Setting the position of options in the context menu..");
+    if (!(options.optionsMenuLocation === "top" || options.optionsMenuLocation === "bottom" || options.optionsMenuLocation === "none")) {
+        // By default, the options menu is located at the bottom of the context menu
+        options.optionsMenuLocation = "bottom";
+    }
+
+    if (logToConsole) console.log("Setting grid of icons preference..");
+    if (!(options.gridOff === false || options.gridOff === true)) {
+        // By default, the grid of icons is enabled
+        options.gridOff = false;
+    }
+
+    if (logToConsole) console.log("Setting favicons preference..");
+    if (!(options.favicons === false || options.favicons === true)) {
+        // By default, favicons should be displayed
+        options.favicons = true;
+    }
+    if (logToConsole) console.log("Favicons should be displayed.");
+
+    Promise.all(arrayOfPromises).then(function(){
+        initializeFavicons();
+        rebuildContextMenu();
+    }, onError);
+
+    /*
+    setTabMode(options).then(function(){
+        setOptionsMenu(options).then(function(){
+            setGrid(options).then(function(){
+                setFavicons(options).then(function(){
+                    initializeFavicons();
+                    rebuildContextMenu();
+                }, onError);
+            }, onError);
+        }, onError);
+    }, onError);
+    */
+}
+
 function saveOptions(data) {
-    browser.storage.sync.set(data);
+    let promise = new Promise(
+        function resolver(resolve, reject) {
+            browser.storage.sync.set({"options": data}).then(resolve, reject);
+        }
+    );
+    return promise;
 }
 
 // Enable or disable the grid of icons
 function setGrid(data) {
-    if (logToConsole) {
-        if (data.gridOff) {
-            console.log("Disabling the grid of icons..");
-        } else {
-            console.log("Enabling the grid of icons..");
+    let promise = new Promise(
+        function resolver(resolve, reject) {
+            if (logToConsole) {
+                if (data.gridOff) {
+                    console.log("Disabling the grid of icons..");
+                } else {
+                    console.log("Enabling the grid of icons..");
+                }
+            }
+            browser.tabs.query({
+                currentWindow: true,
+                url: "*://*/*"
+            }).then((tabs) => sendMessageToTabs(tabs, {"action": "setGridMode", "data": data}), onError);
+            saveOptions(data).then(resolve, reject);
         }
-    }
-    saveOptions(data);
-    browser.tabs.query({
-        currentWindow: true,
-        url: "*://*/*"
-    }).then((tabs) => sendMessageToTabs(tabs, {"action": "setGridMode", "data": data}), onError);
+    );
+    return promise;
 }
 
 // Store the default values for tab mode in storage local
 function setTabMode(data) {
-    contextsearch_makeNewTabOrWindowActive = data.tabActive;
-    switch (data.tabMode) {
-        case "openNewTab":
-            contextsearch_openSearchResultsInNewTab = true;
-            contextsearch_openSearchResultsInNewWindow = false;
-            break;
-        case "sameTab":
-            contextsearch_openSearchResultsInNewTab = false;
-            contextsearch_openSearchResultsInNewWindow = false;
-            break;
-        case "openNewWindow":
-            contextsearch_openSearchResultsInNewWindow = true;
-            contextsearch_openSearchResultsInNewTab = false;
-            break;
-        default:
-            break;
-    }
-    saveOptions(data);
+    let promise = new Promise(
+        function resolver(resolve, reject) {
+            contextsearch_makeNewTabOrWindowActive = data.tabActive;
+            switch (data.tabMode) {
+                case "openNewTab":
+                    contextsearch_openSearchResultsInNewTab = true;
+                    contextsearch_openSearchResultsInNewWindow = false;
+                    break;
+                case "sameTab":
+                    contextsearch_openSearchResultsInNewTab = false;
+                    contextsearch_openSearchResultsInNewWindow = false;
+                    break;
+                case "openNewWindow":
+                    contextsearch_openSearchResultsInNewWindow = true;
+                    contextsearch_openSearchResultsInNewTab = false;
+                    break;
+                default:
+                    break;
+            }
+            saveOptions(data).then(resolve, reject);
+        }
+    );
+    return promise;
 }
 
 function setOptionsMenu(data) {
-    contextsearch_optionsMenuLocation = data.optionsMenuLocation;
-    browser.storage.sync.set(data).then(rebuildContextMenu, onError);
+    let promise = new Promise(
+        function resolver(resolve, reject) {
+            contextsearch_optionsMenuLocation = data.optionsMenuLocation;
+            saveOptions(data).then(resolve, reject);
+        }
+    );
+    return promise;
 }
 
 function setFavicons(data) {
-	contextsearch_getFavicons = data.favicons;
-    browser.storage.sync.set(data).then(initializeFavicons, onError);
+    let promise = new Promise(
+        function resolver(resolve, reject) {
+            contextsearch_getFavicons = data.favicons;
+            saveOptions(data).then(resolve, reject);
+        }
+    );
+    return promise;
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
-function loadSearchEngines(data) {
-    if (logToConsole) console.log("Loading the search engines from storage sync..");
-    if (isEmpty(data)) {
-        if (logToConsole) console.log("Storage sync is empty -> loading default list of search engines.");
-        resetSearchEngines();
-    } else {
-        if (logToConsole) console.log("Sorting search engines by index.");
-        searchEngines = sortByIndex(data);
-    }
-}
-
-function resetSearchEngines(){
-	loadDefaultSearchEngines(DEFAULT_JSON);
-}
-
 /// Load default list of search engines
 function loadDefaultSearchEngines(jsonFile) {
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", jsonFile, true);
-    xhr.setRequestHeader("Content-type", "application/json");
-    xhr.overrideMimeType("application/json");
-    xhr.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            searchEngines = JSON.parse(this.responseText);
+    let promise = new Promise(
+        function resolver(resolve, reject) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", jsonFile, true);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.overrideMimeType("application/json");
+            xhr.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    searchEngines = JSON.parse(this.responseText);
+                    if (logToConsole) console.log("Search engines: \n" + searchEngines);
+                }
+                initializeFavicons();
+                saveSearchEngines(searchEngines, true);
+            };
+            xhr.send();
         }
-    };
-    xhr.send();
+    );
+    return promise;
 }
 
 function saveSearchEngines(searchEnginesToSave, blnNotify){
@@ -256,7 +305,7 @@ function saveSearchEngines(searchEnginesToSave, blnNotify){
 /// Get and store favicon urls and base64 images
 function initializeFavicons() {
     if (logToConsole) console.log("Fetching favicons..");
-    if (logToConsole) console.log(searchEngines);
+    if (logToConsole) console.log("Search engines: \n" + JSON.stringify(searchEngines));
 
 	let arrayOfPromises = new Array();
 	
@@ -280,10 +329,8 @@ function initializeFavicons() {
 			searchEngines[value.id]["base64"] = value.base64;
 		}
         
-        if (logToConsole) console.log("Search engines list now is: ");
-        if (logToConsole) console.log(searchEngines);
+        if (logToConsole) console.log("Search engines: \n" + JSON.stringify(searchEngines));
         saveSearchEngines(searchEngines, false);
-		
 	});
 }
 
