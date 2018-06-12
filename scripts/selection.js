@@ -22,6 +22,7 @@ document.addEventListener("contextmenu", handleRightClickWithoutGrid);
 browser.runtime.onMessage.addListener(function(message) {
     switch (message.action) {
         case "setGridMode":
+			if (logToConsole) console.log("Grid mode received in selection.js, value is " + JSON.stringify(message.data));
             setGrid(message.data);
             break;
 		default:
@@ -34,8 +35,8 @@ function getGridSettings() {
 }
 
 function setGrid(data) {
-    if (logToConsole) console.log("Selection.js says gridOff is: " + data.gridOff);
-    if (data.gridOff) {
+    if (logToConsole) console.log("selection.js says gridOff is: " + data.gridOff + " while data is " + JSON.stringify(data));
+    if (data.gridOff === false || data.gridOff === undefined) {
         document.removeEventListener("keydown", onKeyDown);
         document.removeEventListener("keyup", onKeyUp);
         document.removeEventListener("click", handleShiftClickWithGrid);

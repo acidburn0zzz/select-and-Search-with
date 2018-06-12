@@ -26,7 +26,6 @@ const btnUpload = document.getElementById("upload");
 var divSearchEngines = document.getElementById("searchEngines");
 var storageSyncCount = 0;
 var searchEngines = {};
-var gridOff = disableGrid.checked;
 
 // Translation variables
 const move = browser.i18n.getMessage("move");
@@ -37,6 +36,13 @@ const multipleSearchEnginesSearch = browser.i18n.getMessage("multipleSearchEngin
 const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
 const placeHolderKeyword = browser.i18n.getMessage("placeHolderKeyword");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
+
+// Typing timer
+var typingTimerKeyword;
+var typingTimerQueryString;
+var typingEventKeyword;
+var typingEventQueryString;
+var typingInterval = 1500;
 
 /// WebExtension event handlers
 browser.runtime.onMessage.addListener(handleMessage);
@@ -164,13 +170,28 @@ function createLineItem(id, searchEngine) {
     let removeButton = createButton("ion-ios-trash", "remove", remove + " " + searchEngine.name);
     
     inputName.addEventListener("click", visibleChanged, false);
-    inputKeyword.addEventListener("keydown", keywordChanged, false);
-    inputKeyword.addEventListener("input", keywordChanged, false); // when people paste text
-    inputKeyword.addEventListener("blur", keywordChanged, false); // when people paste text
+    inputKeyword.addEventListener("paste", keywordChanged, false); // when people paste text
+    inputKeyword.addEventListener("blur", keywordChanged, false); // when people go away
+    inputKeyword.addEventListener("keyup", function (e) {
+		clearTimeout(typingTimerKeyword);
+		typingTimerKeyword = setTimeout(keywordChanged, typingInterval);
+	});
+	inputKeyword.addEventListener("keydown", function (e) {
+		typingEventKeyword = e;
+		clearTimeout(typingTimerKeyword);
+	});
+	
     inputMultiTab.addEventListener("click", multiTabChanged, false); // when people go away
-    inputQueryString.addEventListener("keydown", queryStringChanged, false);
-    inputQueryString.addEventListener("input", queryStringChanged, false); // when people paste text
+    inputQueryString.addEventListener("paste", queryStringChanged, false); // when people paste text
     inputQueryString.addEventListener("blur", queryStringChanged, false); // when people go away
+	inputQueryString.addEventListener("keyup", function (e) {
+		clearTimeout(typingTimerQueryString);
+		typingTimerQueryString = setTimeout(queryStringChanged, typingInterval);
+	});
+	inputQueryString.addEventListener("keydown", function (e) {
+		typingEventQueryString = e;
+		clearTimeout(typingTimerQueryString);
+	});
 
     upButton.addEventListener("click", upEventHandler, false);
     downButton.addEventListener("click", downEventHandler, false);
@@ -242,6 +263,7 @@ function reset() {
     sendMessage("reset", "");
 }
 
+// Begin of user event handlers
 function swapIndexes(previousItem, nextItem) {
     // Initialise variables
     let firstObj = null;
@@ -285,7 +307,6 @@ function moveSearchEngineDown(e) {
 
     // Update indexes in sync storage
     swapIndexes(lineItem.getAttribute("id"), ns.getAttribute("id"));
-
 }
 
 function removeSearchEngine(e) {
@@ -298,6 +319,7 @@ function removeSearchEngine(e) {
 }
 
 function visibleChanged(e){
+	let event = e;
 	let lineItem = e.target.parentNode;
 	let id = lineItem.getAttribute("id");
     let visible = e.target.checked;
@@ -315,9 +337,13 @@ function visibleChanged(e){
 }
 
 function keywordChanged(e){
-	let lineItem = e.target.parentNode;
+	if(e){
+		if(e.target.value == typingEventKeyword.target.value) return;
+	}
+	let event = e || typingEventKeyword;
+	let lineItem = event.target.parentNode;
 	let id = lineItem.getAttribute("id");
-    let keyword = e.target.value;
+    let keyword = event.target.value;
 
     // Initialise variables
     let newObj = {};
@@ -326,12 +352,12 @@ function keywordChanged(e){
         let retrievedSearchEngine = data[id];
 		retrievedSearchEngine.keyword = keyword;
         newObj[id] = retrievedSearchEngine;
-    }, onError).then(function(){
         sendMessage("saveEngines", newObj);
     }, onError);
 }
 
 function multiTabChanged(e){
+	let event = e;
 	let lineItem = e.target.parentNode;
 	let id = lineItem.getAttribute("id");
     let multiTab = e.target.checked;
@@ -343,15 +369,18 @@ function multiTabChanged(e){
         let retrievedSearchEngine = data[id];
 		retrievedSearchEngine.multitab = multiTab;
         newObj[id] = retrievedSearchEngine;
-    }, onError).then(function(){
         sendMessage("saveEngines", newObj);
     }, onError);
 }
 
 function queryStringChanged(e){
-	let lineItem = e.target.parentNode;
+	if(e){
+		if(e.target.value == typingEventQueryString.target.value) return;
+	}
+	let event = e || typingEventQueryString;
+	let lineItem = event.target.parentNode;
 	let id = lineItem.getAttribute("id");
-    let queryString = e.target.value;
+    let queryString = event.target.value;
     
     // Initialise variables
     let newObj = {};
@@ -360,10 +389,10 @@ function queryStringChanged(e){
         let retrievedSearchEngine = data[id];
 		retrievedSearchEngine.url = queryString;
         newObj[id] = retrievedSearchEngine;
-    }, onError).then(function(){
         sendMessage("saveEngines", newObj);
     }, onError);
 }
+// End of user event handlers
 
 function readData() {
     let oldSearchEngines = {};
@@ -481,7 +510,8 @@ function onGot(data) {
 
     if (options.tabActive === true) {
         tabActive.checked = true;
-    } else { // Default value for tabActive is false
+    } else {
+		// Default value for tabActive is false
         tabActive.checked = false;
     }
 
@@ -556,7 +586,7 @@ function updateGetFavicons() {
 }
 
 function toggleGridMode() {
-    gridOff = disableGrid.checked;
+    let gridOff = disableGrid.checked;
     sendMessage("toggleGridMode", {"gridOff": gridOff});
 }
 

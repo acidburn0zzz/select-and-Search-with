@@ -98,10 +98,7 @@ function sendMessageToTabs(tabs, message) {
     if (logToConsole) console.log("Tabs array is: ");
     if (logToConsole) console.log(tabs);
     for (let tab of tabs) {
-        browser.tabs.sendMessage(
-          tab.id,
-          message
-        );
+        browser.tabs.sendMessage(tab.id, message);
     }
 }
 
