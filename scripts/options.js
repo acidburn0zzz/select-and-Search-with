@@ -1,11 +1,16 @@
 /// Global variables
+// Settings container and div for addSearchEngine
 const divContainer = document.getElementById("container");
 const divAddSearchEngine = document.getElementById("addSearchEngine");
+
+// Engine
 const show = document.getElementById("show"); // Boolean
 const name = document.getElementById("name"); // String
 const keyword = document.getElementById("keyword"); // String
 const multitab = document.getElementById("multitab"); // Boolean
 const url = document.getElementById("url"); // String
+
+// Settings
 const openNewTab = document.getElementById("openNewTab");
 const openNewWindow = document.getElementById("openNewWindow");
 const sameTab = document.getElementById("sameTab");
@@ -15,14 +20,22 @@ const active = document.getElementById("active");
 const optionsMenuLocation = document.getElementById("optionsMenuLocation");
 const getFavicons = document.getElementById("getFavicons");
 const disableGrid = document.getElementById("disableGrid");
+const faviconCache = document.getElementById("faviconCache");
+
+// All engine buttons
 const btnClearAll = document.getElementById("clearAll");
 const btnSelectAll = document.getElementById("selectAll");
 const btnReset = document.getElementById("reset");
+
+// Add new search engine buttons
 const btnTest = document.getElementById("test");
 const btnAdd = document.getElementById("add");
 const btnClear = document.getElementById("clear");
+
+// Import/export
 const btnDownload = document.getElementById("download");
 const btnUpload = document.getElementById("upload");
+
 var divSearchEngines = document.getElementById("searchEngines");
 var storageSyncCount = 0;
 var searchEngines = {};
@@ -49,17 +62,26 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 /// Event handlers
 document.addEventListener('DOMContentLoaded', restoreOptions);
+
+// Settings
+faviconCache.addEventListener("click", updateFaviconCache);
 getFavicons.addEventListener("click", updateGetFavicons);
 disableGrid.addEventListener("clcik", toggleGridMode);
 tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
 optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
+
+// All engine buttons
 btnClearAll.addEventListener("click", clearAll);
 btnSelectAll.addEventListener("click", selectAll);
+
+// Add new engine
 btnReset.addEventListener("click", reset);
 btnTest.addEventListener("click", testSearchEngine);
 btnAdd.addEventListener("click", addSearchEngine);
 btnClear.addEventListener("click", clear);
+
+// Import/export
 btnDownload.addEventListener("click", saveToLocalDisk);
 btnUpload.addEventListener("change", handleFileUpload);
 
@@ -578,6 +600,11 @@ function updateTabMode() {
 	data["tabMode"] = document.querySelector('input[name="results"]:checked').value;
 	data["tabActive"] = tabActive.checked;
 	sendMessage("updateTabMode", data);
+}
+
+function updateFaviconCache() {
+	let favCache = faviconCache.checked;
+	sendMessage("updateFaviconCache", {"faviconCache": favCache});
 }
 
 function updateGetFavicons() {

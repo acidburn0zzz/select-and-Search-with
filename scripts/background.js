@@ -36,6 +36,7 @@ let contextsearch_makeNewTabOrWindowActive = false;
 let contextsearch_openSearchResultsInNewWindow = false;
 let contextsearch_getFavicons = true;
 let contextsearch_gridMode = false;
+let contextsearch_faviconCache = false; // default should be true
 
 /// Handle Incoming Messages
 // Listen for messages from the content or options script
@@ -68,20 +69,24 @@ browser.runtime.onMessage.addListener(function(message) {
             searchEngines[id] = message.data.searchEngine;
             addNewFavicon(domain, id).then(function(value){
                 searchEngines[id]["base64"] = value.base64;
+                saveSearchEngines(searchEngines, false);
             }, onError);
             break;
+        case "updateFaviconCache":
+			setFaviconCache(message.data);
+			break;
         case "updateGetFavicons":
-            setFavicons(message.data, false)
+            setFavicons(message.data)
             initializeFavicons();
             break;
         case "toggleGridMode":
             setGrid(message.data);
             break;
 		case "updateTabMode":
-			setTabMode(message.data, false);
+			setTabMode(message.data);
 			break;
         case "updateOptionsMenuLocation":
-            setOptionsMenu(message.data, false);
+            setOptionsMenu(message.data);
             rebuildContextMenu();
 			break;
 		case "save":
@@ -184,15 +189,18 @@ function saveOptions(data) {
 function setGrid(data) {
     if (logToConsole) {
         if (data.gridOff) {
-            console.log("Disabling the grid of icons..");
-        } else {
-            console.log("Enabling the grid of icons..");
-        }
-    }
+			console.log("Disabling the grid of icons.., data is " + JSON.stringify(data));
+		} else {
+			console.log("Enabling the grid of icons.., data is " + JSON.stringify(data));
+		}
+	}
+    
     browser.tabs.query({
         currentWindow: true,
         url: "*://*/*"
-    }).then((tabs) => sendMessageToTabs(tabs, {"action": "setGridMode", "data": data}), onError);
+    }).then((tabs) => {
+		sendMessageToTabs(tabs, {"action": "setGridMode", "data": data}
+	}), onError);
     saveOptions(data);
 }
 
@@ -227,6 +235,16 @@ function setOptionsMenuLocation(data) {
     }, onError);
 }
 
+function setFaviconCache(data){
+	let promise = new Promise(
+        function resolver(resolve, reject) {
+            contextsearch_faviconCache = data.faviconCache;
+            saveOptions(data).then(resolve, reject);
+        }
+    );
+    return promise;
+}
+
 function setFavicons(data) {
     if (logToConsole) console.log("Setting favicons preference..");
     contextsearch_getFavicons = data.favicons;
@@ -259,7 +277,15 @@ function loadDefaultSearchEngines(jsonFile) {
 }
 
 function saveSearchEngines(searchEnginesToSave, blnNotify){
-    browser.storage.sync.set(searchEnginesToSave).then(function() {
+	let searchEnginesLocal = JSON.parse(JSON.stringify(searchEngines));
+	if(contextsearch_faviconCache === false){
+		if(logToConsole) console.log("faviconCache is disabled, clearing favicons before saving to sync storage..");
+		for (let id in searchEnginesLocal) {
+			searchEnginesLocal[id].base64 = null;
+		}
+	}
+	
+    browser.storage.sync.set(searchEnginesLocal).then(function() {
         rebuildContextMenu();
         if (blnNotify) notify(notifySearchEnginesLoaded);
     }, onError);
@@ -385,7 +411,7 @@ function buildContextMenuItem(searchEngine, index, title, base64String, browserV
 }
 
 /// Rebuild the context menu using the search engines from storage sync
-function rebuildContextMenu() {
+function rebuildContextMenu(force) {
 	if (logToConsole) console.log("Rebuilding context menu with or without icons, taking into account all settings related to the context menu..");
     browser.runtime.getBrowserInfo().then((info) => {
 		let v = info.version;
@@ -394,35 +420,39 @@ function rebuildContextMenu() {
         browser.contextMenus.removeAll();
 		browser.contextMenus.onClicked.removeListener(processSearch);
 
-		browser.storage.sync.get(null).then(
-			(data) => {
-				if (contextsearch_optionsMenuLocation === "top") {
-					rebuildContextOptionsMenu();
-				}
-
+		if(searchEngines == null || force){
+			browser.storage.sync.get(null).then((data) => {
 				searchEngines = sortByIndex(data);
-				searchEnginesArray = [];
-				var index = 0;
-				for (let id in searchEngines) {
-					let base64String = searchEngines[id].base64;
-					let strIndex = "cs-" + index.toString();
-					let strTitle = searchEngines[id].name;
-					//let url = searchEngines[id].url;
-					//let domain = getDomain(url);
-					//let faviconUrl = herokuAppUrl + domain + herokuAppUrlSuffix;
-					searchEnginesArray.push(id);
-					buildContextMenuItem(searchEngines[id], strIndex, strTitle, base64String, browserVersion);
-					index += 1;
-				}
-
-				if (contextsearch_optionsMenuLocation === "bottom") {
-					rebuildContextOptionsMenu();
-				}
-			}
-		);
+				rebuildContextMenuWithData(browserVersion);
+			});
+		}else{
+			rebuildContextMenuWithData(browserVersion);
+		}
 
 		browser.contextMenus.onClicked.addListener(processSearch);
 	});
+}
+
+function rebuildContextMenuWithData(browserVersion){
+	if (contextsearch_optionsMenuLocation === "top") {
+		rebuildContextOptionsMenu();
+	}
+	
+	searchEnginesArray = [];
+	var index = 0;
+	for (let id in searchEngines) {
+		let base64String = searchEngines[id].base64;
+		let strIndex = "cs-" + index.toString();
+		let strTitle = searchEngines[id].name;
+		
+		searchEnginesArray.push(id);
+		buildContextMenuItem(searchEngines[id], strIndex, strTitle, base64String, browserVersion);
+		index += 1;
+	}
+
+	if (contextsearch_optionsMenuLocation === "bottom") {
+		rebuildContextOptionsMenu();
+	}
 }
 
 function rebuildContextOptionsMenu(){
