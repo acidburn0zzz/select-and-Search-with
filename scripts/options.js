@@ -162,6 +162,16 @@ function createLineItem(id, searchEngine) {
     let upButton = createButton("ion-ios-arrow-up", "up", move + " " + searchEngine.name + " " + up);
     let downButton = createButton("ion-ios-arrow-down", "down", move + " " + searchEngine.name + " " + down);
     let removeButton = createButton("ion-ios-trash", "remove", remove + " " + searchEngine.name);
+    
+    inputName.addEventListener("click", visibleChanged, false);
+    inputKeyword.addEventListener("keydown", keywordChanged, false);
+    inputKeyword.addEventListener("input", keywordChanged, false); // when people paste text
+    inputKeyword.addEventListener("blur", keywordChanged, false); // when people paste text
+    inputMultiTab.addEventListener("click", multiTabChanged, false); // when people go away
+    inputQueryString.addEventListener("keydown", queryStringChanged, false);
+    inputQueryString.addEventListener("input", queryStringChanged, false); // when people paste text
+    inputQueryString.addEventListener("blur", queryStringChanged, false); // when people go away
+
     upButton.addEventListener("click", upEventHandler, false);
     downButton.addEventListener("click", downEventHandler, false);
     removeButton.addEventListener("click", removeEventHandler, false);
@@ -285,6 +295,74 @@ function removeSearchEngine(e) {
         
     pn.removeChild(lineItem);
     browser.storage.sync.remove(id).then(saveOptions, onError);
+}
+
+function visibleChanged(e){
+	let lineItem = e.target.parentNode;
+	let id = lineItem.getAttribute("id");
+    let visible = e.target.checked;
+    
+    // Initialise variables
+    let newObj = {};
+
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.show = visible;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
+}
+
+function keywordChanged(e){
+	let lineItem = e.target.parentNode;
+	let id = lineItem.getAttribute("id");
+    let keyword = e.target.value;
+
+    // Initialise variables
+    let newObj = {};
+
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.keyword = keyword;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
+}
+
+function multiTabChanged(e){
+	let lineItem = e.target.parentNode;
+	let id = lineItem.getAttribute("id");
+    let multiTab = e.target.checked;
+    
+    // Initialise variables
+    let newObj = {};
+    
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.multitab = multiTab;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
+}
+
+function queryStringChanged(e){
+	let lineItem = e.target.parentNode;
+	let id = lineItem.getAttribute("id");
+    let queryString = e.target.value;
+    
+    // Initialise variables
+    let newObj = {};
+    
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.url = queryString;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
 }
 
 function readData() {
