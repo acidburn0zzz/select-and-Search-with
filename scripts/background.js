@@ -74,7 +74,7 @@ browser.runtime.onMessage.addListener(function(message) {
             }, onError);
             break;
         case "updateCacheFavicons":
-			setcacheFavicons(message.data);
+			setCacheFavicons(message.data);
 			break;
         case "updateGetFavicons":
             setDisplayFavicons(message.data);

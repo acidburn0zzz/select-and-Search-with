@@ -22,6 +22,8 @@ const getFavicons = document.getElementById("getFavicons");
 const disableGrid = document.getElementById("disableGrid");
 const cacheFavicons = document.getElementById("cacheFavicons");
 
+console.log(disableGrid);
+
 // All engine buttons
 const btnClearAll = document.getElementById("clearAll");
 const btnSelectAll = document.getElementById("selectAll");
@@ -195,19 +197,19 @@ function createLineItem(id, searchEngine) {
     let removeButton = createButton("ion-ios-trash", "remove", remove + " " + searchEngineName);
     
     // Event handler for 'show search engine' checkbox click event
-    chkShowSearchEngine.addEventListener("click", visibleChanged, false); // when users check or uncheck the checkbox
+    chkShowSearchEngine.addEventListener("click", visibleChanged); // when users check or uncheck the checkbox
 
     // Event handlers for search engine name changes
-    inputSearchEngineName.addEventListener("paste", searchEngineNameChanged, false); // when users paste text
-    inputSearchEngineName.addEventListener("change", searchEngineNameChanged, false); // when users leave the input field and content has changed
+    inputSearchEngineName.addEventListener("paste", searchEngineNameChanged); // when users paste text
+    inputSearchEngineName.addEventListener("change", searchEngineNameChanged); // when users leave the input field and content has changed
     inputSearchEngineName.addEventListener("input", function (e) {
 		clearTimeout(inputSearchEngineNameTimer);
 		inputSearchEngineNameTimer = setTimeout(searchEngineNameChanged, saveInterval);
 	});
 
     // Event handlers for keyword text changes
-    inputKeyword.addEventListener("paste", keywordChanged, false); // when users paste text
-    inputKeyword.addEventListener("change", keywordChanged, false); // when users leave the input field and content has changed
+    inputKeyword.addEventListener("paste", keywordChanged); // when users paste text
+    inputKeyword.addEventListener("change", keywordChanged); // when users leave the input field and content has changed
     inputKeyword.addEventListener("keyup", function (e) {
 		clearTimeout(typingTimerKeyword);
 		typingTimerKeyword = setTimeout(keywordChanged, typingInterval);
@@ -218,11 +220,11 @@ function createLineItem(id, searchEngine) {
 	});
     
     // Event handler for 'include search engine in multi-search' checkbox click event
-    chkMultiSearch.addEventListener("click", multiTabChanged, false); // when users check or uncheck the checkbox
+    chkMultiSearch.addEventListener("click", multiTabChanged); // when users check or uncheck the checkbox
 
     // Event handlers for query string changes
-    inputQueryString.addEventListener("paste", queryStringChanged, false); // when users paste text
-    inputQueryString.addEventListener("change", queryStringChanged, false); // when users leave the input field and content has changed
+    inputQueryString.addEventListener("paste", queryStringChanged); // when users paste text
+    inputQueryString.addEventListener("change", queryStringChanged); // when users leave the input field and content has changed
 	inputQueryString.addEventListener("keyup", function (e) {
 		//clearTimeout(typingTimerQueryString);
 		//typingTimerQueryString = setTimeout(queryStringChanged, typingInterval);
@@ -233,9 +235,9 @@ function createLineItem(id, searchEngine) {
 	});
 
     // Navigation and deletion buttons event handlers
-    upButton.addEventListener("click", upEventHandler, false);
-    downButton.addEventListener("click", downEventHandler, false);
-    removeButton.addEventListener("click", removeEventHandler, false);
+    upButton.addEventListener("click", upEventHandler);
+    downButton.addEventListener("click", downEventHandler);
+    removeButton.addEventListener("click", removeEventHandler);
 
     // Set attributes for all the elements composing a search engine or line item
     lineItem.setAttribute("id", id);
@@ -380,7 +382,7 @@ function visibleChanged(e){
 
 function searchEngineNameChanged(e) {
     let searchEngineName = e.target.value;
-    let lineItem = event.target.parentNode;
+    let lineItem = e.target.parentNode;
     let id = lineItem.getAttribute("id");
     
     // Initialise variables
