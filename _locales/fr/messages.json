@@ -84,7 +84,11 @@
     "description": ""
   },
   "header4": {
-    "message": "Menu contextuel sous forme de grille d'icones",
+    "message": "Stocker les icônes des moteurs de recherche",
+    "description": ""
+  },
+  "cacheFavicons": {
+    "message": "Sauvegarder les icônes des moteurs de recherche dans la mémoire synchronisée du navigateur",
     "description": ""
   },
   "gridMode": {

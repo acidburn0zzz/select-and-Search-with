@@ -36,7 +36,7 @@ let contextsearch_makeNewTabOrWindowActive = false;
 let contextsearch_openSearchResultsInNewWindow = false;
 let contextsearch_getFavicons = true;
 let contextsearch_gridMode = false;
-let contextsearch_faviconCache = false; // default should be true
+let contextsearch_cacheFavicons = false; // default should be true
 
 /// Handle Incoming Messages
 // Listen for messages from the content or options script
@@ -61,7 +61,8 @@ browser.runtime.onMessage.addListener(function(message) {
             testSearchEngine(message.data);
             break;
         case "saveEngines":
-			saveSearchEngines(message.data, false);
+            searchEngines = message.data;
+			saveSearchEngines(false);
 			break;
         case "addNewSearchEngine":
             let id = message.data.id;
@@ -69,24 +70,25 @@ browser.runtime.onMessage.addListener(function(message) {
             searchEngines[id] = message.data.searchEngine;
             addNewFavicon(domain, id).then(function(value){
                 searchEngines[id]["base64"] = value.base64;
-                saveSearchEngines(searchEngines, false);
+                saveSearchEngines(false);
             }, onError);
             break;
-        case "updateFaviconCache":
-			setFaviconCache(message.data);
+        case "updateCacheFavicons":
+			setcacheFavicons(message.data);
 			break;
         case "updateGetFavicons":
-            setFavicons(message.data)
+            setDisplayFavicons(message.data);
             initializeFavicons();
             break;
-        case "toggleGridMode":
+        case "setGridMode":
+            console.log("COUCOU");
             setGrid(message.data);
             break;
 		case "updateTabMode":
 			setTabMode(message.data);
 			break;
         case "updateOptionsMenuLocation":
-            setOptionsMenu(message.data);
+            setOptionsMenuLocation(message.data);
             rebuildContextMenu();
 			break;
 		case "save":
@@ -100,8 +102,7 @@ browser.runtime.onMessage.addListener(function(message) {
 // Send a message to the content script (selection.js)
 function sendMessageToTabs(tabs, message) {
     if (isEmpty(tabs)) return;
-    if (logToConsole) console.log("Tabs array is: ");
-    if (logToConsole) console.log(tabs);
+    if (logToConsole) console.log("Tabs array is: \n" + JSON.stringify(tabs));
     for (let tab of tabs) {
         browser.tabs.sendMessage(tab.id, message);
     }
@@ -116,11 +117,12 @@ function init() {
             "tabActive": false,
             "optionsMenuLocation": "bottom",
             "gridOff": false,
+            "cacheFavicons": true,
             "favicons": true
         }
     }
 
-    if (logToConsole) console.log("Loading the options and search engines from storage sync..");
+    if (logToConsole) console.log("Loading the extension's preferences and search engines from storage sync..");
     browser.storage.sync.get(null).then(function(data){
         
         var options = data.options;
@@ -135,7 +137,7 @@ function init() {
             if (logToConsole) console.log("Storage sync is empty -> loading default list of search engines.");
             loadDefaultSearchEngines(DEFAULT_JSON).then(setOptions(options), onError);
         } else {
-            if (logToConsole) console.log("Sorting search engines by index...");
+            if (logToConsole) console.log("Sorting search engines by index..");
             searchEngines = sortByIndex(data);
             setOptions(options);
         }
@@ -168,18 +170,26 @@ function setOptions(options) {
     }
     setGrid(options);
 
+    if (!(options.cacheFavicons === false || options.cacheFavicons === true)) {
+        // By default, favicons should be cached
+        options.cacheFavicons = true;
+    }
+    setCacheFavicons(options);
+
     if (!(options.favicons === false || options.favicons === true)) {
         // By default, favicons should be displayed
         options.favicons = true;
     }
-    setFavicons(options);
+    setDisplayFavicons(options);
+    let strOptions = JSON.stringify(options);
+    if (logToConsole) console.log("Options settings:\n" + strOptions);
 
 }
 
 function saveOptions(data) {
     let promise = new Promise(
         function resolver(resolve, reject) {
-            browser.storage.sync.set({"options": data});
+            browser.storage.sync.set({"options": data}).then(resolve, reject);
         }
     );
     return promise;
@@ -189,9 +199,9 @@ function saveOptions(data) {
 function setGrid(data) {
     if (logToConsole) {
         if (data.gridOff) {
-			console.log("Disabling the grid of icons.., data is " + JSON.stringify(data));
+			console.log("Disabling the grid of icons..");
 		} else {
-			console.log("Enabling the grid of icons.., data is " + JSON.stringify(data));
+			console.log("Enabling the grid of icons..");
 		}
 	}
     
@@ -199,8 +209,8 @@ function setGrid(data) {
         currentWindow: true,
         url: "*://*/*"
     }).then((tabs) => {
-		sendMessageToTabs(tabs, {"action": "setGridMode", "data": data}
-	}), onError);
+		sendMessageToTabs(tabs, {"action": "setGridMode", "data": data});
+	}, onError);
     saveOptions(data);
 }
 
@@ -235,17 +245,13 @@ function setOptionsMenuLocation(data) {
     }, onError);
 }
 
-function setFaviconCache(data){
-	let promise = new Promise(
-        function resolver(resolve, reject) {
-            contextsearch_faviconCache = data.faviconCache;
-            saveOptions(data).then(resolve, reject);
-        }
-    );
-    return promise;
+function setCacheFavicons(data){
+    if (logToConsole) console.log("Setting the preference for caching favicons..");
+    contextsearch_cacheFavicons = data.cacheFavicons;
+    saveOptions(data);
 }
 
-function setFavicons(data) {
+function setDisplayFavicons(data) {
     if (logToConsole) console.log("Setting favicons preference..");
     contextsearch_getFavicons = data.favicons;
     saveOptions(data).then(function(){
@@ -268,18 +274,20 @@ function loadDefaultSearchEngines(jsonFile) {
                     if (logToConsole) console.log("Search engines: \n" + searchEngines);
                 }
                 initializeFavicons();
-                saveSearchEngines(searchEngines, true);
+                saveSearchEngines(true);
+                resolve();
             };
             xhr.send();
+            xhr.onerror(reject);
         }
     );
     return promise;
 }
 
-function saveSearchEngines(searchEnginesToSave, blnNotify){
+function saveSearchEngines(blnNotify){
 	let searchEnginesLocal = JSON.parse(JSON.stringify(searchEngines));
-	if(contextsearch_faviconCache === false){
-		if(logToConsole) console.log("faviconCache is disabled, clearing favicons before saving to sync storage..");
+	if(contextsearch_cacheFavicons === false){
+		if(logToConsole) console.log("cacheFavicons is disabled, clearing favicons before saving to sync storage..");
 		for (let id in searchEnginesLocal) {
 			searchEnginesLocal[id].base64 = null;
 		}
@@ -294,7 +302,7 @@ function saveSearchEngines(searchEnginesToSave, blnNotify){
 /// Get and store favicon urls and base64 images
 function initializeFavicons() {
     if (logToConsole) console.log("Fetching favicons..");
-    if (logToConsole) console.log("Search engines: \n" + JSON.stringify(searchEngines));
+    //if (logToConsole) console.log("Search engines: \n" + JSON.stringify(searchEngines));
 
 	let arrayOfPromises = new Array();
 	
@@ -307,7 +315,6 @@ function initializeFavicons() {
     }
     
     Promise.all(arrayOfPromises).then(function(values) { // values is an array of {id:, base64:}
-        if (logToConsole) console.log("We're no longer fetching favicons..");
         if (values === undefined) return;
         for (let value of values) {
 			if(logToConsole) console.log("================================================");
@@ -317,9 +324,9 @@ function initializeFavicons() {
             if(logToConsole) console.log("================================================");
 			searchEngines[value.id]["base64"] = value.base64;
 		}
-        
+        if (logToConsole) console.log("We're no longer fetching favicons..");
         if (logToConsole) console.log("Search engines: \n" + JSON.stringify(searchEngines));
-        saveSearchEngines(searchEngines, false);
+        saveSearchEngines(false);
 	});
 }
 

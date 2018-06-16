@@ -84,7 +84,11 @@
     "description": ""
   },
   "header4": {
-    "message": "搜索引擎图标网格模式",
+    "message": "Cache favicons inside browser sync storage",
+    "description": ""
+  },
+  "cacheFavicons": {
+    "message": "Save favicons to browser sync storage",
     "description": ""
   },
   "gridMode": {

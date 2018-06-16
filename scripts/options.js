@@ -20,7 +20,7 @@ const active = document.getElementById("active");
 const optionsMenuLocation = document.getElementById("optionsMenuLocation");
 const getFavicons = document.getElementById("getFavicons");
 const disableGrid = document.getElementById("disableGrid");
-const faviconCache = document.getElementById("faviconCache");
+const cacheFavicons = document.getElementById("cacheFavicons");
 
 // All engine buttons
 const btnClearAll = document.getElementById("clearAll");
@@ -47,26 +47,30 @@ const down = browser.i18n.getMessage("down");
 const remove = browser.i18n.getMessage("remove");
 const multipleSearchEnginesSearch = browser.i18n.getMessage("multipleSearchEnginesSearch");
 const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
+const placeHolderName = browser.i18n.getMessage("searchEngineName");
 const placeHolderKeyword = browser.i18n.getMessage("placeHolderKeyword");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
 
 // Typing timer
+var inputSearchEngineNameTimer;
 var typingTimerKeyword;
 var typingTimerQueryString;
+var typingEventName;
 var typingEventKeyword;
 var typingEventQueryString;
 var typingInterval = 1500;
+var saveInterval = 1500;
 
-/// WebExtension event handlers
+/// Message handlers
 browser.runtime.onMessage.addListener(handleMessage);
 
 /// Event handlers
 document.addEventListener('DOMContentLoaded', restoreOptions);
 
 // Settings
-faviconCache.addEventListener("click", updateFaviconCache);
+cacheFavicons.addEventListener("click", updateCacheFavicons);
 getFavicons.addEventListener("click", updateGetFavicons);
-disableGrid.addEventListener("clcik", toggleGridMode);
+disableGrid.addEventListener("clcik", updateGridMode);
 tabMode.addEventListener("click", updateTabMode);
 tabActive.addEventListener("click", updateTabMode);
 optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
@@ -175,25 +179,35 @@ function createButton(ioniconClass, btnClass, btnTitle) {
 }
 
 function createLineItem(id, searchEngine) {
+    let searchEngineName = searchEngine.name;
     let lineItem = document.createElement("li");
 
-    let inputName = document.createElement("input");
-    let labelName = document.createElement("label");
-    let textName = document.createTextNode(searchEngine.name);
-
+    // Input elements for each search engine composing each line item
+    let chkShowSearchEngine = document.createElement("input");
+    let inputSearchEngineName = document.createElement("input");
     let inputKeyword = document.createElement("input");
-
-    let inputMultiTab = document.createElement("input");
-    
+    let chkMultiSearch = document.createElement("input");
     let inputQueryString = document.createElement("input");
 
-    let upButton = createButton("ion-ios-arrow-up", "up", move + " " + searchEngine.name + " " + up);
-    let downButton = createButton("ion-ios-arrow-down", "down", move + " " + searchEngine.name + " " + down);
-    let removeButton = createButton("ion-ios-trash", "remove", remove + " " + searchEngine.name);
+    // Navigation and deletion buttons for each search engine or line item
+    let upButton = createButton("ion-ios-arrow-up", "up", move + " " + searchEngineName + " " + up);
+    let downButton = createButton("ion-ios-arrow-down", "down", move + " " + searchEngineName + " " + down);
+    let removeButton = createButton("ion-ios-trash", "remove", remove + " " + searchEngineName);
     
-    inputName.addEventListener("click", visibleChanged, false);
-    inputKeyword.addEventListener("paste", keywordChanged, false); // when people paste text
-    inputKeyword.addEventListener("blur", keywordChanged, false); // when people go away
+    // Event handler for 'show search engine' checkbox click event
+    chkShowSearchEngine.addEventListener("click", visibleChanged, false); // when users check or uncheck the checkbox
+
+    // Event handlers for search engine name changes
+    inputSearchEngineName.addEventListener("paste", searchEngineNameChanged, false); // when users paste text
+    inputSearchEngineName.addEventListener("change", searchEngineNameChanged, false); // when users leave the input field and content has changed
+    inputSearchEngineName.addEventListener("input", function (e) {
+		clearTimeout(inputSearchEngineNameTimer);
+		inputSearchEngineNameTimer = setTimeout(searchEngineNameChanged, saveInterval);
+	});
+
+    // Event handlers for keyword text changes
+    inputKeyword.addEventListener("paste", keywordChanged, false); // when users paste text
+    inputKeyword.addEventListener("change", keywordChanged, false); // when users leave the input field and content has changed
     inputKeyword.addEventListener("keyup", function (e) {
 		clearTimeout(typingTimerKeyword);
 		typingTimerKeyword = setTimeout(keywordChanged, typingInterval);
@@ -202,32 +216,39 @@ function createLineItem(id, searchEngine) {
 		typingEventKeyword = e;
 		clearTimeout(typingTimerKeyword);
 	});
-	
-    inputMultiTab.addEventListener("click", multiTabChanged, false); // when people go away
-    inputQueryString.addEventListener("paste", queryStringChanged, false); // when people paste text
-    inputQueryString.addEventListener("blur", queryStringChanged, false); // when people go away
+    
+    // Event handler for 'include search engine in multi-search' checkbox click event
+    chkMultiSearch.addEventListener("click", multiTabChanged, false); // when users check or uncheck the checkbox
+
+    // Event handlers for query string changes
+    inputQueryString.addEventListener("paste", queryStringChanged, false); // when users paste text
+    inputQueryString.addEventListener("change", queryStringChanged, false); // when users leave the input field and content has changed
 	inputQueryString.addEventListener("keyup", function (e) {
-		clearTimeout(typingTimerQueryString);
-		typingTimerQueryString = setTimeout(queryStringChanged, typingInterval);
+		//clearTimeout(typingTimerQueryString);
+		//typingTimerQueryString = setTimeout(queryStringChanged, typingInterval);
 	});
 	inputQueryString.addEventListener("keydown", function (e) {
-		typingEventQueryString = e;
-		clearTimeout(typingTimerQueryString);
+		//typingEventQueryString = e;
+		//clearTimeout(typingTimerQueryString);
 	});
 
+    // Navigation and deletion buttons event handlers
     upButton.addEventListener("click", upEventHandler, false);
     downButton.addEventListener("click", downEventHandler, false);
     removeButton.addEventListener("click", removeEventHandler, false);
 
+    // Set attributes for all the elements composing a search engine or line item
     lineItem.setAttribute("id", id);
 
-    inputName.setAttribute("type", "checkbox");
-    inputName.setAttribute("title", titleShowEngine);
-    inputName.setAttribute("id", id + "-cbx");
-    inputName.checked = searchEngine.show;
+    chkShowSearchEngine.setAttribute("type", "checkbox");
+    chkShowSearchEngine.setAttribute("title", titleShowEngine);
+    chkShowSearchEngine.setAttribute("id", id + "-chk");
+    chkShowSearchEngine.checked = searchEngine.show;
 
-    labelName.setAttribute("for", id + "-cbx");
-    labelName.appendChild(textName);
+    inputSearchEngineName.setAttribute("type", "text");
+    inputSearchEngineName.setAttribute("id", id + "-name");
+    inputSearchEngineName.setAttribute("placeholder", placeHolderName);
+    inputSearchEngineName.setAttribute("value", searchEngineName);
 
     inputKeyword.setAttribute("type", "text");
     inputKeyword.setAttribute("id", id + "-kw");
@@ -235,19 +256,19 @@ function createLineItem(id, searchEngine) {
     inputKeyword.setAttribute("placeholder", placeHolderKeyword);
     inputKeyword.setAttribute("value", searchEngine.keyword);
 
-    inputMultiTab.setAttribute("type", "checkbox");
-    inputMultiTab.setAttribute("id", id + "-mt");
-    inputMultiTab.setAttribute("title", multipleSearchEnginesSearch);
-
-    inputMultiTab.checked = searchEngine.multitab;
+    chkMultiSearch.setAttribute("type", "checkbox");
+    chkMultiSearch.setAttribute("id", id + "-mt");
+    chkMultiSearch.setAttribute("title", multipleSearchEnginesSearch);
+    chkMultiSearch.checked = searchEngine.multitab;
 
     inputQueryString.setAttribute("type", "url");
     inputQueryString.setAttribute("value", searchEngine.url);
 
-    lineItem.appendChild(inputName);
-    lineItem.appendChild(labelName);
+    // Attach all the elements composing a search engine to the line item
+    lineItem.appendChild(chkShowSearchEngine);
+    lineItem.appendChild(inputSearchEngineName);
     lineItem.appendChild(inputKeyword);
-    lineItem.appendChild(inputMultiTab);
+    lineItem.appendChild(chkMultiSearch);
     lineItem.appendChild(inputQueryString);
 
     lineItem.appendChild(upButton);
@@ -341,7 +362,6 @@ function removeSearchEngine(e) {
 }
 
 function visibleChanged(e){
-	let event = e;
 	let lineItem = e.target.parentNode;
 	let id = lineItem.getAttribute("id");
     let visible = e.target.checked;
@@ -352,6 +372,23 @@ function visibleChanged(e){
     browser.storage.sync.get([id]).then(function(data){
         let retrievedSearchEngine = data[id];
 		retrievedSearchEngine.show = visible;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
+}
+
+function searchEngineNameChanged(e) {
+    let searchEngineName = e.target.value;
+    let lineItem = event.target.parentNode;
+    let id = lineItem.getAttribute("id");
+    
+    // Initialise variables
+    let newObj = {};
+
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.name = searchEngineName;
         newObj[id] = retrievedSearchEngine;
     }, onError).then(function(){
         sendMessage("saveEngines", newObj);
@@ -374,12 +411,12 @@ function keywordChanged(e){
         let retrievedSearchEngine = data[id];
 		retrievedSearchEngine.keyword = keyword;
         newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
         sendMessage("saveEngines", newObj);
     }, onError);
 }
 
 function multiTabChanged(e){
-	let event = e;
 	let lineItem = e.target.parentNode;
 	let id = lineItem.getAttribute("id");
     let multiTab = e.target.checked;
@@ -391,6 +428,7 @@ function multiTabChanged(e){
         let retrievedSearchEngine = data[id];
 		retrievedSearchEngine.multitab = multiTab;
         newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
         sendMessage("saveEngines", newObj);
     }, onError);
 }
@@ -411,6 +449,7 @@ function queryStringChanged(e){
         let retrievedSearchEngine = data[id];
 		retrievedSearchEngine.url = queryString;
         newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
         sendMessage("saveEngines", newObj);
     }, onError);
 }
@@ -602,9 +641,9 @@ function updateTabMode() {
 	sendMessage("updateTabMode", data);
 }
 
-function updateFaviconCache() {
-	let favCache = faviconCache.checked;
-	sendMessage("updateFaviconCache", {"faviconCache": favCache});
+function updateCacheFavicons() {
+	let cacheFav = cacheFavicons.checked;
+	sendMessage("updateCacheFavicons", {"cacheFavicons": cacheFav});
 }
 
 function updateGetFavicons() {
@@ -612,9 +651,10 @@ function updateGetFavicons() {
 	sendMessage("updateGetFavicons", {"favicons": fav});
 }
 
-function toggleGridMode() {
+function updateGridMode() {
+    console.log("AVANT COUCOU!");
     let gridOff = disableGrid.checked;
-    sendMessage("toggleGridMode", {"gridOff": gridOff});
+    sendMessage("setGridMode", {"gridOff": gridOff});
 }
 
 function updateOptionsMenuLocation() {

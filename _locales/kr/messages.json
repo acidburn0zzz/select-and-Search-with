@@ -84,7 +84,11 @@
     "description": ""
   },
   "header4": {
-    "message": "Search engines icon grid mode",
+    "message": "Cache favicons inside browser sync storage",
+    "description": ""
+  },
+  "cacheFavicons": {
+    "message": "Save favicons to browser sync storage",
     "description": ""
   },
   "gridMode": {

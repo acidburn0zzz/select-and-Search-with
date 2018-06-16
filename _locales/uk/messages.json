@@ -84,7 +84,11 @@
     "description": ""
   },
   "header4": {
-    "message": "Відображення пошукових систем сіткою іконок",
+    "message": "Cache favicons inside browser sync storage",
+    "description": ""
+  },
+  "cacheFavicons": {
+    "message": "Save favicons to browser sync storage",
     "description": ""
   },
   "gridMode": {

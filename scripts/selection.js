@@ -36,14 +36,14 @@ function getGridSettings() {
 
 function setGrid(data) {
     if (logToConsole) console.log("selection.js says gridOff is: " + data.gridOff + " while data is " + JSON.stringify(data));
-    if (data.gridOff === false || data.gridOff === undefined) {
-        document.removeEventListener("keydown", onKeyDown);
-        document.removeEventListener("keyup", onKeyUp);
-        document.removeEventListener("click", handleShiftClickWithGrid);
-    } else {
+    if (data.gridOff === true) {
         document.addEventListener("keydown", onKeyDown);
         document.addEventListener("keyup", onKeyUp);
         document.addEventListener("click", handleShiftClickWithGrid);
+    } else {
+        document.removeEventListener("keydown", onKeyDown);
+        document.removeEventListener("keyup", onKeyUp);
+        document.removeEventListener("click", handleShiftClickWithGrid);
     }
 }
 
