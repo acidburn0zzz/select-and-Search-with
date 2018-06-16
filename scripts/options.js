@@ -22,8 +22,6 @@ const getFavicons = document.getElementById("getFavicons");
 const disableGrid = document.getElementById("disableGrid");
 const cacheFavicons = document.getElementById("cacheFavicons");
 
-console.log(disableGrid);
-
 // All engine buttons
 const btnClearAll = document.getElementById("clearAll");
 const btnSelectAll = document.getElementById("selectAll");
@@ -54,17 +52,16 @@ const placeHolderKeyword = browser.i18n.getMessage("placeHolderKeyword");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
 
 // Typing timer
-var inputSearchEngineNameTimer;
+var typingTimerSearchEngineName;
 var typingTimerKeyword;
 var typingTimerQueryString;
-var typingEventName;
+var typingEventSearchEngineName;
 var typingEventKeyword;
 var typingEventQueryString;
 var typingInterval = 1500;
-var saveInterval = 1500;
 
 /// Message handlers
-browser.runtime.onMessage.addListener(handleMessage);
+browser.runtime.onMessage.addListener(handleMessages);
 
 /// Event handlers
 document.addEventListener('DOMContentLoaded', restoreOptions);
@@ -152,6 +149,7 @@ function sortByIndex(list) {
     return sortedList;
 }
 
+// Display the list of search engines
 function listSearchEngines(list) {
     let divSearchEngines = document.getElementById("searchEngines");
     if (divSearchEngines != null) divContainer.removeChild(divSearchEngines);
@@ -169,6 +167,7 @@ function listSearchEngines(list) {
 
 }
 
+// Create a navigation button using icons from ionicon (up arrow, down arrow and bin)
 function createButton(ioniconClass, btnClass, btnTitle) {
     let button = document.createElement("button");
     let btnIcon = document.createElement("i");
@@ -180,6 +179,7 @@ function createButton(ioniconClass, btnClass, btnTitle) {
     return button;
 }
 
+// Display a single search engine in a row or line item
 function createLineItem(id, searchEngine) {
     let searchEngineName = searchEngine.name;
     let lineItem = document.createElement("li");
@@ -202,10 +202,14 @@ function createLineItem(id, searchEngine) {
     // Event handlers for search engine name changes
     inputSearchEngineName.addEventListener("paste", searchEngineNameChanged); // when users paste text
     inputSearchEngineName.addEventListener("change", searchEngineNameChanged); // when users leave the input field and content has changed
-    inputSearchEngineName.addEventListener("input", function (e) {
-		clearTimeout(inputSearchEngineNameTimer);
-		inputSearchEngineNameTimer = setTimeout(searchEngineNameChanged, saveInterval);
-	});
+    inputSearchEngineName.addEventListener("keyup", function (e) {
+		clearTimeout(typingTimerSearchEngineName);
+		typingTimerSearchEngineName = setTimeout(searchEngineNameChanged, typingInterval);
+    });
+    inputSearchEngineName.addEventListener("keydown", function(e){
+        typingEventSearchEngineName = e;
+        clearTimeout(typingTimerSearchEngineName);
+    });
 
     // Event handlers for keyword text changes
     inputKeyword.addEventListener("paste", keywordChanged); // when users paste text
@@ -381,9 +385,13 @@ function visibleChanged(e){
 }
 
 function searchEngineNameChanged(e) {
-    let searchEngineName = e.target.value;
-    let lineItem = e.target.parentNode;
+    if(e){
+		if(e.target.value == typingEventSearchEngineName.target.value) return;
+	}
+	let event = e || typingEventSearchEngineName;
+	let lineItem = event.target.parentNode;
     let id = lineItem.getAttribute("id");
+    let searchEngineName = event.target.value;
     
     // Initialise variables
     let newObj = {};
@@ -540,7 +548,7 @@ function addSearchEngine() {
 }
 
 function clear() {
-    // Clear check boxes and text box entries
+    // Clear check boxes and text box entries of the line used to add a search engine
     show.checked = true;
     name.value = null;
     keyword.value = null;
@@ -598,6 +606,13 @@ function onGot(data) {
         // Default setting is to fetch favicons for context menu list
         getFavicons.checked = true;
     } 
+
+    if (options.cacheFavicons === true){
+        cacheFavicons.checked = true;
+    } else {
+        // Default setting is to cache favicons in storage sync
+        cacheFavicons.checked = false;
+    }
     
 }
 
@@ -675,9 +690,13 @@ function isValidUrl(url) {
     }
 }
 
-function handleMessage(message) {
-    if (message.action === "searchEnginesLoaded") {
-        listSearchEngines(message.data);
+function handleMessages(message) {
+    switch (message.action) {
+        case "searchEnginesLoaded":
+            listSearchEngines(message.data); // message.data will contain 
+            break;
+		default:
+			break;
     }
 }
 

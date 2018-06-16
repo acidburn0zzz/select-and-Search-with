@@ -52,7 +52,8 @@ browser.runtime.onMessage.addListener(function(message) {
             if (message.data) selection = message.data;
             break;
         case "reset":
-            loadDefaultSearchEngines(DEFAULT_JSON);
+            let blnInit = false;
+            loadDefaultSearchEngines(DEFAULT_JSON, blnInit);
             break;
         case "sendCurrentTabUrl":
             if (message.data) targetUrl = message.data;
@@ -78,7 +79,6 @@ browser.runtime.onMessage.addListener(function(message) {
 			break;
         case "updateGetFavicons":
             setDisplayFavicons(message.data);
-            initializeFavicons();
             break;
         case "setGridMode":
             console.log("COUCOU");
@@ -98,15 +98,6 @@ browser.runtime.onMessage.addListener(function(message) {
 			break;
 	}
 });
-
-// Send a message to the content script (selection.js)
-function sendMessageToTabs(tabs, message) {
-    if (isEmpty(tabs)) return;
-    if (logToConsole) console.log("Tabs array is: \n" + JSON.stringify(tabs));
-    for (let tab of tabs) {
-        browser.tabs.sendMessage(tab.id, message);
-    }
-}
 
 /// Initialisation
 function init() {
@@ -181,6 +172,7 @@ function setOptions(options) {
         options.favicons = true;
     }
     setDisplayFavicons(options);
+
     let strOptions = JSON.stringify(options);
     if (logToConsole) console.log("Options settings:\n" + strOptions);
 
@@ -255,13 +247,13 @@ function setDisplayFavicons(data) {
     if (logToConsole) console.log("Setting favicons preference..");
     contextsearch_getFavicons = data.favicons;
     saveOptions(data).then(function(){
-        initializeFavicons();
+        initializeFavicons(false);
     }, onError);
 }
 
 // To support Firefox ESR, we should check whether browser.storage.sync is supported and enabled.
 /// Load default list of search engines
-function loadDefaultSearchEngines(jsonFile) {
+function loadDefaultSearchEngines(jsonFile, blnInit) {
     let promise = new Promise(
         function resolver(resolve, reject) {
             let xhr = new XMLHttpRequest();
@@ -273,12 +265,14 @@ function loadDefaultSearchEngines(jsonFile) {
                     searchEngines = JSON.parse(this.responseText);
                     if (logToConsole) console.log("Search engines: \n" + searchEngines);
                 }
-                initializeFavicons();
-                saveSearchEngines(true);
+                initializeFavicons(true);
+                if (!blnInit) sendMessageToOptionsScript("searchEnginesLoaded", searchEngines);
                 resolve();
             };
             xhr.send();
-            xhr.onerror(reject);
+            xhr.onerror = function(e) {
+                reject(e);
+            }
         }
     );
     return promise;
@@ -300,9 +294,8 @@ function saveSearchEngines(blnNotify){
 }
 
 /// Get and store favicon urls and base64 images
-function initializeFavicons() {
+function initializeFavicons(blnNotify) {
     if (logToConsole) console.log("Fetching favicons..");
-    //if (logToConsole) console.log("Search engines: \n" + JSON.stringify(searchEngines));
 
 	let arrayOfPromises = new Array();
 	
@@ -326,7 +319,7 @@ function initializeFavicons() {
 		}
         if (logToConsole) console.log("We're no longer fetching favicons..");
         if (logToConsole) console.log("Search engines: \n" + JSON.stringify(searchEngines));
-        saveSearchEngines(false);
+        saveSearchEngines(blnNotify);
 	});
 }
 
@@ -580,16 +573,6 @@ function searchUsing(id) {
     });
 }
 
-/// Helper functions
-// Test if an object is empty
-function isEmpty(obj) {
-    for (var key in obj) {
-        if (obj.hasOwnProperty(key))
-            return false;
-    }
-    return true;
-}
-
 // Display the search results
 function displaySearchResults(targetUrl, tabPosition) {
     browser.windows.getCurrent({populate: false}).then(function(windowInfo) {
@@ -706,11 +689,22 @@ function buildSuggestion(text) {
     return result;
 }
 
-function testSearchEngine(engineData){
-	if(engineData.url != ""){
+/// Helper functions
+// Test if an object is empty
+function isEmpty(obj) {
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+
+// Test if a search engine performing a search for the keyword 'test' returns valid results
+function testSearchEngine(engineData) {
+	if (engineData.url != "") {
 		let tempTargetUrl = getSearchEngineUrl(engineData.url, "test");
 		browser.tabs.create({url: tempTargetUrl});
-	}else{
+	} else {
 		notify(notifySearchEngineUrlRequired);
 	}
 }
@@ -732,12 +726,25 @@ function encodeUrl(url) {
     return encodeURIComponent(url);
 }
 
-/// Verify is uri is encoded
+/// Verify if uri is encoded
 function isEncoded(uri) {
     uri = uri || "";  
     return uri !== decodeURIComponent(uri);
 }
 
+/// Send a message to the option script
+function sendMessageToOptionsScript(action, data) {
+    browser.runtime.sendMessage({"action": action, "data": data});
+}
+
+/// Send messages to content scripts (selection.js)
+function sendMessageToTabs(tabs, message) {
+    if (isEmpty(tabs)) return;
+    if (logToConsole) console.log("Tabs array is: \n" + JSON.stringify(tabs));
+    for (let tab of tabs) {
+        browser.tabs.sendMessage(tab.id, message);
+    }
+}
 /// Notifications
 function notify(message){
     browser.notifications.create(message.substring(0, 20),
