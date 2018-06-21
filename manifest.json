@@ -5,7 +5,7 @@
   "name": "__MSG_extensionName__",
   "description": "__MSG_extensionDescription__",
   "version": "3.70",
-  "author": "Olivier de Broqueville, Geoffrey De Belie",
+  "author": "Olivier de Broqueville",
   "applications": {
     "gecko": {
         "id": "olivier.debroqueville@gmail.com"
