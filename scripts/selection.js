@@ -4,7 +4,7 @@ const base64ContextSearchIcon = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAA
 /// Global variables
 var searchEngines = {};
 var selectedText = "";
-var shiftKey = false;
+var altKey = false;
 var range = null;
 
 /// Generic Error Handler
@@ -54,7 +54,7 @@ function setGrid(data) {
 }
 
 function handleAltClickWithGrid(e) {
-    // Exit function if shift key isn't pressed whilst clicking
+    // Exit function if Option (alt) key isn't pressed whilst clicking
     if (!altKey) return;
 
     let sel = window.getSelection();
