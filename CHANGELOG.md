@@ -1,7 +1,7 @@
 3.69
 =========
-* Changed the sources to fetch favicons from heroku
-* Removed console logs triggered on keyboard events
+* Changes the sources to fetch favicons from heroku
+* Fixes issue #127: Removes console logs triggered on keyboard events
 
 3.68
 =========
