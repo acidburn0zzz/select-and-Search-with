@@ -84,7 +84,11 @@
     "description": ""
   },
   "header4": {
-    "message": "Search engines icon grid mode",
+    "message": "Cache favicons inside browser sync storage",
+    "description": ""
+  },
+  "cacheFavicons": {
+    "message": "Save favicons to browser sync storage",
     "description": ""
   },
   "gridMode": {
@@ -151,6 +155,14 @@
     "message": "Clear",
     "description": ""
   },
+  "header7": {
+    "message": "Disable grid of icons",
+    "description": ""
+  },
+  "disableGrid": {
+    "message": "Disable grid of icons",
+    "description": ""
+  },
   "move": {
     "message": "Move",
     "description": ""
@@ -177,6 +189,10 @@
   },
   "notifySearchEngineAdded": {
     "message": "Search engine added.",
+    "description": ""
+  },
+  "titleShowEngine": {
+    "message": "Show this search engine in the context menu or grid",
     "description": ""
   },
   "notifyEnableStorageSync": {
@@ -222,9 +238,5 @@
   "notifySearchEngineUrlRequired": {
     "message": "Please fill in a search engine URL.",
       "description": ""
-  },
-  "titleShowEngine": {
-    "message": "Show this search engine in the context menu or grid",
-    "description": ""
   }
 }

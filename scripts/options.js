@@ -1,11 +1,16 @@
 /// Global variables
+// Settings container and div for addSearchEngine
 const divContainer = document.getElementById("container");
 const divAddSearchEngine = document.getElementById("addSearchEngine");
+
+// Engine
 const show = document.getElementById("show"); // Boolean
 const name = document.getElementById("name"); // String
 const keyword = document.getElementById("keyword"); // String
 const multitab = document.getElementById("multitab"); // Boolean
 const url = document.getElementById("url"); // String
+
+// Settings
 const openNewTab = document.getElementById("openNewTab");
 const openNewWindow = document.getElementById("openNewWindow");
 const sameTab = document.getElementById("sameTab");
@@ -14,8 +19,25 @@ const tabActive = document.getElementById("tabActive");
 const active = document.getElementById("active");
 const optionsMenuLocation = document.getElementById("optionsMenuLocation");
 const getFavicons = document.getElementById("getFavicons");
-let divSearchEngines = document.getElementById("searchEngines");
-let storageSyncCount = 0;
+const disableGrid = document.getElementById("disableGrid");
+const cacheFavicons = document.getElementById("cacheFavicons");
+
+// All engine buttons
+const btnClearAll = document.getElementById("clearAll");
+const btnSelectAll = document.getElementById("selectAll");
+const btnReset = document.getElementById("reset");
+
+// Add new search engine buttons
+const btnTest = document.getElementById("test");
+const btnAdd = document.getElementById("add");
+const btnClear = document.getElementById("clear");
+
+// Import/export
+const btnDownload = document.getElementById("download");
+const btnUpload = document.getElementById("upload");
+
+var divSearchEngines = document.getElementById("searchEngines");
+var storageSyncCount = 0;
 var searchEngines = {};
 
 // Translation variables
@@ -25,8 +47,46 @@ const down = browser.i18n.getMessage("down");
 const remove = browser.i18n.getMessage("remove");
 const multipleSearchEnginesSearch = browser.i18n.getMessage("multipleSearchEnginesSearch");
 const titleShowEngine = browser.i18n.getMessage("titleShowEngine");
+const placeHolderName = browser.i18n.getMessage("searchEngineName");
 const placeHolderKeyword = browser.i18n.getMessage("placeHolderKeyword");
 const notifySearchEngineAdded = browser.i18n.getMessage("notifySearchEngineAdded");
+
+// Typing timer
+var typingTimerSearchEngineName;
+var typingTimerKeyword;
+var typingTimerQueryString;
+var typingEventSearchEngineName;
+var typingEventKeyword;
+var typingEventQueryString;
+var typingInterval = 1500;
+
+/// Message handlers
+browser.runtime.onMessage.addListener(handleMessages);
+
+/// Event handlers
+document.addEventListener('DOMContentLoaded', restoreOptions);
+
+// Settings
+cacheFavicons.addEventListener("click", updateCacheFavicons);
+getFavicons.addEventListener("click", updateGetFavicons);
+disableGrid.addEventListener("clcik", updateGridMode);
+tabMode.addEventListener("click", updateTabMode);
+tabActive.addEventListener("click", updateTabMode);
+optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
+
+// All engine buttons
+btnClearAll.addEventListener("click", clearAll);
+btnSelectAll.addEventListener("click", selectAll);
+
+// Add new engine
+btnReset.addEventListener("click", reset);
+btnTest.addEventListener("click", testSearchEngine);
+btnAdd.addEventListener("click", addSearchEngine);
+btnClear.addEventListener("click", clear);
+
+// Import/export
+btnDownload.addEventListener("click", saveToLocalDisk);
+btnUpload.addEventListener("change", handleFileUpload);
 
 // Send a message to the background script
 function sendMessage(action, data) {
@@ -89,6 +149,7 @@ function sortByIndex(list) {
     return sortedList;
 }
 
+// Display the list of search engines
 function listSearchEngines(list) {
     let divSearchEngines = document.getElementById("searchEngines");
     if (divSearchEngines != null) divContainer.removeChild(divSearchEngines);
@@ -106,6 +167,7 @@ function listSearchEngines(list) {
 
 }
 
+// Create a navigation button using icons from ionicon (up arrow, down arrow and bin)
 function createButton(ioniconClass, btnClass, btnTitle) {
     let button = document.createElement("button");
     let btnIcon = document.createElement("i");
@@ -117,35 +179,82 @@ function createButton(ioniconClass, btnClass, btnTitle) {
     return button;
 }
 
+// Display a single search engine in a row or line item
 function createLineItem(id, searchEngine) {
+    let searchEngineName = searchEngine.name;
     let lineItem = document.createElement("li");
 
-    let inputName = document.createElement("input");
-    let labelName = document.createElement("label");
-    let textName = document.createTextNode(searchEngine.name);
-
+    // Input elements for each search engine composing each line item
+    let chkShowSearchEngine = document.createElement("input");
+    let inputSearchEngineName = document.createElement("input");
     let inputKeyword = document.createElement("input");
-
-    let inputMultiTab = document.createElement("input");
-    
+    let chkMultiSearch = document.createElement("input");
     let inputQueryString = document.createElement("input");
 
-    let upButton = createButton("ion-ios-arrow-up", "up", move + " " + searchEngine.name + " " + up);
-    let downButton = createButton("ion-ios-arrow-down", "down", move + " " + searchEngine.name + " " + down);
-    let removeButton = createButton("ion-ios-trash", "remove", remove + " " + searchEngine.name);
-    upButton.addEventListener("click", upEventHandler, false);
-    downButton.addEventListener("click", downEventHandler, false);
-    removeButton.addEventListener("click", removeEventHandler, false);
+    // Navigation and deletion buttons for each search engine or line item
+    let upButton = createButton("ion-ios-arrow-up", "up", move + " " + searchEngineName + " " + up);
+    let downButton = createButton("ion-ios-arrow-down", "down", move + " " + searchEngineName + " " + down);
+    let removeButton = createButton("ion-ios-trash", "remove", remove + " " + searchEngineName);
+    
+    // Event handler for 'show search engine' checkbox click event
+    chkShowSearchEngine.addEventListener("click", visibleChanged); // when users check or uncheck the checkbox
 
+    // Event handlers for search engine name changes
+    inputSearchEngineName.addEventListener("paste", searchEngineNameChanged); // when users paste text
+    inputSearchEngineName.addEventListener("change", searchEngineNameChanged); // when users leave the input field and content has changed
+    inputSearchEngineName.addEventListener("keyup", function (e) {
+		clearTimeout(typingTimerSearchEngineName);
+		typingTimerSearchEngineName = setTimeout(searchEngineNameChanged, typingInterval);
+    });
+    inputSearchEngineName.addEventListener("keydown", function(e){
+        typingEventSearchEngineName = e;
+        clearTimeout(typingTimerSearchEngineName);
+    });
+
+    // Event handlers for keyword text changes
+    inputKeyword.addEventListener("paste", keywordChanged); // when users paste text
+    inputKeyword.addEventListener("change", keywordChanged); // when users leave the input field and content has changed
+    inputKeyword.addEventListener("keyup", function (e) {
+		clearTimeout(typingTimerKeyword);
+		typingTimerKeyword = setTimeout(keywordChanged, typingInterval);
+	});
+	inputKeyword.addEventListener("keydown", function (e) {
+		typingEventKeyword = e;
+		clearTimeout(typingTimerKeyword);
+	});
+    
+    // Event handler for 'include search engine in multi-search' checkbox click event
+    chkMultiSearch.addEventListener("click", multiTabChanged); // when users check or uncheck the checkbox
+
+    // Event handlers for query string changes
+    inputQueryString.addEventListener("paste", queryStringChanged); // when users paste text
+    inputQueryString.addEventListener("change", queryStringChanged); // when users leave the input field and content has changed
+	inputQueryString.addEventListener("keyup", function (e) {
+		//clearTimeout(typingTimerQueryString);
+		//typingTimerQueryString = setTimeout(queryStringChanged, typingInterval);
+	});
+	inputQueryString.addEventListener("keydown", function (e) {
+		//typingEventQueryString = e;
+		//clearTimeout(typingTimerQueryString);
+	});
+
+    // Navigation and deletion buttons event handlers
+    upButton.addEventListener("click", upEventHandler);
+    downButton.addEventListener("click", downEventHandler);
+    removeButton.addEventListener("click", removeEventHandler);
+
+    // Set attributes for all the elements composing a search engine or line item
     lineItem.setAttribute("id", id);
 
-    inputName.setAttribute("type", "checkbox");
-    inputName.setAttribute("title", titleShowEngine);
-    inputName.setAttribute("id", id + "-cbx");
-    inputName.checked = searchEngine.show;
+    chkShowSearchEngine.setAttribute("type", "checkbox");
+    chkShowSearchEngine.setAttribute("title", titleShowEngine);
+    chkShowSearchEngine.setAttribute("id", id + "-chk");
+    chkShowSearchEngine.checked = searchEngine.show;
 
-    labelName.setAttribute("for", id + "-cbx");
-    labelName.appendChild(textName);
+    inputSearchEngineName.setAttribute("type", "text");
+    inputSearchEngineName.setAttribute("id", id + "-name");
+    inputSearchEngineName.setAttribute("placeholder", placeHolderName);
+    inputSearchEngineName.setAttribute("value", searchEngineName);
 
     inputKeyword.setAttribute("type", "text");
     inputKeyword.setAttribute("id", id + "-kw");
@@ -153,19 +262,19 @@ function createLineItem(id, searchEngine) {
     inputKeyword.setAttribute("placeholder", placeHolderKeyword);
     inputKeyword.setAttribute("value", searchEngine.keyword);
 
-    inputMultiTab.setAttribute("type", "checkbox");
-    inputMultiTab.setAttribute("id", id + "-mt");
-    inputMultiTab.setAttribute("title", multipleSearchEnginesSearch);
-
-    inputMultiTab.checked = searchEngine.multitab;
+    chkMultiSearch.setAttribute("type", "checkbox");
+    chkMultiSearch.setAttribute("id", id + "-mt");
+    chkMultiSearch.setAttribute("title", multipleSearchEnginesSearch);
+    chkMultiSearch.checked = searchEngine.multitab;
 
     inputQueryString.setAttribute("type", "url");
     inputQueryString.setAttribute("value", searchEngine.url);
 
-    lineItem.appendChild(inputName);
-    lineItem.appendChild(labelName);
+    // Attach all the elements composing a search engine to the line item
+    lineItem.appendChild(chkShowSearchEngine);
+    lineItem.appendChild(inputSearchEngineName);
     lineItem.appendChild(inputKeyword);
-    lineItem.appendChild(inputMultiTab);
+    lineItem.appendChild(chkMultiSearch);
     lineItem.appendChild(inputQueryString);
 
     lineItem.appendChild(upButton);
@@ -203,6 +312,7 @@ function reset() {
     sendMessage("reset", "");
 }
 
+// Begin of user event handlers
 function swapIndexes(previousItem, nextItem) {
     // Initialise variables
     let firstObj = null;
@@ -246,7 +356,6 @@ function moveSearchEngineDown(e) {
 
     // Update indexes in sync storage
     swapIndexes(lineItem.getAttribute("id"), ns.getAttribute("id"));
-
 }
 
 function removeSearchEngine(e) {
@@ -257,6 +366,104 @@ function removeSearchEngine(e) {
     pn.removeChild(lineItem);
     browser.storage.sync.remove(id).then(saveOptions, onError);
 }
+
+function visibleChanged(e){
+	let lineItem = e.target.parentNode;
+	let id = lineItem.getAttribute("id");
+    let visible = e.target.checked;
+    
+    // Initialise variables
+    let newObj = {};
+
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.show = visible;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
+}
+
+function searchEngineNameChanged(e) {
+    if(e){
+		if(e.target.value == typingEventSearchEngineName.target.value) return;
+	}
+	let event = e || typingEventSearchEngineName;
+	let lineItem = event.target.parentNode;
+    let id = lineItem.getAttribute("id");
+    let searchEngineName = event.target.value;
+    
+    // Initialise variables
+    let newObj = {};
+
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.name = searchEngineName;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
+}
+
+function keywordChanged(e){
+	if(e){
+		if(e.target.value == typingEventKeyword.target.value) return;
+	}
+	let event = e || typingEventKeyword;
+	let lineItem = event.target.parentNode;
+	let id = lineItem.getAttribute("id");
+    let keyword = event.target.value;
+
+    // Initialise variables
+    let newObj = {};
+
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.keyword = keyword;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
+}
+
+function multiTabChanged(e){
+	let lineItem = e.target.parentNode;
+	let id = lineItem.getAttribute("id");
+    let multiTab = e.target.checked;
+    
+    // Initialise variables
+    let newObj = {};
+    
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.multitab = multiTab;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
+}
+
+function queryStringChanged(e){
+	if(e){
+		if(e.target.value == typingEventQueryString.target.value) return;
+	}
+	let event = e || typingEventQueryString;
+	let lineItem = event.target.parentNode;
+	let id = lineItem.getAttribute("id");
+    let queryString = event.target.value;
+    
+    // Initialise variables
+    let newObj = {};
+    
+    browser.storage.sync.get([id]).then(function(data){
+        let retrievedSearchEngine = data[id];
+		retrievedSearchEngine.url = queryString;
+        newObj[id] = retrievedSearchEngine;
+    }, onError).then(function(){
+        sendMessage("saveEngines", newObj);
+    }, onError);
+}
+// End of user event handlers
 
 function readData() {
     let oldSearchEngines = {};
@@ -341,7 +548,7 @@ function addSearchEngine() {
 }
 
 function clear() {
-    // Clear check boxes and text box entries
+    // Clear check boxes and text box entries of the line used to add a search engine
     show.checked = true;
     name.value = null;
     keyword.value = null;
@@ -350,7 +557,10 @@ function clear() {
 }
 
 function onGot(data) {
-    switch (data.tabMode) {
+    let options = data.options;
+    delete data.options;
+    listSearchEngines(data);
+    switch (options.tabMode) {
         case "openNewTab":
             openNewTab.checked = true;
             active.style.visibility = "visible";
@@ -369,32 +579,46 @@ function onGot(data) {
             break;
     }
 
-    if (data.tabActive === true) {
+    if (options.tabActive === true) {
         tabActive.checked = true;
-    } else { // Default value for tabActive is false
+    } else {
+		// Default value for tabActive is false
         tabActive.checked = false;
     }
 
-    if (data.optionsMenuLocation === "top" || data.optionsMenuLocation === "bottom" || data.optionsMenuLocation === "none") {
-		optionsMenuLocation.value = data.optionsMenuLocation;
+    if (options.gridOff === true) {
+        disableGrid.checked = true;
+    } else {
+        // By default, the grid of icons is enabled
+        disableGrid.checked = false;
+    }
+
+    if (options.optionsMenuLocation === "top" || options.optionsMenuLocation === "bottom" || options.optionsMenuLocation === "none") {
+		optionsMenuLocation.value = options.optionsMenuLocation;
     } else {
         // Default value for optionsMenuLocation is bottom
 		optionsMenuLocation.value = "bottom";
     }
 
-    if (data.favicons === false) {
+    if (options.favicons === false) {
         getFavicons.checked = false;
     } else {
         // Default setting is to fetch favicons for context menu list
         getFavicons.checked = true;
     } 
+
+    if (options.cacheFavicons === true){
+        cacheFavicons.checked = true;
+    } else {
+        // Default setting is to cache favicons in storage sync
+        cacheFavicons.checked = false;
+    }
     
 }
 
 // Restore the list of search engines to be displayed in the context menu from the local storage
 function restoreOptions() {
-    browser.storage.sync.get(null).then(listSearchEngines);
-    browser.storage.local.get(["tabMode", "tabActive", "optionsMenuLocation", "favicons"]).then(onGot, onError);
+    browser.storage.sync.get(null).then(onGot, onError);
 }
 
 function saveToLocalDisk() {
@@ -434,9 +658,20 @@ function updateTabMode() {
 	sendMessage("updateTabMode", data);
 }
 
+function updateCacheFavicons() {
+	let cacheFav = cacheFavicons.checked;
+	sendMessage("updateCacheFavicons", {"cacheFavicons": cacheFav});
+}
+
 function updateGetFavicons() {
     let fav = getFavicons.checked;
 	sendMessage("updateGetFavicons", {"favicons": fav});
+}
+
+function updateGridMode() {
+    console.log("AVANT COUCOU!");
+    let gridOff = disableGrid.checked;
+    sendMessage("setGridMode", {"gridOff": gridOff});
 }
 
 function updateOptionsMenuLocation() {
@@ -455,9 +690,13 @@ function isValidUrl(url) {
     }
 }
 
-function handleMessage(message) {
-    if (message.action === "searchEnginesLoaded") {
-        listSearchEngines(message.data);
+function handleMessages(message) {
+    switch (message.action) {
+        case "searchEnginesLoaded":
+            listSearchEngines(message.data); // message.data will contain 
+            break;
+		default:
+			break;
     }
 }
 
@@ -496,21 +735,3 @@ function translateContent(attribute, type) {
 
 i18n();
 restoreOptions();
-
-/// WebExtension event handlers
-browser.runtime.onMessage.addListener(handleMessage);
-
-/// Event handlers
-getFavicons.addEventListener("click", updateGetFavicons);
-tabMode.addEventListener("click", updateTabMode);
-tabActive.addEventListener("click", updateTabMode);
-optionsMenuLocation.addEventListener("click", updateOptionsMenuLocation);
-document.addEventListener('DOMContentLoaded', restoreOptions);
-document.getElementById("clearAll").addEventListener("click", clearAll);
-document.getElementById("selectAll").addEventListener("click", selectAll);
-document.getElementById("reset").addEventListener("click", reset);
-document.getElementById("test").addEventListener("click", testSearchEngine);
-document.getElementById("add").addEventListener("click", addSearchEngine);
-document.getElementById("clear").addEventListener("click", clear);
-document.getElementById("download").addEventListener("click", saveToLocalDisk);
-document.getElementById("upload").addEventListener("change", handleFileUpload);

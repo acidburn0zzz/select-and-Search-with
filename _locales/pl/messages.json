@@ -84,7 +84,11 @@
     "description": ""
   },
   "header4": {
-    "message": "Tryb siatki ikon wyszukiwania",
+    "message": "Cache favicons inside browser sync storage",
+    "description": ""
+  },
+  "cacheFavicons": {
+    "message": "Save favicons to browser sync storage",
     "description": ""
   },
   "gridMode": {
@@ -225,6 +229,14 @@
   },
   "titleShowEngine": {
     "message": "Show this search engine in the context menu or grid",
+    "description": ""
+  },
+  "header7": {
+    "message": "Disable grid of icons",
+    "description": ""
+  },
+  "disableGrid": {
+    "message": "Disable grid of icons",
     "description": ""
   }
 }
