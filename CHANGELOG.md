@@ -1,3 +1,8 @@
+3.69
+=========
+* Changed the sources to fetch favicons from heroku
+* Removed console logs triggered on keyboard events
+
 3.68
 =========
 * Fixes bugs #113, #114 and #115 encountered in version 3.66
