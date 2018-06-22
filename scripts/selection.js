@@ -212,7 +212,7 @@ function onKeyDown(e) {
         let nav = document.getElementById("cs-grid");
         nav.style.display = "none";
     }
-    // If the Shift key is pressed
+    // If the Option (alt) key is pressed
     if (e.altKey) {
         altKey = true;
         let sel = window.getSelection();
