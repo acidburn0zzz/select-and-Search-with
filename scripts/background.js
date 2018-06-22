@@ -745,6 +745,7 @@ function sendMessageToTabs(tabs, message) {
         browser.tabs.sendMessage(tab.id, message);
     }
 }
+
 /// Notifications
 function notify(message){
     browser.notifications.create(message.substring(0, 20),
