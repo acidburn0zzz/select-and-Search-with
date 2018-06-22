@@ -4,7 +4,7 @@ const base64ContextSearchIcon = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAA
 /// Global variables
 var searchEngines = {};
 var selectedText = "";
-var shiftKey = false;
+var altKey = false;
 var range = null;
 
 /// Generic Error Handler
@@ -19,7 +19,7 @@ document.addEventListener("contextmenu", handleRightClickWithoutGrid);
 
 function handleShiftClickWithGrid(e) {
     // Exit function if shift key isn't pressed whilst clicking
-    if (!shiftKey) return;
+    if (!altKey) return;
 
     let sel = window.getSelection();
     sel.empty();
@@ -213,15 +213,15 @@ function onKeyDown(e) {
         nav.style.display = "none";
     }
     // If the Shift key is pressed
-    if (e.shiftKey) {
-        shiftKey = true;
+    if (e.altKey) {
+        altKey = true;
         let sel = window.getSelection();
         range = sel.getRangeAt(0);
     }
 }
 
 function onKeyUp(e) {
-    shiftKey = false;
+    altKey = false;
     range = null;
 }
 
